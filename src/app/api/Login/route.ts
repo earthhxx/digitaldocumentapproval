@@ -101,6 +101,7 @@ export async function POST(req: NextRequest) {
             {
                 userId: userrow.User_Id,
                 username: userrow.Name,
+                fullName: userrow.Name,
                 roles,
                 permissions,
             },
