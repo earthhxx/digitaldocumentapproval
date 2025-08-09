@@ -1,86 +1,73 @@
 "use client";
-
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+// AuthContext.tsx
+import { createContext, useContext, useState, useEffect } from "react";
 import {jwtDecode} from "jwt-decode";
 
-type User = {
-  userId: number;
-  username: string;
+interface User {
+  userId: string;
+  fullName: string;
+  username?: string; // ใช้ username ถ้าไม่มี fullName
   roles: string[];
-  exp?: number; // JWT expiration (optional)
-};
+}
 
-type AuthContextType = {
+interface DecodedToken {
+  userId: string;
+  fullName: string;
+  roles: string | string[];
+}
+
+interface AuthContextType {
   user: User | null;
-  login: (token: string) => void;
+  token: string | null;
+  login: (token: string) => void;  // รับแค่ token
   logout: () => void;
   isAuthenticated: boolean;
-};
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
-  // โหลด token จาก localStorage ตอนเปิดหน้า
+  const isAuthenticated = !!token;
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decoded: User = jwtDecode(token);
-        setUser(decoded);
-      } catch (error) {
-        console.error("Invalid token", error);
-        localStorage.removeItem("token");
-      }
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      setUser(JSON.parse(storedUser));
     }
   }, []);
 
-  // sync state ระหว่างหลายแท็บ
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const decoded: User = jwtDecode(token);
-          setUser(decoded);
-        } catch (error) {
-          console.error("Invalid token", error);
-          setUser(null);
-        }
-      } else {
-        setUser(null);
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
   const login = (token: string) => {
-    localStorage.setItem("token", token);
     try {
-      const decoded: User = jwtDecode(token);
-      setUser(decoded);
-    } catch (error) {
-      console.error("Invalid token", error);
+      const decoded = jwtDecode<DecodedToken>(token);
+      const userData = {
+        userId: decoded.userId,
+        fullName: decoded.fullName,
+        roles: Array.isArray(decoded.roles) ? decoded.roles : [decoded.roles],
+      };
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(userData));
+      setToken(token);
+      setUser(userData);
+    } catch {
+      // handle error
     }
   };
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setToken(null);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        logout,
-        isAuthenticated: !!user,
-      }}
-    >
+    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
@@ -88,8 +75,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 };

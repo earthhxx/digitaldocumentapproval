@@ -8,7 +8,7 @@ export default function Sidebar() {
   // ดึงข้อมูลจาก user (ถ้าไม่มี ให้เป็นค่าดีฟอลต์)
   const roles = user?.roles || [];
   const userId = user?.userId || "";
-  const fullName = user?.username || ""; // หรือเปลี่ยนเป็น fullName ถ้า token มี field นี้
+  const fullName = user?.fullName || ""; // หรือเปลี่ยนเป็น fullName ถ้า token มี field นี้
 
   return (
     <aside className="h-screen w-64 bg-gray-900 text-white flex flex-col">
