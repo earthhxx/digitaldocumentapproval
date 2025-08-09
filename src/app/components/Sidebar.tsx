@@ -4,7 +4,7 @@ import LoginForm from "./LoginForm";
 import { jwtDecode } from "jwt-decode";
 
 type DecodedToken = {
-    roles: string; // ถ้าเป็น array ใช้ string[]
+    roles: string; // หรือ string[] ถ้าเป็น array
     userId: string;
     fullName: string;
 };
@@ -24,6 +24,8 @@ export default function Sidebar() {
                 setFullName(decoded.fullName);
             } catch {
                 setRoles(null);
+                setUsername(null);
+                setFullName(null);
             }
         }
     }, []);
@@ -32,43 +34,44 @@ export default function Sidebar() {
         localStorage.setItem("token", token);
         try {
             const decoded = jwtDecode<DecodedToken>(token);
-            console.log("Decoded roles:", decoded.roles);
-            setRoles(decoded.roles);  // <-- แก้จาก setRole เป็น setRoles
+            setRoles(decoded.roles);
             setUsername(decoded.userId);
             setFullName(decoded.fullName);
         } catch {
             setRoles(null);
+            setUsername(null);
+            setFullName(null);
         }
     };
 
     const handleLogout = () => {
         localStorage.removeItem("token");
         setRoles(null);
+        setUsername(null);
+        setFullName(null);
     };
 
-
     return (
-        <div className="h-screen w-64 bg-gray-800 text-white flex flex-col">
-            <div className="p-4 border-b border-gray-700">
-                {!roles ? (
-                    <LoginForm onLoginSuccess={onLoginSuccess} />
-                ) : (
-                    <div className="p-2">
-                        Welcome, you are logged in!
-                        {/* อาจมีปุ่ม Logout เพิ่มได้ */}
-                    </div>
-                )}
-            </div>
+        <aside className="h-screen w-64 bg-gray-900 text-white flex flex-col">
+            {roles && (
+                <div className="p-6 text-center">
+                    <p className="text-lg font-semibold">Welcome</p>
+                    <p className="text-lg">{fullName || username}</p>
+                </div>
+            )}
 
-            <nav className="flex flex-col gap-2 p-4">
-                <a href="/" className="hover:bg-gray-700 p-2 rounded">
+            <nav className="flex flex-col gap-3 p-6 flex-1">
+                <a
+                    href="/"
+                    className="hover:bg-gray-700 p-3 rounded font-medium transition-colors"
+                >
                     Home
                 </a>
 
                 {roles?.includes("admin") && (
                     <a
                         href="/register-user"
-                        className="hover:bg-gray-700 p-2 rounded text-green-400"
+                        className="hover:bg-green-700 p-3 rounded font-medium text-green-400 transition-colors"
                     >
                         Register User
                     </a>
@@ -77,34 +80,40 @@ export default function Sidebar() {
                 {roles?.includes("user") && (
                     <a
                         href="/contracts"
-                        className="hover:bg-gray-700 p-2 rounded text-green-400"
+                        className="hover:bg-green-700 p-3 rounded font-medium text-green-400 transition-colors"
                     >
-                        contracts
+                        Contracts
                     </a>
                 )}
-                {roles && (
-                    <button
-                        onClick={handleLogout}
-                        className="mt-2 bg-red-600 px-3 py-1 rounded"
-                    >
-                        Logout
-                    </button>
-                )}
-                {roles && (
-                    <>
-                        <div className="  mt-2 text-sm text-gray-400">
-                            Roles: {roles}
-                        </div>
-                        <div className="  mt-2 text-sm text-gray-400">
-                            UserName : {username}
-                        </div>
-                        <div className="  mt-2 text-sm text-gray-400">
-                            FullName : {fullName}
-                        </div>
-                    </>
-                )}
-
             </nav>
-        </div>
-    )
+
+            {roles && (
+                <div className="px-6 pt-4 pb-2 border-t border-gray-700 text-gray-400 text-sm space-y-1">
+                    <div>
+                        <span className="font-semibold">Roles:</span> {roles}
+                    </div>
+                    <div>
+                        <span className="font-semibold">User ID:</span> {username}
+                    </div>
+                    <div>
+                        <span className="font-semibold">Full Name:</span> {fullName}
+                    </div>
+                </div>
+            )}
+            <div className="px-6 pb-4 border-b border-gray-700">
+                {!roles ? (
+                    <LoginForm onLoginSuccess={onLoginSuccess} />
+                ) : (
+                    <div className="space-y-2">
+                        <button
+                            onClick={handleLogout}
+                            className="mt-2 w-full bg-red-600 hover:bg-red-700 transition-colors rounded px-4 py-2 font-semibold"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                )}
+            </div>
+        </aside>
+    );
 }
