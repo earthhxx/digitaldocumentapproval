@@ -5,22 +5,26 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth(); // ต้องมี isLoading จาก context ด้วย
   const router = useRouter();
   const pathname = usePathname();
 
-  // รายการ path ที่ไม่ต้องล็อกอิน
   const publicPaths = ["/login", "/register"];
 
   useEffect(() => {
-    if (!isAuthenticated && !publicPaths.includes(pathname)) {
-      router.replace("/login"); // redirect ไปหน้า login
+    if (!isLoading && !isAuthenticated && !publicPaths.includes(pathname)) {
+      router.replace("/");
+      console.log("Redirecting to login because user is not authenticated");
     }
-  }, [isAuthenticated, pathname, router]);
+  }, [isAuthenticated, isLoading, pathname, router]);
 
-  // รอโหลด หรือไม่ผ่าน ให้ return null หรือ loading state
+  if (isLoading) {
+    // รอโหลดสถานะ auth ให้เสร็จก่อน
+    return <div>Loading...</div>;
+  }
+
   if (!isAuthenticated && !publicPaths.includes(pathname)) {
-    return null;
+    return null; // หรือ <Loading /> แบบข้างบนก็ได้
   }
 
   return <>{children}</>;

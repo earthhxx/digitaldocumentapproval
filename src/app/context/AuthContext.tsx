@@ -1,12 +1,11 @@
 "use client";
-// AuthContext.tsx
 import { createContext, useContext, useState, useEffect } from "react";
-import {jwtDecode} from "jwt-decode";
+import  { jwtDecode }from "jwt-decode";
 
 interface User {
   userId: string;
   fullName: string;
-  username?: string; // ใช้ username ถ้าไม่มี fullName
+  username?: string; // optional
   roles: string[];
 }
 
@@ -19,9 +18,10 @@ interface DecodedToken {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (token: string) => void;  // รับแค่ token
+  login: (token: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,22 +29,25 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-
-  const isAuthenticated = !!token;
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
+
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
     }
+
+    setIsLoading(false);
   }, []);
 
   const login = (token: string) => {
     try {
       const decoded = jwtDecode<DecodedToken>(token);
-      const userData = {
+
+      const userData: User = {
         userId: decoded.userId,
         fullName: decoded.fullName,
         roles: Array.isArray(decoded.roles) ? decoded.roles : [decoded.roles],
@@ -52,10 +55,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(userData));
+
       setToken(token);
       setUser(userData);
-    } catch {
-      // handle error
+    } catch (error) {
+      console.error("Invalid token during login", error);
     }
   };
 
@@ -66,8 +70,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
   };
 
+  const isAuthenticated = !!token;
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated }}>
+    <AuthContext.Provider
+      value={{ user, token, login, logout, isAuthenticated, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );
