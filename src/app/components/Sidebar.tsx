@@ -1,38 +1,47 @@
-import { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
+// Sidebar.tsx
+"use client";
+import { useState } from "react";
 import LoginForm from "./LoginForm";
+import { jwtDecode } from "jwt-decode";
 
-type DecodedToken = {
-    username: string;
-    role: string; // เช่น "admin", "user"
-    exp: number; 
-};
+type DecodedToken = { roles: string };
 
 export default function Sidebar() {
-    const [role, setRole] = useState<string | null>(null);
-
-    useEffect(() => {
+    const [roles, setRole] = useState<string | null>(() => {
+        // อ่าน token ตอนแรก
         const token = localStorage.getItem("token");
         if (token) {
             try {
-                const decoded = jwtDecode<DecodedToken>(token);
-                setRole(decoded.role);
-            } catch (err) {
-                console.error("Invalid token", err);
+                console.log("Decoded role:", jwtDecode<DecodedToken>(token).roles);
+                return jwtDecode<DecodedToken>(token).roles;
+            } catch {
+                return null;
             }
         }
-    }, []);
+        return null;
+    });
+
+    // ฟังก์ชันให้ LoginForm เรียกตอน login สำเร็จ
+    const onLoginSuccess = (token: string) => {
+        localStorage.setItem("token", token);
+        try {
+            const decoded = jwtDecode<DecodedToken>(token);
+            console.log("Decoded roles:", decoded.roles);
+            setRole(decoded.roles);
+        } catch {
+            setRole(null);
+        }
+    };
 
     return (
         <div className="h-screen w-64 bg-gray-800 text-white flex flex-col">
             <div className="p-4 border-b border-gray-700">
-                <LoginForm />
+                <LoginForm onLoginSuccess={onLoginSuccess} />
             </div>
 
             <nav className="flex flex-col gap-2 p-4">
                 <a href="/" className="hover:bg-gray-700 p-2 rounded">Home</a>
-
-                {role === "admin" && (
+                {roles === "admin" && (
                     <a
                         href="/register-user"
                         className="hover:bg-gray-700 p-2 rounded text-green-400"
