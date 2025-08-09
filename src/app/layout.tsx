@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AuthProvider } from "../app/contexts/AuthContext";
+import Sidebar from "./components/Sidebar";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -26,11 +26,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-screen flex`}
       >
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <Sidebar />
+        {children}
       </body>
     </html>
   );

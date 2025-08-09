@@ -1,15 +1,11 @@
-"use client";
-import Image from "next/image";
-import { useAuth } from "../app/contexts/AuthContext";
 
-export default function ApproveButton() {
-  const { user } = useAuth();
-
-  if (!user?.permissions.includes("APPROVE_DOC")) {
-    return null; // ไม่มีสิทธิ์ไม่โชว์ปุ่ม
-  }
-
-  return <button className="btn btn-primary">Approve</button>;
+export default function Home() {
+  return (
+    <div className="flex">
+      <main className="flex-1 p-4">
+        <h1 className="text-xl font-bold">Welcome</h1>
+        <p>เนื้อหาหลักอยู่ตรงนี้</p>
+      </main>
+    </div>
+  );
 }
-
-
