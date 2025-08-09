@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Sidebar from "./components/Sidebar";
 import { AuthProvider } from "../app/context/AuthContext";
+import ProtectedRoute from "@/app/components/ProtectedRoute";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -31,8 +32,13 @@ export default function RootLayout({
       >
         <AuthProvider>
           <Sidebar />
-          {children}
+          <main className="flex-1">
+            <ProtectedRoute>
+              {children}
+            </ProtectedRoute>
+          </main>
         </AuthProvider>
+
       </body>
     </html>
   );
