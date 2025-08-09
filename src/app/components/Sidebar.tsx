@@ -1,35 +1,35 @@
-// Sidebar.tsx
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoginForm from "./LoginForm";
 import { jwtDecode } from "jwt-decode";
 
-type DecodedToken = { roles: string };
+type DecodedToken = {
+    roles: string; // ถ้าเป็น array ใช้ string[]
+};
 
 export default function Sidebar() {
-    const [roles, setRole] = useState<string | null>(() => {
-        // อ่าน token ตอนแรก
+    const [roles, setRoles] = useState<string | null>(null);
+
+    useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
             try {
-                console.log("Decoded role:", jwtDecode<DecodedToken>(token).roles);
-                return jwtDecode<DecodedToken>(token).roles;
+                const decoded = jwtDecode<DecodedToken>(token);
+                setRoles(decoded.roles);
             } catch {
-                return null;
+                setRoles(null);
             }
         }
-        return null;
-    });
+    }, []);
 
-    // ฟังก์ชันให้ LoginForm เรียกตอน login สำเร็จ
     const onLoginSuccess = (token: string) => {
         localStorage.setItem("token", token);
         try {
             const decoded = jwtDecode<DecodedToken>(token);
             console.log("Decoded roles:", decoded.roles);
-            setRole(decoded.roles);
+            setRoles(decoded.roles);  // <-- แก้จาก setRole เป็น setRoles
         } catch {
-            setRole(null);
+            setRoles(null);
         }
     };
 
@@ -40,13 +40,23 @@ export default function Sidebar() {
             </div>
 
             <nav className="flex flex-col gap-2 p-4">
-                <a href="/" className="hover:bg-gray-700 p-2 rounded">Home</a>
-                {roles === "admin" && (
+                <a href="/" className="hover:bg-gray-700 p-2 rounded">
+                    Home
+                </a>
+                {roles?.includes("admin") && (
                     <a
                         href="/register-user"
                         className="hover:bg-gray-700 p-2 rounded text-green-400"
                     >
                         Register User
+                    </a>
+                )}
+                {roles?.includes("user") && (
+                    <a
+                        href="/contracts"
+                        className="hover:bg-gray-700 p-2 rounded text-green-400"
+                    >
+                        contracts
                     </a>
                 )}
             </nav>

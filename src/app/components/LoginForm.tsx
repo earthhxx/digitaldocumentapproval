@@ -10,6 +10,11 @@ export default function LoginForm({ onLoginSuccess }: Props) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
+    const clearForm = () => {
+        setUsername("");
+        setPassword("");
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -27,11 +32,15 @@ export default function LoginForm({ onLoginSuccess }: Props) {
             if (res.ok && data.token) {
                 // เก็บ token ลง localStorage
                 localStorage.setItem("token", data.token);
-
+                // ล้างฟอร์ม
+                clearForm();
+                // แจ้งผู้ใช้ว่า login สำเร็จ
+                alert("Login สำเร็จ");
                 // แจ้ง Sidebar ว่า login สำเร็จ พร้อมส่ง token
                 onLoginSuccess(data.token);
             } else {
                 alert(data.error || "Login ล้มเหลว");
+                clearForm(); // ล้างฟอร์มเมื่อ login ล้มเหลว
             }
         } catch (error) {
             alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
