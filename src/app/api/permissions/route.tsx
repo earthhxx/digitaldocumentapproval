@@ -14,9 +14,8 @@ export async function GET(req: NextRequest) {
     if (Result.recordset.length === 0) {
       return NextResponse.json({ error: "ไม่พบข้อมูล" }, { status: 404 });
     }
-
     // ✅ ส่งข้อมูลกลับ
-    return NextResponse.json(Result.recordset, { status: 200 });
+    return NextResponse.json({ data: Result });
 
   } catch (error) {
     console.error(error);
