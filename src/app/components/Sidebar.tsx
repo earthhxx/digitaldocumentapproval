@@ -18,7 +18,7 @@ export default function Sidebar() {
           <div className="absolute inset-0 flex flex-col justify-center items-center">
             {/* ลายน้ำหมุน */}
             <div
-              className="relative mb-6 w-[150px] h-[150px] "
+              className="relative mb-6 w-[150px] h-[150px]"
             >
               <div className="absolute flex justify-center items-center pb-4 inset-0 rounded-full bg-white opacity-80 shadow-2xl animate-spin-coin-reverse preserve-3d">
                 {/* ด้านหน้า */}
@@ -50,7 +50,7 @@ export default function Sidebar() {
           </div>
         )}
 
-        <nav className="flex flex-col gap-3 p-6 flex-1">
+        <nav className="flex flex-col gap-3 p-6 flex-1 w-full">
 
           {/* pulbic */}
           {isAuthenticated && (
@@ -63,10 +63,10 @@ export default function Sidebar() {
           {/* // admin */}
           {roles.includes("admin") && (
             <a
-              href="/register-user"
+              href="/pages/admin"
               className="hover:bg-green-700 bg-green-700/30 p-3 rounded font-medium text-green-400"
             >
-              Register User
+              Admin Panel
             </a>
           )}
 
