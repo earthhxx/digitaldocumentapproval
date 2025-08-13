@@ -1,116 +1,137 @@
-// /admin/adcomponents/RolePermissionsTable.tsx
 import { useState } from "react";
 import { RolePermission as BaseRolePermission } from "../types";
+import { Plus, CheckCircle, Loader2, AlertCircle } from "lucide-react";
 
-type RolePermission = Omit<BaseRolePermission, "RoleID"> & { RoleID: number | string; PermissionID: number | string };
+type RolePermission = Omit<BaseRolePermission, "RoleID"> & {
+  RoleID: number | string;
+  PermissionID: number | string;
+};
 
 type Props = { rolePermissions: RolePermission[] };
 
-export default function RolePermissionsTable({ rolePermissions }: Props) {
-    const [editableRolePermissions, setEditableRolePermissions] = useState<RolePermission[]>(rolePermissions);
-    const [savingId, setSavingId] = useState<number | string | null>(null);
-    const [newCounter, setNewCounter] = useState(0);
+export default function RolePermissionsList({ rolePermissions }: Props) {
+  const [items, setItems] = useState<RolePermission[]>(rolePermissions);
+  const [savingId, setSavingId] = useState<number | string | null>(null);
+  const [form, setForm] = useState({ RoleID: "", PermissionID: "" });
 
-    const handleChange = (id: number | string, field: keyof RolePermission, value: string) => {
-        setEditableRolePermissions(prev =>
-            prev.map(rp => (rp.RoleID === id ? { ...rp, [field]: value } : rp))
-        );
-    };
+  const handleChangeForm = (field: keyof typeof form, value: string) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+  };
 
-    const saveRolePermission = async (rp: RolePermission) => {
-        const isNew = typeof rp.RoleID === "string" && rp.RoleID.startsWith("new-");
-        setSavingId(rp.RoleID);
-        try {
-            const res = await fetch(isNew ? `/api/role-permissions` : `/api/role-permissions/${rp.RoleID}`, {
-                method: isNew ? "POST" : "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(rp),
-            });
-            if (!res.ok) throw new Error("Failed to save");
-
-            if (isNew) {
-                const data = await res.json();
-                setEditableRolePermissions(prev =>
-                    prev.map(r => (r.RoleID === rp.RoleID ? { ...r, RoleID: data.RoleID } : r))
-                );
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Save failed");
-        } finally {
-            setSavingId(null);
+  const saveRolePermission = async (rp: RolePermission, isNew: boolean) => {
+    setSavingId(rp.RoleID);
+    try {
+      const res = await fetch(
+        isNew
+          ? `/api/role-permissions`
+          : `/api/role-permissions/${rp.RoleID}`,
+        {
+          method: isNew ? "POST" : "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(rp),
         }
-    };
+      );
+      if (!res.ok) throw new Error("Failed to save");
 
-    const handleBlur = (rp: RolePermission) => saveRolePermission(rp);
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, rp: RolePermission) => {
-        if (e.key === "Enter") e.currentTarget.blur();
-    };
+      if (isNew) {
+        const data = await res.json();
+        setItems(prev =>
+          prev.map(r =>
+            r.RoleID === rp.RoleID
+              ? { ...r, RoleID: data.RoleID }
+              : r
+          )
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Save failed");
+    } finally {
+      setSavingId(null);
+    }
+  };
 
-    const addRolePermission = () => {
-        const tempId = `new-${newCounter}`;
-        setNewCounter(prev => prev + 1);
-        setEditableRolePermissions(prev => [
-            ...prev,
-            { RoleID: tempId as any, PermissionID: "" }
-        ]);
+  const addRolePermission = async () => {
+    if (!form.RoleID.trim() || !form.PermissionID.trim()) return;
+    const tempId = `new-${Date.now()}`;
+    const newRP: RolePermission = {
+      RoleID: tempId,
+      PermissionID: form.PermissionID,
     };
+    setItems(prev => [...prev, newRP]);
+    setForm({ RoleID: "", PermissionID: "" });
+    await saveRolePermission(newRP, true);
+  };
 
-    return (
-        <div>
-            <h2 className="font-bold text-lg mb-2 flex justify-between items-center">
-                Role Permissions
-                <button
-                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    onClick={addRolePermission}
-                >
-                    Add RolePermission
-                </button>
-            </h2>
-            <table className="w-full border border-gray-300">
-                <thead>
-                    <tr className="bg-gray-100 text-black">
-                        <th className="p-2 border">Role</th>
-                        <th className="p-2 border">Permission</th>
-                        <th className="p-2 border">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {editableRolePermissions.map((rp, i) => (
-                        <tr key={rp.RoleID}>
-                            <td className="p-2 border">
-                                <input
-                                    className="w-full p-1 border rounded"
-                                    value={rp.RoleID}
-                                    onChange={e => handleChange(rp.RoleID, "RoleID", e.target.value)}
-                                    onBlur={() => handleBlur(rp)}
-                                    onKeyDown={e => handleKeyDown(e, rp)}
-                                    disabled={savingId === rp.RoleID}
-                                />
-                            </td>
-                            <td className="p-2 border">
-                                <input
-                                    className="w-full p-1 border rounded"
-                                    value={rp.PermissionID}
-                                    onChange={e => handleChange(rp.RoleID, "PermissionID", e.target.value)}
-                                    onBlur={() => handleBlur(rp)}
-                                    onKeyDown={e => handleKeyDown(e, rp)}
-                                    disabled={savingId === rp.RoleID}
-                                />
-                            </td>
-                            <td className="p-2 border text-center">
-                                {savingId === rp.RoleID ? (
-                                    <span className="text-sm text-blue-500">Saving...</span>
-                                ) : typeof rp.RoleID === "string" ? (
-                                    <span className="text-sm text-yellow-500">New</span>
-                                ) : (
-                                    <span className="text-sm text-green-500">Saved</span>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+  return (
+    <div className="max-w-2xl mx-auto space-y-6">
+      <h2 className="text-2xl font-bold">Role Permissions</h2>
+
+      {/* Add Form */}
+      <div className="p-5 border rounded-2xl bg-white shadow-sm space-y-3">
+        <div className="text-lg font-medium flex items-center gap-2 text-blue-500">
+          <Plus className="w-5 h-5" /> Add New Role Permission
         </div>
-    );
+        <input
+          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          placeholder="Role ID"
+          value={form.RoleID}
+          onChange={e => handleChangeForm("RoleID", e.target.value)}
+        />
+        <input
+          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          placeholder="Permission ID"
+          value={form.PermissionID}
+          onChange={e => handleChangeForm("PermissionID", e.target.value)}
+        />
+        <button
+          className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+          onClick={addRolePermission}
+        >
+          <Plus className="w-4 h-4" /> Add Role Permission
+        </button>
+      </div>
+
+      {/* Existing Role Permissions */}
+      <div className="space-y-3">
+        {items.map((rp, i) => {
+          const isNew = typeof rp.RoleID === "string";
+          const isSaving = savingId === rp.RoleID;
+          return (
+            <div
+              key={`${rp.RoleID}-${i}`} // <-- แก้ตรงนี้
+              className="p-4 border rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="font-semibold text-gray-800">
+                    Role: {rp.RoleID}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    Permission: {rp.PermissionID}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 text-sm">
+                  {isSaving ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                  ) : isNew ? (
+                    <>
+                      <AlertCircle className="w-4 h-4 text-yellow-500" />
+                      <span className="text-yellow-600">New</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span className="text-green-600">Saved</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+    </div>
+  );
 }

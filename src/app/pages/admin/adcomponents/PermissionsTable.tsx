@@ -1,36 +1,41 @@
 import { useState } from "react";
 import { Permission as BasePermission } from "../types";
+import { Plus, CheckCircle, Loader2, AlertCircle } from "lucide-react";
 
 type Permission = Omit<BasePermission, "PermissionID"> & { PermissionID: number | string };
 
 type Props = { permissions: Permission[] };
 
-export default function PermissionsTable({ permissions }: Props) {
-    const [editablePermissions, setEditablePermissions] = useState<Permission[]>(permissions);
+export default function PermissionsList({ permissions }: Props) {
+    const [items, setItems] = useState<Permission[]>(permissions);
     const [savingId, setSavingId] = useState<number | string | null>(null);
-    const [newCounter, setNewCounter] = useState(0); // counter สำหรับ row ใหม่
+    const [form, setForm] = useState({ PermissionName: "", Description: "" });
 
-    const handleChange = (id: number | string, field: keyof Permission, value: string) => {
-        setEditablePermissions(prev =>
-            prev.map(p => (p.PermissionID === id ? { ...p, [field]: value } : p))
-        );
+    const handleChangeForm = (field: keyof typeof form, value: string) => {
+        setForm(prev => ({ ...prev, [field]: value }));
     };
 
-    const savePermission = async (perm: Permission) => {
-        const isNew = typeof perm.PermissionID === "string" && perm.PermissionID.startsWith("new-");
+    const savePermission = async (perm: Permission, isNew: boolean) => {
         setSavingId(perm.PermissionID);
         try {
-            const res = await fetch(isNew ? `/api/permissions` : `/api/permissions/${perm.PermissionID}`, {
-                method: isNew ? "POST" : "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(perm),
-            });
-            if (!res.ok) throw new Error("Failed to save");
+            const res = await fetch(
+                isNew ? `/api/permissions` : `/api/permissions/${perm.PermissionID}`,
+                {
+                    method: isNew ? "POST" : "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(perm),
+                }
+            );
+            if (!res.ok) throw new Error("Save failed");
 
             if (isNew) {
                 const data = await res.json();
-                setEditablePermissions(prev =>
-                    prev.map(p => (p.PermissionID === perm.PermissionID ? { ...p, PermissionID: data.PermissionID } : p))
+                setItems(prev =>
+                    prev.map(p =>
+                        p.PermissionID === perm.PermissionID
+                            ? { ...p, PermissionID: data.PermissionID }
+                            : p
+                    )
                 );
             }
         } catch (err) {
@@ -41,77 +46,86 @@ export default function PermissionsTable({ permissions }: Props) {
         }
     };
 
-    const handleBlur = (perm: Permission) => savePermission(perm);
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, perm: Permission) => {
-        if (e.key === "Enter") e.currentTarget.blur();
-    };
-
-    const addPermission = () => {
-        const tempId = `new-${newCounter}`;
-        setNewCounter(prev => prev + 1);
-        setEditablePermissions(prev => [
-            ...prev,
-            { PermissionID: tempId as any, PermissionName: "", Description: "" }
-        ]);
+    const addPermission = async () => {
+        if (!form.PermissionName.trim()) return;
+        const tempId = `new-${Date.now()}`;
+        const newPerm: Permission = {
+            PermissionID: tempId,
+            PermissionName: form.PermissionName,
+            Description: form.Description,
+        };
+        setItems(prev => [...prev, newPerm]);
+        setForm({ PermissionName: "", Description: "" });
+        await savePermission(newPerm, true);
     };
 
     return (
-        <div>
-            <h2 className="font-bold text-lg mb-2 flex justify-between items-center">
-                Permissions
+        <div className="max-w-2xl mx-auto space-y-6">
+            <h2 className="text-2xl font-bold">Permissions</h2>
+
+            {/* Add Form */}
+            <div className="p-5 border rounded-2xl bg-white shadow-sm space-y-3">
+                <div className="text-lg font-medium flex items-center gap-2 text-green-600">
+                    <Plus className="w-5 h-5 " /> Add New Permission
+                </div>
+
+                <input
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-black"
+                    placeholder="Permission Name"
+                    value={form.PermissionName}
+                    onChange={e => handleChangeForm("PermissionName", e.target.value)}
+                />
+                <input
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-black"
+                    placeholder="Description"
+                    value={form.Description}
+                    onChange={e => handleChangeForm("Description", e.target.value)}
+                />
                 <button
-                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
                     onClick={addPermission}
                 >
-                    Add Permission
+                    <Plus className="w-4 h-4" /> Add Permission
                 </button>
-            </h2>
-            <table className="w-full border border-gray-300">
-                <thead>
-                    <tr className="bg-gray-100 text-black">
-                        <th className="p-2 border">ID</th>
-                        <th className="p-2 border">Name</th>
-                        <th className="p-2 border">Description</th>
-                        <th className="p-2 border">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {editablePermissions.map((p) => (
-                        <tr key={p.PermissionID}>
-                            <td className="p-2 border">{typeof p.PermissionID === "string" ? "New" : p.PermissionID}</td>
-                            <td className="p-2 border">
-                                <input
-                                    className="w-full p-1 border rounded"
-                                    value={p.PermissionName}
-                                    onChange={e => handleChange(p.PermissionID, "PermissionName", e.target.value)}
-                                    onBlur={() => handleBlur(p)}
-                                    onKeyDown={e => handleKeyDown(e, p)}
-                                    disabled={savingId === p.PermissionID}
-                                />
-                            </td>
-                            <td className="p-2 border">
-                                <input
-                                    className="w-full p-1 border rounded"
-                                    value={p.Description || ""}
-                                    onChange={e => handleChange(p.PermissionID, "Description", e.target.value)}
-                                    onBlur={() => handleBlur(p)}
-                                    onKeyDown={e => handleKeyDown(e, p)}
-                                    disabled={savingId === p.PermissionID}
-                                />
-                            </td>
-                            <td className="p-2 border text-center">
-                                {savingId === p.PermissionID ? (
-                                    <span className="text-sm text-blue-500">Saving...</span>
-                                ) : typeof p.PermissionID === "string" ? (
-                                    <span className="text-sm text-yellow-500">New</span>
-                                ) : (
-                                    <span className="text-sm text-green-500">Saved</span>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            </div>
+
+            {/* Existing Permissions */}
+            <div className="space-y-3">
+                {items.map(p => {
+                    const isNew = typeof p.PermissionID === "string";
+                    const isSaving = savingId === p.PermissionID;
+                    return (
+                        <div
+                            key={p.PermissionID}
+                            className="p-4 border rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow"
+                        >
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <div className="font-semibold text-gray-800">{p.PermissionName}</div>
+                                    {p.Description && (
+                                        <p className="text-sm text-gray-500 mt-1">{p.Description}</p>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-1 text-sm">
+                                    {isSaving ? (
+                                        <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                                    ) : isNew ? (
+                                        <>
+                                            <AlertCircle className="w-4 h-4 text-yellow-500" />
+                                            <span className="text-yellow-600">New</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckCircle className="w-4 h-4 text-green-500" />
+                                            <span className="text-green-600">Saved</span>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 }

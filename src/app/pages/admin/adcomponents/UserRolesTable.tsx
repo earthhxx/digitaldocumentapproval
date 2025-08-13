@@ -1,118 +1,93 @@
-// /admin/adcomponents/UserRolesTable.tsx
 import { useState } from "react";
 import { UserRole as BaseUserRole } from "../types";
+import { Plus, CheckCircle, Loader2 } from "lucide-react";
 
-type UserRole = Omit<BaseUserRole, "UserID"> & { UserID: number | string; RoleID: number | string };
+type UserRole = Omit<BaseUserRole, "UserID"> & {
+  UserID: number | string;
+  RoleID: number | string;
+};
 
 type Props = { userRoles: UserRole[] };
 
-export default function UserRolesTable({ userRoles }: Props) {
-    const [editableUserRoles, setEditableUserRoles] = useState<UserRole[]>(userRoles);
-    const [savingId, setSavingId] = useState<number | string | null>(null);
-    const [newCounter, setNewCounter] = useState(0);
+export default function UserRolesList({ userRoles }: Props) {
+  const [items, setItems] = useState<UserRole[]>(userRoles);
+  const [savingId, setSavingId] = useState<number | string | null>(null);
+  const [form, setForm] = useState({ UserID: "", RoleID: "" });
 
-    const handleChange = (id: number | string, field: keyof UserRole, value: string) => {
-        setEditableUserRoles(prev =>
-            prev.map(ur => (ur.UserID === id ? { ...ur, [field]: value } : ur))
-        );
-    };
+  const handleChangeForm = (field: keyof typeof form, value: string) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+  };
 
-    const saveUserRole = async (ur: UserRole) => {
-        const isNew = typeof ur.UserID === "string" && ur.UserID.startsWith("new-");
-        setSavingId(ur.UserID);
-        try {
-            const res = await fetch(isNew ? `/api/user-roles` : `/api/user-roles/${ur.UserID}`, {
-                method: isNew ? "POST" : "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(ur),
-            });
-            if (!res.ok) throw new Error("Failed to save");
+  const addUserRole = async () => {
+    if (!form.UserID.trim() || !form.RoleID.trim()) return;
 
-            if (isNew) {
-                const data = await res.json();
-                setEditableUserRoles(prev =>
-                    prev.map(u => (u.UserID === ur.UserID ? { ...u, UserID: data.UserID } : u))
-                );
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Save failed");
-        } finally {
-            setSavingId(null);
-        }
-    };
+    const newUR: UserRole = { UserID: 0, RoleID: form.RoleID }; // UserID 0 หรือให้ API generate
+    setSavingId("temp");
+    try {
+      const res = await fetch(`/api/user-roles`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ UserID: form.UserID, RoleID: form.RoleID }),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      const data = await res.json();
+      setItems(prev => [...prev, { ...newUR, UserID: data.UserID }]);
+      setForm({ UserID: "", RoleID: "" });
+    } catch (err) {
+      console.error(err);
+      alert("Save failed");
+    } finally {
+      setSavingId(null);
+    }
+  };
 
-    const handleBlur = (ur: UserRole) => saveUserRole(ur);
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, ur: UserRole) => {
-        if (e.key === "Enter") e.currentTarget.blur();
-    };
+  return (
+    <div className="max-w-2xl mx-auto space-y-6">
+      <h2 className="text-2xl font-bold">User Roles</h2>
 
-    const addUserRole = () => {
-        const tempId = `new-${newCounter}`;
-        setNewCounter(prev => prev + 1);
-        setEditableUserRoles(prev => [
-            ...prev,
-            { UserID: tempId as any, RoleID: "", }
-        ]);
-    };
-
-    return (
-        <div>
-            <h2 className="font-bold text-lg mb-2 flex justify-between items-center">
-                User Roles
-                <button
-                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    onClick={addUserRole}
-                >
-                    Add UserRole
-                </button>
-            </h2>
-            <table className="w-full border border-gray-300">
-                <thead>
-                    <tr className="bg-gray-100 text-black">
-                        <th className="p-2 border">ID</th>
-                        <th className="p-2 border">User ID</th>
-                        <th className="p-2 border">Role</th>
-                        <th className="p-2 border">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {editableUserRoles.map((ur, i) => (
-                        <tr key={ur.UserID}>
-                            <td className="p-2 border">{i + 1}</td>
-                            <td className="p-2 border">
-                                <input
-                                    className="w-full p-1 border rounded"
-                                    value={ur.UserID}
-                                    onChange={e => handleChange(ur.UserID, "UserID", e.target.value)}
-                                    onBlur={() => handleBlur(ur)}
-                                    onKeyDown={e => handleKeyDown(e, ur)}
-                                    disabled={savingId === ur.UserID}
-                                />
-                            </td>
-                            <td className="p-2 border">
-                                <input
-                                    className="w-full p-1 border rounded"
-                                    value={ur.RoleID}
-                                    onChange={e => handleChange(ur.UserID, "RoleID", e.target.value)}
-                                    onBlur={() => handleBlur(ur)}
-                                    onKeyDown={e => handleKeyDown(e, ur)}
-                                    disabled={savingId === ur.UserID}
-                                />
-                            </td>
-                            <td className="p-2 border text-center">
-                                {savingId === ur.UserID ? (
-                                    <span className="text-sm text-blue-500">Saving...</span>
-                                ) : typeof ur.UserID === "string" ? (
-                                    <span className="text-sm text-yellow-500">New</span>
-                                ) : (
-                                    <span className="text-sm text-green-500">Saved</span>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+      {/* Add Form */}
+      <div className="p-5 border rounded-2xl bg-white shadow-sm space-y-3">
+        <div className="text-lg font-medium flex items-center gap-2 text-blue-500">
+          <Plus className="w-5 h-5" /> Add User Role
         </div>
-    );
+        <input
+          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          placeholder="User ID"
+          value={form.UserID}
+          onChange={e => handleChangeForm("UserID", e.target.value)}
+        />
+        <input
+          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          placeholder="Role ID"
+          value={form.RoleID}
+          onChange={e => handleChangeForm("RoleID", e.target.value)}
+        />
+        <button
+          className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+          onClick={addUserRole}
+          disabled={savingId === "temp"}
+        >
+          {savingId === "temp" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+          Add User Role
+        </button>
+      </div>
+
+      {/* Existing User Roles */}
+      <div className="space-y-3">
+        {items.map((ur, i) => (
+          <div
+            key={`${ur.UserID}-${i}`} // <-- แก้ตรงนี้
+            className="p-4 border rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow flex justify-between items-center"
+          >
+            <div>
+              <div className="font-semibold text-gray-800">User: {ur.UserID}</div>
+              <div className="text-sm text-gray-500 mt-1">Role: {ur.RoleID}</div>
+            </div>
+            <CheckCircle className="w-5 h-5 text-green-500" />
+          </div>
+        ))}
+      </div>
+
+    </div>
+  );
 }
