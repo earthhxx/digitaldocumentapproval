@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
         }
 
         // ✅ ส่งข้อมูลกลับ
-        return NextResponse.json({ data: Result });
+        return NextResponse.json({ data: Result.recordset }); // แก้ตรงนี้
 
     } catch (error) {
         console.error(error);
