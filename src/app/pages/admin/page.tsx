@@ -16,21 +16,19 @@ export type Role = {
 };
 
 export type User = {
-    User_id: number;
+    User_Id: number;
     Name: string;
     CreateDate: string;
 };
 
 export type UserRole = {
-    id: number;
-    User_id: number;
-    Role: string;
+    UserID: number;
+    RoleID: string;
 };
 
 export type RolePermission = {
-    id: number;
-    Role: string;
-    Permission: string;
+    RoleID: string;
+    PermissionID: string;
 };
 
 // ===================== Main Component =====================
@@ -71,6 +69,10 @@ export default function AdminAccessPage() {
         fetchAllData();
     }, []);
 
+    useEffect(() => {
+        console.log(userRoles)
+    }, [userRoles]);
+
     if (loading) return <div className="p-4">Loading...</div>;
     if (error) return <div className="p-4 text-red-500">Error: {error}</div>;
 
@@ -81,7 +83,7 @@ export default function AdminAccessPage() {
                 <h2 className="font-bold text-lg mb-2">Permissions</h2>
                 <table className="w-full border border-gray-300">
                     <thead>
-                        <tr className="bg-gray-100">
+                        <tr className="bg-gray-100 text-black">
                             <th className="p-2 border">ID</th>
                             <th className="p-2 border">Name</th>
                             <th className="p-2 border">Description</th>
@@ -104,7 +106,7 @@ export default function AdminAccessPage() {
                 <h2 className="font-bold text-lg mb-2">Roles</h2>
                 <table className="w-full border border-gray-300">
                     <thead>
-                        <tr className="bg-gray-100">
+                        <tr className="bg-gray-100 text-black">
                             <th className="p-2 border">ID</th>
                             <th className="p-2 border">Name</th>
                             <th className="p-2 border">Description</th>
@@ -127,7 +129,7 @@ export default function AdminAccessPage() {
                 <h2 className="font-bold text-lg mb-2">Users</h2>
                 <table className="w-full border border-gray-300">
                     <thead>
-                        <tr className="bg-gray-100">
+                        <tr className="bg-gray-100 text-black">
                             <th className="p-2 border">User ID</th>
                             <th className="p-2 border">Name</th>
                             <th className="p-2 border">Created Date</th>
@@ -136,7 +138,7 @@ export default function AdminAccessPage() {
                     <tbody>
                         {users.map((u, i) => (
                             <tr key={`${u.User_id}-${i}`}>
-                                <td className="p-2 border">{u.User_id}</td>
+                                <td className="p-2 border">{u.User_Id}</td>
                                 <td className="p-2 border">{u.Name}</td>
                                 <td className="p-2 border">{u.CreateDate}</td>
                             </tr>
@@ -150,7 +152,7 @@ export default function AdminAccessPage() {
                 <h2 className="font-bold text-lg mb-2">User Roles</h2>
                 <table className="w-full border border-gray-300">
                     <thead>
-                        <tr className="bg-gray-100">
+                        <tr className="bg-gray-100 text-black">
                             <th className="p-2 border">ID</th>
                             <th className="p-2 border">User ID</th>
                             <th className="p-2 border">Role</th>
@@ -158,10 +160,10 @@ export default function AdminAccessPage() {
                     </thead>
                     <tbody>
                         {userRoles.map((ur, i) => (
-                            <tr key={`${ur.id}-${i}`}>
-                                <td className="p-2 border">{ur.id}</td>
-                                <td className="p-2 border">{ur.User_id}</td>
-                                <td className="p-2 border">{ur.Role}</td>
+                            <tr key={`${ur.UserID}-${i}`}>
+                                <td className="p-2 border">{i + 1}</td>
+                                <td className="p-2 border">{ur.UserID}</td>
+                                <td className="p-2 border">{ur.RoleID}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -173,18 +175,16 @@ export default function AdminAccessPage() {
                 <h2 className="font-bold text-lg mb-2">Role Permissions</h2>
                 <table className="w-full border border-gray-300">
                     <thead>
-                        <tr className="bg-gray-100">
-                            <th className="p-2 border">ID</th>
+                        <tr className="bg-gray-100 text-black">
                             <th className="p-2 border">Role</th>
                             <th className="p-2 border">Permission</th>
                         </tr>
                     </thead>
                     <tbody>
                         {rolePermissions.map((rp, i) => (
-                            <tr key={`${rp.id}-${i}`}>
-                                <td className="p-2 border">{rp.id}</td>
-                                <td className="p-2 border">{rp.Role}</td>
-                                <td className="p-2 border">{rp.Permission}</td>
+                            <tr key={`${rp.RoleID}-${i}`}>
+                                <td className="p-2 border">{rp.RoleID}</td>
+                                <td className="p-2 border">{rp.PermissionID}</td>
                             </tr>
                         ))}
                     </tbody>
