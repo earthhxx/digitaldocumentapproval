@@ -12,6 +12,7 @@
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.1",
     "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.539.0",
     "mssql": "^11.0.1",
     "next": "15.4.6",
     "react": "19.1.0",

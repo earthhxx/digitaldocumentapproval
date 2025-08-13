@@ -11,7 +11,7 @@ export default function Sidebar() {
   const fullName = user?.fullName || ""; // หรือเปลี่ยนเป็น fullName ถ้า token มี field นี้
 
   return (
-    <aside className="h-screen w-64 bg-gray-900 text-white flex flex-col">
+    <aside className="fixed h-screen w-64 bg-gray-900 text-white flex flex-col">
       {isAuthenticated && (
         <div className="p-6 text-center">
           <p className="text-lg font-semibold">Welcome</p>
