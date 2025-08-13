@@ -137,7 +137,7 @@ export default function AdminAccessPage() {
                     </thead>
                     <tbody>
                         {users.map((u, i) => (
-                            <tr key={`${u.User_id}-${i}`}>
+                            <tr key={`${u.User_Id}-${i}`}>
                                 <td className="p-2 border">{u.User_Id}</td>
                                 <td className="p-2 border">{u.Name}</td>
                                 <td className="p-2 border">{u.CreateDate}</td>
