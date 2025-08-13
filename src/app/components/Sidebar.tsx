@@ -30,10 +30,7 @@ export default function Sidebar() {
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
   if (!mounted) return null;
@@ -52,103 +49,99 @@ export default function Sidebar() {
         </button>
       )}
 
-      {open && (
-        <>
-          {/* Overlay กดปิด */}
-          <div className="fixed inset-0 z-40 bg-black/40"></div>
+      {/* Overlay */}
+      <div
+        className={`fixed inset-0 z-40 bg-black transition-opacity duration-300 ${
+          open ? "opacity-40 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      ></div>
 
-          <aside
-            ref={sidebarRef}
-            className="fixed h-screen w-64 bg-gray-900 text-white z-50"
-          >
-            <div className="relative w-full h-full flex flex-col justify-center items-center">
-              {/* ปุ่มปิด */}
-              <button
-                onClick={() => setOpen(false)}
-                className="absolute top-2 right-2 text-white text-xl font-bold hover:text-red-400"
-              >
-                ×
-              </button>
+      {/* Sidebar */}
+      <aside
+        ref={sidebarRef}
+        className={`fixed h-screen w-64 bg-gray-900 text-white z-50 transform transition-transform duration-300 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="relative w-full h-full flex flex-col justify-center items-center">
 
-              {!isAuthenticated && (
-                <div className="absolute inset-0 flex flex-col justify-center items-center">
-                  <div className="relative mb-6 w-[150px] h-[150px]">
-                    <div className="absolute flex justify-center items-center pb-4 inset-0 rounded-full bg-white opacity-80 shadow-2xl animate-spin-coin-reverse preserve-3d">
-                      <Image
-                        src="/images/LOGO3.png"
-                        alt="Watermark"
-                        width={110}
-                        height={110}
-                        style={{ objectFit: "contain", backfaceVisibility: "hidden" }}
-                        priority={true}
-                      />
-                    </div>
-                  </div>
-
-                  <LoginForm onLoginSuccess={login} />
+          {!isAuthenticated && (
+            <div className="absolute inset-0 flex flex-col justify-center items-center">
+              <div className="relative mb-6 w-[150px] h-[150px]">
+                <div className="absolute flex justify-center items-center pb-4 inset-0 rounded-full bg-white opacity-80 shadow-2xl animate-spin-coin-reverse preserve-3d">
+                  <Image
+                    src="/images/LOGO3.png"
+                    alt="Watermark"
+                    width={110}
+                    height={110}
+                    style={{ objectFit: "contain", backfaceVisibility: "hidden" }}
+                    priority={true}
+                  />
                 </div>
-              )}
+              </div>
 
-              {isAuthenticated && (
-                <div className="p-6 text-center">
-                  <p className="text-lg font-semibold">Welcome</p>
-                  <p className="text-lg">{fullName || userId}</p>
-                </div>
-              )}
-
-              <nav className="flex flex-col gap-3 p-6 flex-1 w-full">
-                {isAuthenticated && (
-                  <a
-                    href="/"
-                    className="hover:bg-gray-700 bg-gray-700/30 p-3 rounded font-medium"
-                  >
-                    Home
-                  </a>
-                )}
-                {roles.includes("admin") && (
-                  <a
-                    href="/pages/admin"
-                    className="hover:bg-green-700 bg-green-700/30 p-3 rounded font-medium text-green-400"
-                  >
-                    Admin Panel
-                  </a>
-                )}
-                {roles.includes("user") && (
-                  <a
-                    href="/contracts"
-                    className="hover:bg-green-700 p-3 rounded font-medium text-green-400"
-                  >
-                    Contracts
-                  </a>
-                )}
-              </nav>
-
-              {isAuthenticated && (
-                <div className="px-6 pt-4 pb-2 border-t border-gray-700 text-gray-400 text-sm space-y-1">
-                  <div>
-                    <span className="font-semibold">Roles:</span> {roles.join(", ")}
-                  </div>
-                  <div>
-                    <span className="font-semibold">User ID:</span> {userId}
-                  </div>
-                  <div>
-                    <span className="font-semibold">Full Name:</span> {fullName}
-                  </div>
-                </div>
-              )}
-
-              {isAuthenticated && (
-                <button
-                  onClick={logout}
-                  className="mt-2 w-[80%] bg-red-600 hover:bg-red-700 px-8 py-2 font-semibold rounded-sm mb-4"
-                >
-                  Logout
-                </button>
-              )}
+              <LoginForm onLoginSuccess={login} />
             </div>
-          </aside>
-        </>
-      )}
+          )}
+
+          {isAuthenticated && (
+            <div className="p-6 text-center">
+              <p className="text-lg font-semibold">Welcome</p>
+              <p className="text-lg">{fullName || userId}</p>
+            </div>
+          )}
+
+          <nav className="flex flex-col gap-3 p-6 flex-1 w-full">
+            {isAuthenticated && (
+              <a
+                href="/"
+                className="hover:bg-gray-700 bg-gray-700/30 p-3 rounded font-medium"
+              >
+                Home
+              </a>
+            )}
+            {roles.includes("admin") && (
+              <a
+                href="/pages/admin"
+                className="hover:bg-green-700 bg-green-700/30 p-3 rounded font-medium text-green-400"
+              >
+                Admin Panel
+              </a>
+            )}
+            {roles.includes("user") && (
+              <a
+                href="/contracts"
+                className="hover:bg-green-700 p-3 rounded font-medium text-green-400"
+              >
+                Contracts
+              </a>
+            )}
+          </nav>
+
+          {isAuthenticated && (
+            <div className="px-6 pt-4 pb-2 border-t border-gray-700 text-gray-400 text-sm space-y-1">
+              <div>
+                <span className="font-semibold">Roles:</span> {roles.join(", ")}
+              </div>
+              <div>
+                <span className="font-semibold">User ID:</span> {userId}
+              </div>
+              <div>
+                <span className="font-semibold">Full Name:</span> {fullName}
+              </div>
+            </div>
+          )}
+
+          {isAuthenticated && (
+            <button
+              onClick={logout}
+              className="mt-2 w-[80%] bg-red-600 hover:bg-red-700 px-8 py-2 font-semibold rounded-sm mb-4"
+            >
+              Logout
+            </button>
+          )}
+        </div>
+      </aside>
     </>
   );
 }
