@@ -2,14 +2,20 @@
 import LoginForm from "./LoginForm";
 import { useAuth } from "../context/AuthContext";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
 export default function Sidebar() {
   const { user, login, logout, isAuthenticated } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   // ดึงข้อมูลจาก user (ถ้าไม่มี ให้เป็นค่าดีฟอลต์)
   const roles = user?.roles || [];
   const userId = user?.userId || "";
   const fullName = user?.fullName || ""; // หรือเปลี่ยนเป็น fullName ถ้า token มี field นี้
+  
+  if (!mounted) return null; // render เฉพาะ client
 
   return (
     <aside className="fixed h-screen w-64 bg-gray-900 text-white">
