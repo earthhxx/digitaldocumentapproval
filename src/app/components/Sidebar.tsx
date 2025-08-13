@@ -12,21 +12,33 @@ export default function Sidebar() {
   const fullName = user?.fullName || ""; // หรือเปลี่ยนเป็น fullName ถ้า token มี field นี้
 
   return (
-    <aside className="fixed h-screen w-64 bg-gray-900/80 text-white">
+    <aside className="fixed h-screen w-64 bg-gray-900 text-white">
       <div className="relative w-full h-full  flex flex-col justify-center items-center">
+        {!isAuthenticated && (
+          <div className="absolute inset-0 flex flex-col justify-center items-center">
+            {/* ลายน้ำหมุน */}
+            <div
+              className="relative mb-6 w-[150px] h-[150px] "
+            >
+              <div className="absolute flex justify-center items-center pb-4 inset-0 rounded-full bg-white opacity-80 shadow-2xl animate-spin-coin-reverse preserve-3d">
+                {/* ด้านหน้า */}
+                <Image
+                  src="/images/LOGO3.png"
+                  alt="Watermark"
+                  width={110}
+                  height={110}
+                  style={{ objectFit: "contain", backfaceVisibility: "hidden" }}
+                  className=""
+                  priority={true}
+                />
+              </div>
+            </div>
 
-        <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
-          <div className="opacity-50 p-15 bg-amber-50 rounded-full">
-            <Image
-              src="/images/LOGO3.png"
-              alt="Watermark"
-              width={150}
-              height={150}
-              style={{ objectFit: "contain" }}
-              priority={true}
-            />
+            {/* ฟอร์มล็อกอิน */}
+            <LoginForm onLoginSuccess={login} />
           </div>
-        </div>
+        )}
+
 
 
 
@@ -46,11 +58,7 @@ export default function Sidebar() {
               Home
             </a>
 
-          )
-
-          }
-
-
+          )}
 
           {/* // admin */}
           {roles.includes("admin") && (
@@ -87,18 +95,14 @@ export default function Sidebar() {
           </div>
         )}
 
-        <div className="px-6 pb-4 border-b border-gray-700">
-          {!isAuthenticated ? (
-            <LoginForm onLoginSuccess={login} />
-          ) : (
-            <button
-              onClick={logout}
-              className="mt-2 w-full bg-red-600 hover:bg-red-700 rounded px-4 py-2 font-semibold"
-            >
-              Logout
-            </button>
-          )}
-        </div>
+        {isAuthenticated && (
+          <button
+            onClick={logout}
+            className="mt-2 w-[80%] bg-red-600 hover:bg-red-700 px-8 py-2 font-semibold rounded-sm mb-4"
+          >
+            Logout
+          </button>
+        )}
       </div>
     </aside>
   );
