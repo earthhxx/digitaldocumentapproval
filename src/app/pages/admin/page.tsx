@@ -77,7 +77,7 @@ export default function AdminAccessPage() {
     return (
         <div className="p-4 space-y-8">
             {/* Permissions Table */}
-            <div>
+            <div className="mt-15">
                 <h2 className="font-bold text-lg mb-2">Permissions</h2>
                 <table className="w-full border border-gray-300">
                     <thead>
