@@ -92,6 +92,7 @@ export default function AdminAccessPage() {
                     api<Role[]>(API.roles),
                 ]);
                 setPermissions(ps);
+                console.log(ps)
                 setRoles(rs);
                 // Optional: fetch users if you want a dropdown
                 try {
@@ -334,7 +335,7 @@ export default function AdminAccessPage() {
                                 <select className={input} value={linkRoleId} onChange={(e) => setLinkRoleId(e.target.value)}>
                                     <option value="">Select role…</option>
                                     {roles.map((r) => (
-                                        <option key={r.id} value={String(r.id)}>
+                                        <option key={r.name} value={String(r.id)}>
                                             {r.name}
                                         </option>
                                     ))}
