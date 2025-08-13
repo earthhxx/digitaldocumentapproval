@@ -1,37 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Permission, Role, User, UserRole, RolePermission } from "./types";
+import PermissionsTable from "./adcomponents/PermissionsTable";
+import RolesTable from "./adcomponents/RolesTable";
+import UsersTable from "./adcomponents/UsersTable";
+import UserRolesTable from "./adcomponents/UserRolesTable";
+import RolePermissionsTable from "./adcomponents/RolePermissionsTable";
 
-// ===================== Types =====================
-export type Permission = {
-    PermissionID: number;
-    PermissionName: string;
-    Description?: string;
-};
-
-export type Role = {
-    RoleID: number;
-    RoleName: string;
-    Description?: string;
-};
-
-export type User = {
-    User_Id: number;
-    Name: string;
-    CreateDate: string;
-};
-
-export type UserRole = {
-    UserID: number;
-    RoleID: string;
-};
-
-export type RolePermission = {
-    RoleID: string;
-    PermissionID: string;
-};
-
-// ===================== Main Component =====================
 export default function AdminAccessPage() {
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);
@@ -46,11 +22,11 @@ export default function AdminAccessPage() {
         try {
             setLoading(true);
             const [permRes, roleRes, userRes, userRoleRes, rolePermRes] = await Promise.all([
-                fetch("/api/permissions").then((r) => r.json()),
-                fetch("/api/roles").then((r) => r.json()),
-                fetch("/api/users").then((r) => r.json()),
-                fetch("/api/user-roles").then((r) => r.json()),
-                fetch("/api/role-permissions").then((r) => r.json()),
+                fetch("/api/permissions").then(r => r.json()),
+                fetch("/api/roles").then(r => r.json()),
+                fetch("/api/users").then(r => r.json()),
+                fetch("/api/user-roles").then(r => r.json()),
+                fetch("/api/role-permissions").then(r => r.json()),
             ]);
 
             setPermissions(permRes.data ?? []);
@@ -69,128 +45,16 @@ export default function AdminAccessPage() {
         fetchAllData();
     }, []);
 
-    useEffect(() => {
-        console.log(userRoles)
-    }, [userRoles]);
-
     if (loading) return <div className="p-4">Loading...</div>;
     if (error) return <div className="p-4 text-red-500">Error: {error}</div>;
 
     return (
-        <div className="p-4 space-y-8">
-            {/* Permissions Table */}
-            <div className="mt-15">
-                <h2 className="font-bold text-lg mb-2">Permissions</h2>
-                <table className="w-full border border-gray-300">
-                    <thead>
-                        <tr className="bg-gray-100 text-black">
-                            <th className="p-2 border">ID</th>
-                            <th className="p-2 border">Name</th>
-                            <th className="p-2 border">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {permissions.map((p, i) => (
-                            <tr key={`${p.PermissionID} -${i}`}>
-                                <td className="p-2 border">{p.PermissionID}</td>
-                                <td className="p-2 border">{p.PermissionName}</td>
-                                <td className="p-2 border">{p.Description}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Roles Table */}
-            <div>
-                <h2 className="font-bold text-lg mb-2">Roles</h2>
-                <table className="w-full border border-gray-300">
-                    <thead>
-                        <tr className="bg-gray-100 text-black">
-                            <th className="p-2 border">ID</th>
-                            <th className="p-2 border">Name</th>
-                            <th className="p-2 border">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {roles.map((r, i) => (
-                            <tr key={`${r.RoleID}-${i}`}>
-                                <td className="p-2 border">{r.RoleID}</td>
-                                <td className="p-2 border">{r.RoleName}</td>
-                                <td className="p-2 border">{r.Description}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Users Table */}
-            <div>
-                <h2 className="font-bold text-lg mb-2">Users</h2>
-                <table className="w-full border border-gray-300">
-                    <thead>
-                        <tr className="bg-gray-100 text-black">
-                            <th className="p-2 border">User ID</th>
-                            <th className="p-2 border">Name</th>
-                            <th className="p-2 border">Created Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {users.map((u, i) => (
-                            <tr key={`${u.User_Id}-${i}`}>
-                                <td className="p-2 border">{u.User_Id}</td>
-                                <td className="p-2 border">{u.Name}</td>
-                                <td className="p-2 border">{u.CreateDate}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* User Roles Table */}
-            <div>
-                <h2 className="font-bold text-lg mb-2">User Roles</h2>
-                <table className="w-full border border-gray-300">
-                    <thead>
-                        <tr className="bg-gray-100 text-black">
-                            <th className="p-2 border">ID</th>
-                            <th className="p-2 border">User ID</th>
-                            <th className="p-2 border">Role</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {userRoles.map((ur, i) => (
-                            <tr key={`${ur.UserID}-${i}`}>
-                                <td className="p-2 border">{i + 1}</td>
-                                <td className="p-2 border">{ur.UserID}</td>
-                                <td className="p-2 border">{ur.RoleID}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Role Permissions Table */}
-            <div>
-                <h2 className="font-bold text-lg mb-2">Role Permissions</h2>
-                <table className="w-full border border-gray-300">
-                    <thead>
-                        <tr className="bg-gray-100 text-black">
-                            <th className="p-2 border">Role</th>
-                            <th className="p-2 border">Permission</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {rolePermissions.map((rp, i) => (
-                            <tr key={`${rp.RoleID}-${i}`}>
-                                <td className="p-2 border">{rp.RoleID}</td>
-                                <td className="p-2 border">{rp.PermissionID}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-
-                </table>
-            </div>
+        <div className="p-4 space-y-8 mt-[5%]">
+            <PermissionsTable permissions={permissions} />
+            <RolesTable roles={roles} />
+            <UsersTable users={users} />
+            <UserRolesTable userRoles={userRoles} />
+            <RolePermissionsTable rolePermissions={rolePermissions} />
         </div>
     );
 }
