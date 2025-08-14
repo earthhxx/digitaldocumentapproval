@@ -74,7 +74,7 @@ export default function PermissionsList({ permissions }: Props) {
     }, [confirm.visible, choice]);
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6 font-mono text-white bg-black min-h-screen p-4">
+        <div className="flex flex-col justify-start items-start w-full mx-auto space-y-6 font-mono text-white bg-black min-h-screen p-4">
             {/* Confirm card */}
             {confirm.visible && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
@@ -112,7 +112,7 @@ export default function PermissionsList({ permissions }: Props) {
             <h2 className="text-2xl font-bold">Permissions</h2>
 
             {/* CMD Style Floating Form */}
-            <div className="fixed bottom-4 right-4 w-80 border border-white bg-black text-white p-4 rounded-lg shadow-lg">
+            <div className="fixed flex flex-col right-0 bottom-100 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
                 <div className="text-sm font-bold mb-2">Add New Permission</div>
 
                 <input
@@ -135,14 +135,14 @@ export default function PermissionsList({ permissions }: Props) {
             </div>
 
             {/* List */}
-            <div className="space-y-3">
+            <div className="space-y-3 w-[65%]">
                 <table className="w-full border-collapse font-mono text-sm">
                     <thead>
                         <tr className="bg-black text-white">
-                            <th className="border border-gray-500 px-3 py-1 text-left">ID</th>
-                            <th className="border border-gray-500 px-3 py-1 text-left">Permission Name</th>
+                            <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">ID</th>
+                            <th className="border border-gray-500 px-3 py-1 w-[20%] text-left">Permission Name</th>
                             <th className="border border-gray-500 px-3 py-1 text-left">Description</th>
-                            <th className="border border-gray-500 px-3 py-1 text-left">Action</th>
+                            <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">Action</th>
                         </tr>
                     </thead>
                     <tbody>
