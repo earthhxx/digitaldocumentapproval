@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import { Permission } from "../types";
 
@@ -7,12 +8,18 @@ export default function PermissionsList({ permissions }: Props) {
     const [items, setItems] = useState<Permission[]>(permissions);
     const [form, setForm] = useState({ PermissionName: "", Description: "" });
 
-    //ADD || SAVE
-    const [confirmAdd, setConfirmAdd] = useState(false);
+    // Confirm add/delete
+    const [confirm, setConfirm] = useState<{ visible: boolean; type: "add" | "delete"; id?: number | string }>({
+        visible: false,
+        type: "add",
+    });
+    const [choice, setChoice] = useState<"Yes" | "No">("Yes");
 
+    // --- ADD ---
     const triggerAddConfirm = () => {
         if (!form.PermissionName.trim()) return;
-        setConfirmAdd(true);
+        setConfirm({ visible: true, type: "add" });
+        setChoice("Yes");
     };
 
     const confirmAddPermission = async () => {
@@ -25,33 +32,12 @@ export default function PermissionsList({ permissions }: Props) {
         const newPermission: Permission = await res.json();
         setItems(prev => [...prev, newPermission]);
         setForm({ PermissionName: "", Description: "" });
-        setConfirmAdd(false);
+        setConfirm({ visible: false, type: "add" });
     };
 
-
-    const [confirmDel, setConfirmDel] = useState<{ id: number | string; visible: boolean }>({
-        id: 0,
-        visible: false,
-    });
-    const [choice, setChoice] = useState<"Yes" | "No">("Yes");
-
-    const handleKey = (e: KeyboardEvent) => {
-        if (!confirmDel.visible) return;
-
-        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-            setChoice(prev => (prev === "Yes" ? "No" : "Yes"));
-        }
-        if (e.key === "Enter") {
-            if (choice === "Yes") confirmDelete(confirmDel.id);
-            setConfirmDel({ id: 0, visible: false });
-        }
-        if (e.key === "Escape") {  // <-- เปลี่ยนตรงนี้
-            setConfirmDel({ id: 0, visible: false });
-        }
-    };
-
+    // --- DELETE ---
     const delPer = (id: number | string) => {
-        setConfirmDel({ id, visible: true });
+        setConfirm({ visible: true, type: "delete", id });
         setChoice("Yes");
     };
 
@@ -62,49 +48,63 @@ export default function PermissionsList({ permissions }: Props) {
             body: JSON.stringify({ PermissionID: id }),
         });
 
-        if (res.ok) {
-            setItems(prev => prev.filter(p => p.PermissionID !== id));
-        } else {
-            alert("Failed to delete permission");
-        }
+        if (res.ok) setItems(prev => prev.filter(p => p.PermissionID !== id));
+        else alert("Failed to delete permission");
+
+        setConfirm({ visible: false, type: "delete" });
     };
 
+    // --- keyboard ---
+    const handleKey = (e: KeyboardEvent) => {
+        if (!confirm.visible) return;
 
+        if (e.key === "ArrowUp" || e.key === "ArrowDown") setChoice(prev => (prev === "Yes" ? "No" : "Yes"));
+        if (e.key === "Enter") {
+            if (choice === "Yes") {
+                if (confirm.type === "add") confirmAddPermission();
+                if (confirm.type === "delete" && confirm.id !== undefined) confirmDelete(confirm.id);
+            } else setConfirm({ visible: false, type: confirm.type });
+        }
+        if (e.key === "Escape") setConfirm({ visible: false, type: confirm.type });
+    };
 
-    // attach keyboard listener
     useEffect(() => {
         window.addEventListener("keydown", handleKey);
         return () => window.removeEventListener("keydown", handleKey);
-    }, [confirmDel.visible, choice]);
+    }, [confirm.visible, choice]);
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6">
-            {/* Custom confirm card */}
-            {confirmDel.visible && (
+        <div className="max-w-2xl mx-auto space-y-6 font-mono text-white bg-black min-h-screen p-4">
+            {/* Confirm card */}
+            {confirm.visible && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
-                    <div className="bg-black text-white font-mono border border-white rounded-lg p-5 w-80">
-                        <div className="mb-3">Are you sure you want to delete?</div>
+                    <div className="bg-black text-white border border-white rounded-lg p-5 w-80">
+                        <div className="mb-3">
+                            {confirm.type === "add"
+                                ? `Add new permission "${form.PermissionName}"?`
+                                : "Are you sure you want to delete?"}
+                        </div>
                         <div className="flex flex-col gap-2">
                             <div
-                                className={`px-3 py-1 border cursor-pointer ${choice === "Yes" ? "bg-white text-black" : ""
-                                    }`}
+                                className={`px-3 py-1 border cursor-pointer ${choice === "Yes" ? "bg-white text-black" : ""}`}
                                 onClick={() => {
                                     setChoice("Yes");
-                                    confirmDelete(confirmDel.id);
-                                    setConfirmDel({ id: 0, visible: false });
+                                    if (confirm.type === "add") confirmAddPermission();
+                                    if (confirm.type === "delete" && confirm.id !== undefined) confirmDelete(confirm.id);
                                 }}
                             >
                                 Yes
                             </div>
                             <div
-                                className={`px-3 py-1 border cursor-pointer ${choice === "No" ? "bg-white text-black" : ""
-                                    }`}
-                                onClick={() => setConfirmDel({ id: 0, visible: false })}
+                                className={`px-3 py-1 border cursor-pointer ${choice === "No" ? "bg-white text-black" : ""}`}
+                                onClick={() => setConfirm({ visible: false, type: confirm.type })}
                             >
                                 No
                             </div>
                         </div>
-                        <div className="mt-3 text-xs text-gray-400">Use ↑ ↓ to select, Enter to confirm or click</div>
+                        <div className="mt-3 text-xs text-gray-400">
+                            Use ↑ ↓ to select, Enter to confirm or click
+                        </div>
                     </div>
                 </div>
             )}
@@ -112,36 +112,27 @@ export default function PermissionsList({ permissions }: Props) {
             <h2 className="text-2xl font-bold">Permissions</h2>
 
             {/* CMD Style Floating Form */}
-            <div className="fixed bottom-4 right-4 w-80 border border-white bg-black text-white font-mono p-4 rounded-lg shadow-lg">
-                <div className="text-sm font-bold mb-2">
-                    Add New Permission
-                </div>
+            <div className="fixed bottom-4 right-4 w-80 border border-white bg-black text-white p-4 rounded-lg shadow-lg">
+                <div className="text-sm font-bold mb-2">Add New Permission</div>
 
                 <input
-                    className="rounded-2xl border-white"
+                    className="w-full p-2 mb-2 bg-black text-white border border-white outline-none"
                     placeholder="Permission Name"
                     value={form.PermissionName}
                     onChange={e => setForm({ ...form, PermissionName: e.target.value })}
                     onKeyDown={e => { if (e.key === "Enter") triggerAddConfirm(); }}
                 />
                 <input
-                    className="..."
+                    className="w-full p-2 mb-3 bg-black text-white border border-white outline-none"
                     placeholder="Description"
                     value={form.Description}
                     onChange={e => setForm({ ...form, Description: e.target.value })}
                     onKeyDown={e => { if (e.key === "Enter") triggerAddConfirm(); }}
                 />
-                <button
-                    className="..."
-                    onClick={triggerAddConfirm}
-                >
-                    [ Add ]
+                <button className="w-full py-2 bg-white text-black hover:bg-gray-300" onClick={triggerAddConfirm}>
+                    [ Enter ]
                 </button>
-
             </div>
-
-
-
 
             {/* List */}
             <div className="space-y-3">
@@ -155,7 +146,7 @@ export default function PermissionsList({ permissions }: Props) {
                         </tr>
                     </thead>
                     <tbody>
-                        {items.map((p) => (
+                        {items.map(p => (
                             <tr key={p.PermissionID} className="hover:bg-white/10">
                                 <td className="border border-gray-500 px-3 py-1">{p.PermissionID}</td>
                                 <td className="border border-gray-500 px-3 py-1">{p.PermissionName}</td>
