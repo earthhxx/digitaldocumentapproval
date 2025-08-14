@@ -25,7 +25,7 @@ export default function RolesList({ roles }: Props) {
   };
 
   const confirmAddRole = async () => {
-    const res = await fetch("/api/addPermissions", {
+    const res = await fetch("/api/addRoles", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
