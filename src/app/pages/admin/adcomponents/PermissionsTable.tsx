@@ -58,12 +58,7 @@ export default function PermissionsList({ permissions }: Props) {
     const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (!confirm.visible) return;
         // Enter จะทำงานเฉพาะตอน body หรือ div focus
-        if (
-            document.activeElement !== document.body &&
-            confirmRef.current &&
-            document.activeElement !== confirmRef.current
-        )
-            return;
+        if (!confirmRef.current || document.activeElement !== confirmRef.current) return;
 
         if (e.key === "ArrowUp" || e.key === "ArrowDown") setChoice(prev => (prev === "Yes" ? "No" : "Yes"));
         if (e.key === "Enter") {
