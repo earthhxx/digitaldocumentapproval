@@ -19,6 +19,22 @@ export default function PermissionsList({ permissions }: Props) {
         setForm({ PermissionName: "", Description: "" });
     };
 
+    const delPer = async (id: number | string) => {
+        if (!confirm("Are you sure you want to delete this permission?")) return;
+
+        const res = await fetch("/api/delPermissions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ PermissionID: id })
+        });
+
+        if (res.ok) {
+            setItems(prev => prev.filter(p => p.PermissionID !== id));
+        } else {
+            alert("Failed to delete permission");
+        }
+    };
+
 
 
     return (
@@ -61,14 +77,23 @@ export default function PermissionsList({ permissions }: Props) {
                             <th className="border border-gray-500 px-3 py-1 text-left">ID</th>
                             <th className="border border-gray-500 px-3 py-1 text-left">Permission Name</th>
                             <th className="border border-gray-500 px-3 py-1 text-left">Description</th>
+                            <th className="border border-gray-500 px-3 py-1 text-left">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {items.map((p) => (
-                            <tr key={p.PermissionID} className="hover:bg-green-800 ">
+                            <tr key={p.PermissionID} className="hover:bg-white/10">
                                 <td className="border border-gray-500 px-3 py-1">{p.PermissionID}</td>
                                 <td className="border border-gray-500 px-3 py-1">{p.PermissionName}</td>
                                 <td className="border border-gray-500 px-3 py-1">{p.Description || "-"}</td>
+                                <td className="flex justify-center border border-gray-500 px-3 py-1">
+                                    <button
+                                        onClick={() => delPer(p.PermissionID)}
+                                        className="px-2 py-1 bg-white text-black hover:bg-red-800"
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
