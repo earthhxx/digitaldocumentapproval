@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Permission } from "../types";
 
 type Props = { permissions: Permission[] };
@@ -19,13 +19,37 @@ export default function PermissionsList({ permissions }: Props) {
         setForm({ PermissionName: "", Description: "" });
     };
 
-    const delPer = async (id: number | string) => {
-        if (!confirm("Are you sure you want to delete this permission?")) return;
+    const [confirmDel, setConfirmDel] = useState<{ id: number | string; visible: boolean }>({
+        id: 0,
+        visible: false,
+    });
+    const [choice, setChoice] = useState<"Yes" | "No">("Yes");
 
+    const handleKey = (e: KeyboardEvent) => {
+        if (!confirmDel.visible) return;
+
+        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+            setChoice(prev => (prev === "Yes" ? "No" : "Yes"));
+        }
+        if (e.key === "Enter") {
+            if (choice === "Yes") confirmDelete(confirmDel.id);
+            setConfirmDel({ id: 0, visible: false });
+        }
+        if (e.key === "Escape") {  // <-- เปลี่ยนตรงนี้
+            setConfirmDel({ id: 0, visible: false });
+        }
+    };
+
+    const delPer = (id: number | string) => {
+        setConfirmDel({ id, visible: true });
+        setChoice("Yes");
+    };
+
+    const confirmDelete = async (id: number | string) => {
         const res = await fetch("/api/delPermissions", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ PermissionID: id })
+            body: JSON.stringify({ PermissionID: id }),
         });
 
         if (res.ok) {
@@ -37,8 +61,44 @@ export default function PermissionsList({ permissions }: Props) {
 
 
 
+    // attach keyboard listener
+    useEffect(() => {
+        window.addEventListener("keydown", handleKey);
+        return () => window.removeEventListener("keydown", handleKey);
+    }, [confirmDel.visible, choice]);
+
     return (
         <div className="max-w-2xl mx-auto space-y-6">
+            {/* Custom confirm card */}
+            {confirmDel.visible && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+                    <div className="bg-black text-white font-mono border border-white rounded-lg p-5 w-80">
+                        <div className="mb-3">Are you sure you want to delete?</div>
+                        <div className="flex flex-col gap-2">
+                            <div
+                                className={`px-3 py-1 border cursor-pointer ${choice === "Yes" ? "bg-white text-black" : ""
+                                    }`}
+                                onClick={() => {
+                                    setChoice("Yes");
+                                    confirmDelete(confirmDel.id);
+                                    setConfirmDel({ id: 0, visible: false });
+                                }}
+                            >
+                                Yes
+                            </div>
+                            <div
+                                className={`px-3 py-1 border cursor-pointer ${choice === "No" ? "bg-white text-black" : ""
+                                    }`}
+                                onClick={() => setConfirmDel({ id: 0, visible: false })}
+                            >
+                                No
+                            </div>
+                        </div>
+                        <div className="mt-3 text-xs text-gray-400">Use ↑ ↓ to select, Enter to confirm or click</div>
+                    </div>
+                </div>
+            )}
+
             <h2 className="text-2xl font-bold">Permissions</h2>
 
             {/* CMD Style Floating Form */}
