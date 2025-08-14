@@ -51,10 +51,10 @@ export default function AdminAccessPage() {
     return (
         <div className="p-4 space-y-8 mt-[5%]">
             <PermissionsTable permissions={permissions} />
-            <RolesTable roles={roles} />
+            {/* <RolesTable roles={roles} />
             <UsersTable users={users} />
             <UserRolesTable userRoles={userRoles} />
-            <RolePermissionsTable rolePermissions={rolePermissions} />
+            <RolePermissionsTable rolePermissions={rolePermissions} /> */}
         </div>
     );
 }

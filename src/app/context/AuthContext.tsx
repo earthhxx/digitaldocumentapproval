@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect } from "react";
 import  { jwtDecode }from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 interface User {
   userId: string;
@@ -30,6 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -68,6 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("user");
     setToken(null);
     setUser(null);
+    router.push("/");
   };
 
   const isAuthenticated = !!token;
