@@ -9,10 +9,11 @@ export default function PermissionsList({ permissions }: Props) {
     const [form, setForm] = useState({ PermissionName: "", Description: "" });
 
     // Confirm add/delete
-    const [confirm, setConfirm] = useState<{ visible: boolean; type: "add" | "delete"; id?: number | string }>({
+    const [confirm, setConfirm] = useState<{ visible: boolean; type: "add" | "delete" | null; id?: number | string }>({
         visible: false,
-        type: "add",
+        type: null,
     });
+
     const [choice, setChoice] = useState<"Yes" | "No">("Yes");
 
     // --- ADD ---
@@ -75,6 +76,65 @@ export default function PermissionsList({ permissions }: Props) {
 
     return (
         <div className="flex flex-col justify-start items-start w-full mx-auto space-y-6 font-mono text-white bg-black min-h-screen p-4">
+
+            <h2 className="text-2xl font-bold">Permissions</h2>
+
+
+
+            {/* List */}
+            <div className="space-y-3 w-[65%]">
+                <table className="w-full border-collapse font-mono text-sm">
+                    <thead>
+                        <tr className="bg-black text-white">
+                            <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">ID</th>
+                            <th className="border border-gray-500 px-3 py-1 w-[20%] text-left">Permission Name</th>
+                            <th className="border border-gray-500 px-3 py-1 text-left">Description</th>
+                            <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {items.map(p => (
+                            <tr key={p.PermissionID} className="hover:bg-white/10">
+                                <td className="border border-gray-500 px-3 py-1">{p.PermissionID}</td>
+                                <td className="border border-gray-500 px-3 py-1">{p.PermissionName}</td>
+                                <td className="border border-gray-500 px-3 py-1">{p.Description || "-"}</td>
+                                <td className="flex justify-center border border-gray-500 px-3 py-1">
+                                    <button
+                                        onClick={() => delPer(p.PermissionID)}
+                                        className="px-2 py-1 bg-white text-black hover:bg-red-800"
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* CMD Style Floating Form */}
+            <div className="fixed flex flex-col right-0 bottom-100 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
+                <div className="text-sm font-bold mb-2">Add New Permission</div>
+
+                <input
+                    className="w-full p-2 mb-2 bg-black text-white border border-white outline-none"
+                    placeholder="Permission Name"
+                    value={form.PermissionName}
+                    onChange={e => setForm({ ...form, PermissionName: e.target.value })}
+                    onKeyDown={e => { if (e.key === "Enter") triggerAddConfirm(); }}
+                />
+                <input
+                    className="w-full p-2 mb-3 bg-black text-white border border-white outline-none"
+                    placeholder="Description"
+                    value={form.Description}
+                    onChange={e => setForm({ ...form, Description: e.target.value })}
+                    onKeyDown={e => { if (e.key === "Enter") triggerAddConfirm(); }}
+                />
+                <button className="w-full py-2 bg-white text-black hover:bg-gray-300" onClick={triggerAddConfirm}>
+                    [ Enter ]
+                </button>
+            </div>
+
             {/* Confirm card */}
             {confirm.visible && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
@@ -108,62 +168,6 @@ export default function PermissionsList({ permissions }: Props) {
                     </div>
                 </div>
             )}
-
-            <h2 className="text-2xl font-bold">Permissions</h2>
-
-            {/* CMD Style Floating Form */}
-            <div className="fixed flex flex-col right-0 bottom-100 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
-                <div className="text-sm font-bold mb-2">Add New Permission</div>
-
-                <input
-                    className="w-full p-2 mb-2 bg-black text-white border border-white outline-none"
-                    placeholder="Permission Name"
-                    value={form.PermissionName}
-                    onChange={e => setForm({ ...form, PermissionName: e.target.value })}
-                    onKeyDown={e => { if (e.key === "Enter") triggerAddConfirm(); }}
-                />
-                <input
-                    className="w-full p-2 mb-3 bg-black text-white border border-white outline-none"
-                    placeholder="Description"
-                    value={form.Description}
-                    onChange={e => setForm({ ...form, Description: e.target.value })}
-                    onKeyDown={e => { if (e.key === "Enter") triggerAddConfirm(); }}
-                />
-                <button className="w-full py-2 bg-white text-black hover:bg-gray-300" onClick={triggerAddConfirm}>
-                    [ Enter ]
-                </button>
-            </div>
-
-            {/* List */}
-            <div className="space-y-3 w-[65%]">
-                <table className="w-full border-collapse font-mono text-sm">
-                    <thead>
-                        <tr className="bg-black text-white">
-                            <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">ID</th>
-                            <th className="border border-gray-500 px-3 py-1 w-[20%] text-left">Permission Name</th>
-                            <th className="border border-gray-500 px-3 py-1 text-left">Description</th>
-                            <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {items.map(p => (
-                            <tr key={p.PermissionID} className="hover:bg-white/10">
-                                <td className="border border-gray-500 px-3 py-1">{p.PermissionID}</td>
-                                <td className="border border-gray-500 px-3 py-1">{p.PermissionName}</td>
-                                <td className="border border-gray-500 px-3 py-1">{p.Description || "-"}</td>
-                                <td className="flex justify-center border border-gray-500 px-3 py-1">
-                                    <button
-                                        onClick={() => delPer(p.PermissionID)}
-                                        className="px-2 py-1 bg-white text-black hover:bg-red-800"
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
         </div>
     );
 }
