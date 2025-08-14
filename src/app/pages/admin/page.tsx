@@ -13,6 +13,9 @@ type ComponentType = "Permissions" | "Roles" | "Users" | "UserRoles" | "RolePerm
 
 export default function AdminAccessPage() {
     const [selected, setSelected] = useState<ComponentType>("Permissions");
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [highlightedIndex, setHighlightedIndex] = useState(0);
+
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);
     const [users, setUsers] = useState<User[]>([]);
@@ -21,6 +24,8 @@ export default function AdminAccessPage() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const options: ComponentType[] = ["Permissions", "Roles", "Users", "UserRoles", "RolePermissions"];
 
     async function fetchData(component: ComponentType) {
         setLoading(true);
@@ -59,22 +64,63 @@ export default function AdminAccessPage() {
         fetchData(selected);
     }, [selected]);
 
+    // --- keyboard navigation ---
+    const handleKey = (e: KeyboardEvent) => {
+        if (!dropdownOpen) return;
+
+        if (e.key === "ArrowDown") {
+            setHighlightedIndex(prev => (prev + 1) % options.length);
+        }
+        if (e.key === "ArrowUp") {
+            setHighlightedIndex(prev => (prev - 1 + options.length) % options.length);
+        }
+        if (e.key === "Enter") {
+            setSelected(options[highlightedIndex]);
+            setDropdownOpen(false);
+        }
+        if (e.key === "Escape") {
+            setDropdownOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener("keydown", handleKey);
+        return () => window.removeEventListener("keydown", handleKey);
+    }, [dropdownOpen, highlightedIndex]);
+
     return (
         <ProtectedRoute>
             <div className="p-4 font-mono text-white bg-black min-h-screen mt-20">
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex flex-col items-start gap-3 mb-4 relative">
                     <span className="font-bold">Select Component:</span>
-                    <select
-                        className="bg-black text-white border border-white px-2 py-1"
-                        value={selected}
-                        onChange={e => setSelected(e.target.value as ComponentType)}
+
+                    {/* Custom dropdown */}
+                    <div
+                        className="bg-black text-white border border-white px-2 py-1 cursor-pointer"
+                        onClick={() => setDropdownOpen(prev => !prev)}
                     >
-                        <option value="Permissions">Permissions</option>
-                        <option value="Roles">Roles</option>
-                        <option value="Users">Users</option>
-                        <option value="UserRoles">UserRoles</option>
-                        <option value="RolePermissions">RolePermissions</option>
-                    </select>
+                        {selected}
+                    </div>
+
+                    {dropdownOpen && (
+                        <div className="absolute top-full left-0 w-60 bg-black border border-white mt-1 z-10">
+                            {options.map((opt, index) => (
+                                <div
+                                    key={opt}
+                                    className={`px-2 py-1 cursor-pointer ${
+                                        index === highlightedIndex ? "bg-white text-black" : "text-white"
+                                    }`}
+                                    onMouseEnter={() => setHighlightedIndex(index)}
+                                    onClick={() => {
+                                        setSelected(opt);
+                                        setDropdownOpen(false);
+                                    }}
+                                >
+                                    {opt}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {loading && <div>Loading {selected}...</div>}

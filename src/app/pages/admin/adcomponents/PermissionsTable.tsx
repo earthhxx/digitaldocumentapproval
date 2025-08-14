@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Permission } from "../types";
 
 type Props = { permissions: Permission[] };
@@ -7,6 +7,7 @@ type Props = { permissions: Permission[] };
 export default function PermissionsList({ permissions }: Props) {
     const [items, setItems] = useState<Permission[]>(permissions);
     const [form, setForm] = useState({ PermissionName: "", Description: "" });
+    const confirmRef = useRef<HTMLDivElement>(null);
 
     // Confirm add/delete
     const [confirm, setConfirm] = useState<{ visible: boolean; type: "add" | "delete" | null; id?: number | string }>({
@@ -14,13 +15,12 @@ export default function PermissionsList({ permissions }: Props) {
         type: null,
     });
 
-    const [choice, setChoice] = useState<"Yes" | "No">("Yes");
+    const [choice, setChoice] = useState<"Yes" | "No">("No");
 
     // --- ADD ---
     const triggerAddConfirm = () => {
         if (!form.PermissionName.trim()) return;
         setConfirm({ visible: true, type: "add" });
-        setChoice("Yes");
     };
 
     const confirmAddPermission = async () => {
@@ -39,7 +39,6 @@ export default function PermissionsList({ permissions }: Props) {
     // --- DELETE ---
     const delPer = (id: number | string) => {
         setConfirm({ visible: true, type: "delete", id });
-        setChoice("Yes");
     };
 
     const confirmDelete = async (id: number | string) => {
@@ -56,8 +55,15 @@ export default function PermissionsList({ permissions }: Props) {
     };
 
     // --- keyboard ---
-    const handleKey = (e: KeyboardEvent) => {
+    const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (!confirm.visible) return;
+        // Enter จะทำงานเฉพาะตอน body หรือ div focus
+        if (
+            document.activeElement !== document.body &&
+            confirmRef.current &&
+            document.activeElement !== confirmRef.current
+        )
+            return;
 
         if (e.key === "ArrowUp" || e.key === "ArrowDown") setChoice(prev => (prev === "Yes" ? "No" : "Yes"));
         if (e.key === "Enter") {
@@ -70,9 +76,14 @@ export default function PermissionsList({ permissions }: Props) {
     };
 
     useEffect(() => {
-        window.addEventListener("keydown", handleKey);
-        return () => window.removeEventListener("keydown", handleKey);
-    }, [confirm.visible, choice]);
+        if (confirm.visible && confirmRef.current) {
+            confirmRef.current.focus();
+        } else {
+            // กลับ focus ไปที่ body หรือ input อื่น
+            document.body.focus();
+        }
+    }, [confirm.visible]);
+
 
     return (
         <div className="flex flex-col justify-start items-start w-full mx-auto space-y-6 font-mono text-white bg-black min-h-screen p-4">
@@ -121,7 +132,6 @@ export default function PermissionsList({ permissions }: Props) {
                     placeholder="Permission Name"
                     value={form.PermissionName}
                     onChange={e => setForm({ ...form, PermissionName: e.target.value })}
-                    onKeyDown={e => { if (e.key === "Enter") triggerAddConfirm(); }}
                 />
                 <input
                     className="w-full p-2 mb-3 bg-black text-white border border-white outline-none"
@@ -137,7 +147,10 @@ export default function PermissionsList({ permissions }: Props) {
 
             {/* Confirm card */}
             {confirm.visible && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+                <div ref={confirmRef}
+                    tabIndex={0} // ต้องมี tabIndex เพื่อให้ div รับ focus
+                    onKeyDown={handleKey}
+                    className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
                     <div className="bg-black text-white border border-white rounded-lg p-5 w-80">
                         <div className="mb-3">
                             {confirm.type === "add"
@@ -157,7 +170,7 @@ export default function PermissionsList({ permissions }: Props) {
                             </div>
                             <div
                                 className={`px-3 py-1 border cursor-pointer ${choice === "No" ? "bg-white text-black" : ""}`}
-                                onClick={() => setConfirm({ visible: false, type: confirm.type })}
+                                onClick={() => { setChoice("No"); setConfirm({ visible: false, type: confirm.type }) }}
                             >
                                 No
                             </div>
@@ -167,7 +180,8 @@ export default function PermissionsList({ permissions }: Props) {
                         </div>
                     </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }
