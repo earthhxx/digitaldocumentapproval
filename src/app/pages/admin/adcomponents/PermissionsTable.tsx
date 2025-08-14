@@ -25,49 +25,54 @@ export default function PermissionsList({ permissions }: Props) {
         <div className="max-w-2xl mx-auto space-y-6">
             <h2 className="text-2xl font-bold">Permissions</h2>
 
-            {/* Add Form */}
-            <div className="p-5 border rounded-2xl bg-white shadow-sm space-y-3">
-                <div className="text-lg font-medium flex items-center gap-2 text-green-600">
+            {/* CMD Style Floating Form */}
+            <div className="fixed bottom-4 right-4 w-80 border border-white bg-black text-white font-mono p-4 rounded-lg shadow-lg">
+                <div className="text-sm font-bold mb-2">
                     Add New Permission
                 </div>
 
                 <input
-                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-black"
+                    className="w-full p-2 mb-2 bg-black text-white border border-white rounded-none outline-none focus:border-green-400"
                     placeholder="Permission Name"
                     value={form.PermissionName}
                     onChange={e => setForm({ ...form, PermissionName: e.target.value })}
                 />
                 <input
-                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-black"
+                    className="w-full p-2 mb-3 bg-black text-white border border-white rounded-none outline-none focus:border-green-400"
                     placeholder="Description"
                     value={form.Description}
                     onChange={e => setForm({ ...form, Description: e.target.value })}
                 />
                 <button
-                    className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    className="w-full py-2 bg-white text-black border border-white hover:bg-gray-300 transition-colors font-bold"
                     onClick={saveNewPer}
                 >
-                    Add Permission
+                    [ Add ]
                 </button>
             </div>
 
+
+
             {/* List */}
             <div className="space-y-3">
-                {items.map(p => (
-                    <div
-                        key={p.PermissionID}
-                        className="p-4 border rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow"
-                    >
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <div className="font-semibold text-gray-800">{p.PermissionName}</div>
-                                {p.Description && (
-                                    <p className="text-sm text-gray-500 mt-1">{p.Description}</p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                ))}
+                <table className="w-full border-collapse font-mono text-sm">
+                    <thead>
+                        <tr className="bg-black text-white">
+                            <th className="border border-gray-500 px-3 py-1 text-left">ID</th>
+                            <th className="border border-gray-500 px-3 py-1 text-left">Permission Name</th>
+                            <th className="border border-gray-500 px-3 py-1 text-left">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {items.map((p) => (
+                            <tr key={p.PermissionID} className="hover:bg-green-800 ">
+                                <td className="border border-gray-500 px-3 py-1">{p.PermissionID}</td>
+                                <td className="border border-gray-500 px-3 py-1">{p.PermissionName}</td>
+                                <td className="border border-gray-500 px-3 py-1">{p.Description || "-"}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
