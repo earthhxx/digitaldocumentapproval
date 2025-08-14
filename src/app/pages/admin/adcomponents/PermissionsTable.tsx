@@ -7,17 +7,27 @@ export default function PermissionsList({ permissions }: Props) {
     const [items, setItems] = useState<Permission[]>(permissions);
     const [form, setForm] = useState({ PermissionName: "", Description: "" });
 
-    const saveNewPer = async () => {
+    //ADD || SAVE
+    const [confirmAdd, setConfirmAdd] = useState(false);
+
+    const triggerAddConfirm = () => {
+        if (!form.PermissionName.trim()) return;
+        setConfirmAdd(true);
+    };
+
+    const confirmAddPermission = async () => {
         const res = await fetch("/api/addPermissions", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(form)
+            body: JSON.stringify(form),
         });
 
-        const newPermission: Permission = await res.json(); // object เดียว
+        const newPermission: Permission = await res.json();
         setItems(prev => [...prev, newPermission]);
         setForm({ PermissionName: "", Description: "" });
+        setConfirmAdd(false);
     };
+
 
     const [confirmDel, setConfirmDel] = useState<{ id: number | string; visible: boolean }>({
         id: 0,
@@ -108,24 +118,28 @@ export default function PermissionsList({ permissions }: Props) {
                 </div>
 
                 <input
-                    className="w-full p-2 mb-2 bg-black text-white border border-white rounded-none outline-none focus:border-green-400"
+                    className="rounded-2xl border-white"
                     placeholder="Permission Name"
                     value={form.PermissionName}
                     onChange={e => setForm({ ...form, PermissionName: e.target.value })}
+                    onKeyDown={e => { if (e.key === "Enter") triggerAddConfirm(); }}
                 />
                 <input
-                    className="w-full p-2 mb-3 bg-black text-white border border-white rounded-none outline-none focus:border-green-400"
+                    className="..."
                     placeholder="Description"
                     value={form.Description}
                     onChange={e => setForm({ ...form, Description: e.target.value })}
+                    onKeyDown={e => { if (e.key === "Enter") triggerAddConfirm(); }}
                 />
                 <button
-                    className="w-full py-2 bg-white text-black border border-white hover:bg-gray-300 transition-colors font-bold"
-                    onClick={saveNewPer}
+                    className="..."
+                    onClick={triggerAddConfirm}
                 >
                     [ Add ]
                 </button>
+
             </div>
+
 
 
 
