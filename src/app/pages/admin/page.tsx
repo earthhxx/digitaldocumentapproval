@@ -7,6 +7,7 @@ import RolesTable from "./adcomponents/RolesTable";
 import UsersTable from "./adcomponents/UsersTable";
 import UserRolesTable from "./adcomponents/UserRolesTable";
 import RolePermissionsTable from "./adcomponents/RolePermissionsTable";
+import ProtectedRoute from "@/app/components/ProtectedRoute";
 
 type ComponentType = "Permissions" | "Roles" | "Users" | "UserRoles" | "RolePermissions";
 
@@ -59,34 +60,36 @@ export default function AdminAccessPage() {
     }, [selected]);
 
     return (
-        <div className="p-4 font-mono text-white bg-black min-h-screen">
-            <div className="flex items-center gap-3 mb-4">
-                <span className="font-bold">Select Component:</span>
-                <select
-                    className="bg-black text-white border border-white px-2 py-1"
-                    value={selected}
-                    onChange={e => setSelected(e.target.value as ComponentType)}
-                >
-                    <option value="Permissions">Permissions</option>
-                    <option value="Roles">Roles</option>
-                    <option value="Users">Users</option>
-                    <option value="UserRoles">UserRoles</option>
-                    <option value="RolePermissions">RolePermissions</option>
-                </select>
-            </div>
-
-            {loading && <div>Loading {selected}...</div>}
-            {error && <div className="text-red-500">{error}</div>}
-
-            {!loading && !error && (
-                <div className="space-y-4">
-                    {selected === "Permissions" && <PermissionsTable permissions={permissions} />}
-                    {selected === "Roles" && <RolesTable roles={roles} />}
-                    {selected === "Users" && <UsersTable users={users} />}
-                    {selected === "UserRoles" && <UserRolesTable userRoles={userRoles} />}
-                    {selected === "RolePermissions" && <RolePermissionsTable rolePermissions={rolePermissions} />}
+        <ProtectedRoute>
+            <div className="p-4 font-mono text-white bg-black min-h-screen mt-20">
+                <div className="flex items-center gap-3 mb-4">
+                    <span className="font-bold">Select Component:</span>
+                    <select
+                        className="bg-black text-white border border-white px-2 py-1"
+                        value={selected}
+                        onChange={e => setSelected(e.target.value as ComponentType)}
+                    >
+                        <option value="Permissions">Permissions</option>
+                        <option value="Roles">Roles</option>
+                        <option value="Users">Users</option>
+                        <option value="UserRoles">UserRoles</option>
+                        <option value="RolePermissions">RolePermissions</option>
+                    </select>
                 </div>
-            )}
-        </div>
+
+                {loading && <div>Loading {selected}...</div>}
+                {error && <div className="text-red-500">{error}</div>}
+
+                {!loading && !error && (
+                    <div className="space-y-4">
+                        {selected === "Permissions" && <PermissionsTable permissions={permissions} />}
+                        {selected === "Roles" && <RolesTable roles={roles} />}
+                        {selected === "Users" && <UsersTable users={users} />}
+                        {selected === "UserRoles" && <UserRolesTable userRoles={userRoles} />}
+                        {selected === "RolePermissions" && <RolePermissionsTable rolePermissions={rolePermissions} />}
+                    </div>
+                )}
+            </div>
+        </ProtectedRoute>
     );
 }
