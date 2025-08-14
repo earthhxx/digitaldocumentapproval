@@ -100,7 +100,7 @@ export default function Sidebar() {
             <nav className="flex flex-col gap-3 p-6 flex-1 w-full">
               {isAuthenticated && (
                 <a
-                  href="/"
+                  href="/pages/loginhome"
                   className="hover:bg-gray-700 bg-gray-700/30 p-3 rounded font-medium"
                 >
                   Home
