@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Permission, Role, User, UserRole, RolePermission } from "./types";
 import PermissionsTable from "./adcomponents/PermissionsTable";
 import RolesTable from "./adcomponents/RolesTable";
@@ -15,6 +15,7 @@ export default function AdminAccessPage() {
     const [selected, setSelected] = useState<ComponentType>("Permissions");
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(0);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);
@@ -65,8 +66,9 @@ export default function AdminAccessPage() {
     }, [selected]);
 
     // --- keyboard navigation ---
-    const handleKey = (e: KeyboardEvent) => {
+      const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (!dropdownOpen) return;
+        if (!dropdownRef.current || document.activeElement !== dropdownRef.current) return;
 
         if (e.key === "ArrowDown") {
             setHighlightedIndex(prev => (prev + 1) % options.length);
@@ -83,10 +85,12 @@ export default function AdminAccessPage() {
         }
     };
 
+    // เวลา dropdown เปิด → focus
     useEffect(() => {
-        window.addEventListener("keydown", handleKey);
-        return () => window.removeEventListener("keydown", handleKey);
-    }, [dropdownOpen, highlightedIndex]);
+        if (dropdownOpen && dropdownRef.current) {
+            dropdownRef.current.focus();
+        }
+    }, [dropdownOpen]);
 
     return (
         <ProtectedRoute>
@@ -96,6 +100,9 @@ export default function AdminAccessPage() {
 
                     {/* Custom dropdown */}
                     <div
+                        ref={dropdownRef}
+                        tabIndex={0} // ต้องมี tabIndex ถึงจะ focus ได้
+                        onKeyDown={handleKey}
                         className="bg-black text-white border border-white px-2 py-1 cursor-pointer"
                         onClick={() => setDropdownOpen(prev => !prev)}
                     >
@@ -107,9 +114,8 @@ export default function AdminAccessPage() {
                             {options.map((opt, index) => (
                                 <div
                                     key={opt}
-                                    className={`px-2 py-1 cursor-pointer ${
-                                        index === highlightedIndex ? "bg-white text-black" : "text-white"
-                                    }`}
+                                    className={`px-2 py-1 cursor-pointer ${index === highlightedIndex ? "bg-white text-black" : "text-white"
+                                        }`}
                                     onMouseEnter={() => setHighlightedIndex(index)}
                                     onClick={() => {
                                         setSelected(opt);
