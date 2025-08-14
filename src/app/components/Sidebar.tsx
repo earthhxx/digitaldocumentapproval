@@ -43,14 +43,14 @@ export default function Sidebar() {
         {!open && (
           <button
             onClick={() => setOpen(true)}
-            className="fixed flex justify-center items-center top-4 left-4 z-50 p-1 text-xl text-white bg-white/40 rounded-xl px-3 py-2 hover:bg-green-400"
+            className="fixed flex justify-center items-center top-4 left-4 z-50 p-1 text-xl text-black bg-white rounded-xl px-3 py-2 hover:bg-green-400 shadow border-2"
           >
             <div className="flex flex-col justify-between w-8 h-6 p-1">
-              <span className="block h-1 bg-white rounded"></span>
-              <span className="block h-1 bg-white rounded"></span>
-              <span className="block h-1 bg-white rounded"></span>
+              <span className="block h-1 bg-black rounded"></span>
+              <span className="block h-1 bg-black rounded"></span>
+              <span className="block h-1 bg-black rounded"></span>
             </div>
-            <div className="flex flex-col justify-center items-center mt-[0.5]">
+            <div className="flex flex-col justify-center  items-center mt-[0.5]">
               MENU
             </div>
 
