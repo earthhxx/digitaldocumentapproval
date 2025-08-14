@@ -16,6 +16,7 @@ export default function AdminAccessPage() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(0);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const dropdownOptionRef = useRef<HTMLDivElement>(null);
 
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);
@@ -66,7 +67,7 @@ export default function AdminAccessPage() {
     }, [selected]);
 
     // --- keyboard navigation ---
-      const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (!dropdownOpen) return;
         if (!dropdownRef.current || document.activeElement !== dropdownRef.current) return;
 
@@ -90,7 +91,24 @@ export default function AdminAccessPage() {
         if (dropdownOpen && dropdownRef.current) {
             dropdownRef.current.focus();
         }
+        else {
+            document.body.focus();
+        }
     }, [dropdownOpen]);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setDropdownOpen(false);
+            }
+        }
+
+        // listen document
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     return (
         <ProtectedRoute>
@@ -110,7 +128,7 @@ export default function AdminAccessPage() {
                     </div>
 
                     {dropdownOpen && (
-                        <div className="absolute top-full left-0 w-60 bg-black border border-white mt-1 z-10">
+                        <div ref={dropdownOptionRef} className="absolute top-full left-0 w-60 bg-black border border-white mt-1 z-10">
                             {options.map((opt, index) => (
                                 <div
                                     key={opt}
