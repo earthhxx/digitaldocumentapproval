@@ -59,30 +59,34 @@ export default function RolesList({ roles }: Props) {
   const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!confirm.visible) return;
 
-    let newChoice = choice;
+    let currentChoice = choice;
 
     if (e.key === "ArrowUp" || e.key === "ArrowDown") {
       e.preventDefault();
-      newChoice = choice === "Yes" ? "No" : "Yes";
-      setChoice(newChoice);
+      currentChoice = choice === "Yes" ? "No" : "Yes";
+      setChoice(currentChoice);
     }
 
     if (e.key === "Enter") {
       e.preventDefault();
-      // ใช้ newChoice แทน choice เดิม
-      if (newChoice === "Yes") {
+      if (currentChoice === "Yes") {
         if (confirm.type === "add") confirmAddRole();
         if (confirm.type === "delete" && confirm.id !== undefined) confirmDelete(confirm.id);
       } else {
+        // กรณีเลือก No
         setConfirm({ visible: false, type: confirm.type });
         setForm({ RoleName: "", Description: "" });
       }
+      // **reset choice** กลับค่า default หลังกด Enter
+      setChoice("No");
     }
 
     if (e.key === "Escape") {
       setConfirm({ visible: false, type: confirm.type });
+      setChoice("No"); // reset choice ด้วย
     }
   };
+
 
   useEffect(() => {
     if (confirm.visible && confirmRef.current) {
@@ -168,16 +172,16 @@ export default function RolesList({ roles }: Props) {
               <div
                 className={`px-3 py-1 border cursor-pointer ${choice === "Yes" ? "bg-white text-black" : ""}`}
                 onClick={() => {
-                  setChoice("Yes");
                   if (confirm.type === "add") confirmAddRole();
                   if (confirm.type === "delete" && confirm.id !== undefined) confirmDelete(confirm.id);
+                  setChoice("No");
                 }}
               >
                 Yes
               </div>
               <div
                 className={`px-3 py-1 border cursor-pointer ${choice === "No" ? "bg-white text-black" : ""}`}
-                onClick={() => { setChoice("No"); setConfirm({ visible: false, type: confirm.type }) }}
+                onClick={() => { setConfirm({ visible: false, type: confirm.type }); setChoice("No"); }}
               >
                 No
               </div>

@@ -72,12 +72,18 @@ export default function PermissionsList({ permissions }: Props) {
                 if (confirm.type === "add") confirmAddPermission();
                 if (confirm.type === "delete" && confirm.id !== undefined) confirmDelete(confirm.id);
             } else {
+                // กรณีเลือก No
                 setConfirm({ visible: false, type: confirm.type });
                 setForm({ PermissionName: "", Description: "" });
             }
+            // **reset choice** กลับค่า default หลังกด Enter
+            setChoice("No");
         }
 
-        if (e.key === "Escape") setConfirm({ visible: false, type: confirm.type });
+        if (e.key === "Escape") {
+            setConfirm({ visible: false, type: confirm.type });
+            setChoice("No"); // reset choice ด้วย
+        }
     };
 
 
@@ -167,16 +173,16 @@ export default function PermissionsList({ permissions }: Props) {
                                 <div
                                     className={`px-3 py-1 border cursor-pointer ${choice === "Yes" ? "bg-white text-black" : ""}`}
                                     onClick={() => {
-                                        setChoice("Yes");
                                         if (confirm.type === "add") confirmAddPermission();
                                         if (confirm.type === "delete" && confirm.id !== undefined) confirmDelete(confirm.id);
+                                        setChoice("No");
                                     }}
                                 >
                                     Yes
                                 </div>
                                 <div
                                     className={`px-3 py-1 border cursor-pointer ${choice === "No" ? "bg-white text-black" : ""}`}
-                                    onClick={() => { setChoice("No"); setConfirm({ visible: false, type: confirm.type }) }}
+                                    onClick={() => { setChoice("No"); setConfirm({ visible: false, type: confirm.type }); setChoice("No"); }}
                                 >
                                     No
                                 </div>
