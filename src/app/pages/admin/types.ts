@@ -12,9 +12,19 @@ export type Role = {
 };
 
 export type User = {
-    User_Id: number;
+    id: number;
+    User_Id: string;
     Name: string;
+    Department: string;
+    Pass: string;
     CreateDate: string;
+    Age?: number | null;
+    Sex?: string | null;
+    StartDate?: string | null;
+    Status?: string | null;
+    Tel?: string | null;
+    Image?: string | null;
+    Process?: string;
 };
 
 export type UserRole = {

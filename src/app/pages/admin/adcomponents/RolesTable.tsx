@@ -25,7 +25,7 @@ export default function RolesList({ roles }: Props) {
   };
 
   const confirmAddRole = async () => {
-    const res = await fetch("/api/addRoles", {
+    const res = await fetch("/api/rolepermission/addRoles", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
@@ -43,7 +43,7 @@ export default function RolesList({ roles }: Props) {
   };
 
   const confirmDelete = async (id: number | string) => {
-    const res = await fetch("/api/delRoles", {
+    const res = await fetch("/api/rolepermission/delRoles", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ RoleID: id }),

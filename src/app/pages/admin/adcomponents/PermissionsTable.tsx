@@ -24,7 +24,7 @@ export default function PermissionsList({ permissions }: Props) {
     };
 
     const confirmAddPermission = async () => {
-        const res = await fetch("/api/addPermissions", {
+        const res = await fetch("/api/permissiontable/addPermissions", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),
@@ -42,7 +42,7 @@ export default function PermissionsList({ permissions }: Props) {
     };
 
     const confirmDelete = async (id: number | string) => {
-        const res = await fetch("/api/delPermissions", {
+        const res = await fetch("/api/permissiontable/delPermissions", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ PermissionID: id }),

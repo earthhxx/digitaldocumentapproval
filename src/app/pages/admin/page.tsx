@@ -34,23 +34,23 @@ export default function AdminAccessPage() {
         try {
             switch (component) {
                 case "Permissions":
-                    const permRes = await fetch("/api/permissions").then(r => r.json());
+                    const permRes = await fetch("/api/permissiontable/permissions").then(r => r.json());
                     setPermissions(permRes.data ?? []);
                     break;
                 case "Roles":
-                    const roleRes = await fetch("/api/roles").then(r => r.json());
+                    const roleRes = await fetch("/api/roletable/roles").then(r => r.json());
                     setRoles(roleRes.data ?? []);
                     break;
                 case "Users":
-                    const userRes = await fetch("/api/users").then(r => r.json());
+                    const userRes = await fetch("/api/usertable/users").then(r => r.json());
                     setUsers(userRes.data ?? []);
                     break;
                 case "UserRoles":
-                    const userRoleRes = await fetch("/api/user-roles").then(r => r.json());
+                    const userRoleRes = await fetch("/api/userroletable/user-roles").then(r => r.json());
                     setUserRoles(userRoleRes.data ?? []);
                     break;
                 case "RolePermissions":
-                    const rolePermRes = await fetch("/api/role-permissions").then(r => r.json());
+                    const rolePermRes = await fetch("/api/rolepermission/role-permissions").then(r => r.json());
                     setRolePermissions(rolePermRes.data ?? []);
                     break;
             }
