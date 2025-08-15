@@ -17,10 +17,8 @@ type User = {
     Process?: string;
 };
 
-type Props = { users: User[] };
-
-export default function UsersList({ users }: Props) {
-    const [items, setItems] = useState<User[]>(users);
+export default function UsersList() {
+    const [items, setItems] = useState<User[]>([]);
     const [form, setForm] = useState({ User_Id: "", Name: "", Department: "", Pass: "" });
     const [editingId, setEditingId] = useState<number | null>(null);
     const [activeTab, setActiveTab] = useState<"add" | "edit">("add");
@@ -28,6 +26,27 @@ export default function UsersList({ users }: Props) {
     const [choice, setChoice] = useState<"Yes" | "No">("No");
     const confirmRef = useRef<HTMLDivElement>(null);
     const [searchTerm, setSearchTerm] = useState("");
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    // --- Fetch on mount ---
+    useEffect(() => {
+        const fetchRoles = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const res = await fetch("/api/usertable/users");
+                const data = await res.json();
+                setItems(data.data ?? []);
+            } catch (err: any) {
+                setError(err.message || "Error fetching permissions");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchRoles();
+    }, []);
 
     // --- trigger confirm ---
     const triggerAddConfirm = () => {
@@ -106,54 +125,62 @@ export default function UsersList({ users }: Props) {
         <div className="flex flex-col w-full p-4 bg-black text-white min-h-screen font-mono">
             <h2 className="text-2xl font-bold mb-4">Users</h2>
 
-            {/* Table */}
-            <div className="mb-6 w-full">
-                <table className="w-[60%] border-collapse text-sm">
-                    <thead>
-                        <tr className="bg-black text-white">
-                            <th className="border px-2 py-1 w-[2%]">ID</th>
-                            <th className="border px-2 py-1 w-[2%]">User_Id</th>
-                            <th className="border px-2 py-1 w-[20%]">Name</th>
-                            <th className="border px-2 py-1 w-[10%]">Department</th>
-                            <th className="border px-2 py-1 w-[2%]">Pass</th>
-                            <th className="border px-2 py-1 w-[2%]">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {items
-                            .filter(u =>
-                                u.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                u.User_Id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                u.Department.toLowerCase().includes(searchTerm.toLowerCase())
-                            )
-                            .map(u => (
+            {!loading && !error && items.length > 0 ? (
+                <div className="mb-6 w-full">
+                    <table className="w-[60%] border-collapse text-sm">
+                        <thead>
+                            <tr className="bg-black text-white">
+                                <th className="border px-2 py-1 w-[2%]">ID</th>
+                                <th className="border px-2 py-1 w-[2%]">User_Id</th>
+                                <th className="border px-2 py-1 w-[20%]">Name</th>
+                                <th className="border px-2 py-1 w-[10%]">Department</th>
+                                <th className="border px-2 py-1 w-[2%]">Pass</th>
+                                <th className="border px-2 py-1 w-[2%]">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {items
+                                .filter(u =>
+                                    (u.Name ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    (u.User_Id ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    (u.Department ?? "").toLowerCase().includes(searchTerm.toLowerCase())
+                                )
+                                .map((u, i) => (
+                                    <tr key={u.id ?? i} className="hover:bg-white/10">
+                                        <td className="border px-2 py-1">{u.id}</td>
+                                        <td className="border px-2 py-1">{u.User_Id ?? "-"}</td>
+                                        <td className="border px-2 py-1">{u.Name ?? "-"}</td>
+                                        <td className="border px-2 py-1">{u.Department ?? "-"}</td>
+                                        <td className="border px-2 py-1">{u.Pass ?? "-"}</td>
+                                        <td className="flex justify-center gap-1 border px-2 py-1">
+                                            <button
+                                                className="px-2 py-1 bg-gray-700 hover:bg-gray-500"
+                                                onClick={() => {
+                                                    setActiveTab("edit");
+                                                    setEditingId(u.id ?? null);
+                                                    setForm({
+                                                        User_Id: u.User_Id ?? "",
+                                                        Name: u.Name ?? "",
+                                                        Department: u.Department ?? "",
+                                                        Pass: u.Pass ?? ""
+                                                    });
+                                                }}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button className="px-2 py-1 bg-red-700 hover:bg-red-500" onClick={() => triggerDeleteConfirm(u.id ?? 0)}>
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table>
+                </div>
+            ) : (
+                !loading && !error && <div>No users found.</div>
+            )}
 
-                                <tr key={u.id} className="hover:bg-white/10">
-                                    <td className="border px-2 py-1">{u.id}</td>
-                                    <td className="border px-2 py-1">{u.User_Id}</td>
-                                    <td className="border px-2 py-1">{u.Name}</td>
-                                    <td className="border px-2 py-1">{u.Department}</td>
-                                    <td className="border px-2 py-1">{u.Pass}</td>
-                                    <td className="flex justify-center gap-1 border px-2 py-1">
-                                        <button
-                                            className="px-2 py-1 bg-gray-700 hover:bg-gray-500"
-                                            onClick={() => {
-                                                setActiveTab("edit");
-                                                setEditingId(u.id);
-                                                setForm({ User_Id: u.User_Id, Name: u.Name, Department: u.Department, Pass: u.Pass });
-                                            }}
-                                        >
-                                            Edit
-                                        </button>
-                                        <button className="px-2 py-1 bg-red-700 hover:bg-red-500" onClick={() => triggerDeleteConfirm(u.id)}>
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
-                </table>
-            </div>
 
             {/* Add/Edit Form */}
             <div className="fixed z-50 bottom-4 right-0 bg-black w-[40%] p-4 border-2 rounded-md">

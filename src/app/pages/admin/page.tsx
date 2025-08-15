@@ -94,8 +94,8 @@ export default function AdminAccessPage() {
                 <div className="space-y-4">
                     {selected === "Permissions" && <PermissionsTable />}
                     {selected === "Roles" && <RolesTable />}
-                    {/* {selected === "Users" && <UsersTable />}
-                    {selected === "UserRoles" && <UserRolesTable />}
+                    {selected === "Users" && <UsersTable />}
+                    {/* {selected === "UserRoles" && <UserRolesTable />}
                     {selected === "RolePermissions" && <RolePermissionsTable />} */}
                 </div>
             </div>

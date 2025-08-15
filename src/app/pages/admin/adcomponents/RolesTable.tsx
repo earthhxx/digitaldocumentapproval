@@ -26,7 +26,6 @@ export default function RolesList() {
       setError(null);
       try {
         const res = await fetch("/api/roletable/roles");
-        console.log(res)
         const data = await res.json();
         setItems(data.data ?? []);
       } catch (err: any) {
