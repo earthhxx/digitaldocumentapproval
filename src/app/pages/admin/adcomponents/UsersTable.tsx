@@ -27,6 +27,7 @@ export default function UsersList({ users }: Props) {
     const [confirm, setConfirm] = useState<{ visible: boolean; type: "add" | "edit" | "delete" | null; id?: number }>({ visible: false, type: null });
     const [choice, setChoice] = useState<"Yes" | "No">("No");
     const confirmRef = useRef<HTMLDivElement>(null);
+    const [searchTerm, setSearchTerm] = useState("");
 
     // --- trigger confirm ---
     const triggerAddConfirm = () => {
@@ -119,94 +120,110 @@ export default function UsersList({ users }: Props) {
                         </tr>
                     </thead>
                     <tbody>
-                        {items.map(u => (
-                            <tr key={u.id} className="hover:bg-white/10">
-                                <td className="border px-2 py-1">{u.id}</td>
-                                <td className="border px-2 py-1">{u.User_Id}</td>
-                                <td className="border px-2 py-1">{u.Name}</td>
-                                <td className="border px-2 py-1">{u.Department}</td>
-                                <td className="border px-2 py-1">{u.Pass}</td>
-                                <td className="flex justify-center gap-1 border px-2 py-1">
-                                    <button
-                                        className="px-2 py-1 bg-gray-700 hover:bg-gray-500"
-                                        onClick={() => {
-                                            setActiveTab("edit");
-                                            setEditingId(u.id);
-                                            setForm({ User_Id: u.User_Id, Name: u.Name, Department: u.Department, Pass: u.Pass });
-                                        }}
-                                    >
-                                        Edit
-                                    </button>
-                                    <button className="px-2 py-1 bg-red-700 hover:bg-red-500" onClick={() => triggerDeleteConfirm(u.id)}>
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {items
+                            .filter(u =>
+                                u.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                u.User_Id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                u.Department.toLowerCase().includes(searchTerm.toLowerCase())
+                            )
+                            .map(u => (
+
+                                <tr key={u.id} className="hover:bg-white/10">
+                                    <td className="border px-2 py-1">{u.id}</td>
+                                    <td className="border px-2 py-1">{u.User_Id}</td>
+                                    <td className="border px-2 py-1">{u.Name}</td>
+                                    <td className="border px-2 py-1">{u.Department}</td>
+                                    <td className="border px-2 py-1">{u.Pass}</td>
+                                    <td className="flex justify-center gap-1 border px-2 py-1">
+                                        <button
+                                            className="px-2 py-1 bg-gray-700 hover:bg-gray-500"
+                                            onClick={() => {
+                                                setActiveTab("edit");
+                                                setEditingId(u.id);
+                                                setForm({ User_Id: u.User_Id, Name: u.Name, Department: u.Department, Pass: u.Pass });
+                                            }}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button className="px-2 py-1 bg-red-700 hover:bg-red-500" onClick={() => triggerDeleteConfirm(u.id)}>
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
                     </tbody>
                 </table>
             </div>
-            <div className="relative ">
-                <div className="fixed z50 bottom-0 right-0 bg-black w-[40%] p-4 border-2 rounded-md">
-                    {/* Tabs */}
-                    <div className="flex gap-2 mb-3 ">
-                        <button
-                            className={`px-3 py-1 border rounded ${activeTab === "add" ? "bg-white text-black" : ""}`}
-                            onClick={() => setActiveTab("add")}
-                        >
-                            Add
-                        </button>
-                        <button
-                            className={`px-3 py-1 border rounded ${activeTab === "edit" ? "bg-white text-black" : ""}`}
-                            onClick={() => setActiveTab("edit")}
-                        >
-                            Edit
-                        </button>
-                    </div>
 
-                    {/* Form */}
-                    <div className=" border p-3 rounded bg-gray-900 flex flex-col gap-2">
-                        {activeTab === "add" && (
-                            <>
-                                <input placeholder="User_Id" value={form.User_Id} onChange={e => setForm({ ...form, User_Id: e.target.value })} className="p-2 bg-black border border-white" />
-                                <input placeholder="Name" value={form.Name} onChange={e => setForm({ ...form, Name: e.target.value })} className="p-2 bg-black border border-white" />
-                                <input placeholder="Department" value={form.Department} onChange={e => setForm({ ...form, Department: e.target.value })} className="p-2 bg-black border border-white" />
-                                <input placeholder="Pass" value={form.Pass} onChange={e => setForm({ ...form, Pass: e.target.value })} className="p-2 bg-black border border-white" />
-                                <button onClick={triggerAddConfirm} className="mt-2 bg-white text-black py-1">Add</button>
-                                <button onClick={() => setForm({ User_Id: "", Name: "", Department: "", Pass: "" })} className="mt-2 bg-white text-black py-1">Clear</button>
-                            </>
-                        )}
-                        {activeTab === "edit" && (
-                            <>
-                                <select
-                                    value={editingId ?? ""}
-                                    onChange={e => {
-                                        const selected = items.find(u => u.id === Number(e.target.value));
-                                        if (selected) {
-                                            setEditingId(selected.id);
-                                            setForm({ User_Id: selected.User_Id, Name: selected.Name, Department: selected.Department, Pass: selected.Pass });
-                                        }
-                                    }}
-                                    className="p-2 bg-black border border-white"
-                                >
-                                    <option value="">Select User to Edit</option>
-                                    {items.map(u => <option key={u.id} value={u.id}>{u.Name}</option>)}
-                                </select>
-                                {editingId && (
-                                    <>
-                                        <input placeholder="User_Id" value={form.User_Id} onChange={e => setForm({ ...form, User_Id: e.target.value })} className="p-2 bg-black border border-white" />
-                                        <input placeholder="Name" value={form.Name} onChange={e => setForm({ ...form, Name: e.target.value })} className="p-2 bg-black border border-white" />
-                                        <input placeholder="Department" value={form.Department} onChange={e => setForm({ ...form, Department: e.target.value })} className="p-2 bg-black border border-white" />
-                                        <input placeholder="Pass" value={form.Pass} onChange={e => setForm({ ...form, Pass: e.target.value })} className="p-2 bg-black border border-white" />
-                                        <button onClick={triggerEditConfirm} className="mt-2 bg-white text-black py-1">Save</button>
-                                        <button onClick={() => setForm({ User_Id: "", Name: "", Department: "", Pass: "" })} className="mt-2 bg-white text-black py-1">Clear</button>
-                                    </>
-                                )}
-                            </>
-                        )}
-                    </div>
+            {/* Add/Edit Form */}
+            <div className="fixed z-50 bottom-4 right-0 bg-black w-[40%] p-4 border-2 rounded-md">
+                {/* Search bar */}
+                <div className="mb-4 z-40 top-4 right-0 w-full p-2 bg-black border border-white rounded flex flex-col sm:flex-row gap-2">
+                    <div className="flex items-center w-[25%]">FIND USER :</div>
+                    <input
+                        type="text"
+                        placeholder="Search by Name, User_Id or Department"
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        className="flex-1 p-2 bg-black border border-white text-white rounded"
+                    />
+                </div>
+
+                {/* Tabs */}
+                <div className="flex gap-2 mb-3">
+                    <button
+                        className={`px-3 py-1 border rounded ${activeTab === "add" ? "bg-white text-black" : ""}`}
+                        onClick={() => setActiveTab("add")}
+                    >
+                        Add
+                    </button>
+                    <button
+                        className={`px-3 py-1 border rounded ${activeTab === "edit" ? "bg-white text-black" : ""}`}
+                        onClick={() => setActiveTab("edit")}
+                    >
+                        Edit
+                    </button>
+                </div>
+
+                {/* Form Content */}
+                <div className="border p-3 rounded bg-gray-900 flex flex-col gap-2">
+                    {activeTab === "add" && (
+                        <>
+                            <input placeholder="User_Id" value={form.User_Id} onChange={e => setForm({ ...form, User_Id: e.target.value })} className="p-2 bg-black border border-white" />
+                            <input placeholder="Name" value={form.Name} onChange={e => setForm({ ...form, Name: e.target.value })} className="p-2 bg-black border border-white" />
+                            <input placeholder="Department" value={form.Department} onChange={e => setForm({ ...form, Department: e.target.value })} className="p-2 bg-black border border-white" />
+                            <input placeholder="Pass" value={form.Pass} onChange={e => setForm({ ...form, Pass: e.target.value })} className="p-2 bg-black border border-white" />
+                            <button onClick={triggerAddConfirm} className="mt-2 bg-white text-black py-1">Add</button>
+                            <button onClick={() => setForm({ User_Id: "", Name: "", Department: "", Pass: "" })} className="mt-2 bg-white text-black py-1">Clear</button>
+                        </>
+                    )}
+                    {activeTab === "edit" && editingId && (
+                        <>
+                            <select
+                                value={editingId ?? ""}
+                                onChange={e => {
+                                    const selected = items.find(u => u.id === Number(e.target.value));
+                                    if (selected) {
+                                        setEditingId(selected.id);
+                                        setForm({ User_Id: selected.User_Id, Name: selected.Name, Department: selected.Department, Pass: selected.Pass });
+                                    }
+                                }}
+                                className="p-2 bg-black border border-white"
+                            >
+                                <option value="">Select User to Edit</option>
+                                {items.map(u => <option key={u.id} value={u.id}>{u.Name}</option>)}
+                            </select>
+                            <input placeholder="User_Id" value={form.User_Id} onChange={e => setForm({ ...form, User_Id: e.target.value })} className="p-2 bg-black border border-white" />
+                            <input placeholder="Name" value={form.Name} onChange={e => setForm({ ...form, Name: e.target.value })} className="p-2 bg-black border border-white" />
+                            <input placeholder="Department" value={form.Department} onChange={e => setForm({ ...form, Department: e.target.value })} className="p-2 bg-black border border-white" />
+                            <input placeholder="Pass" value={form.Pass} onChange={e => setForm({ ...form, Pass: e.target.value })} className="p-2 bg-black border border-white" />
+                            <button onClick={triggerEditConfirm} className="mt-2 bg-white text-black py-1">Save</button>
+                            <button onClick={() => setForm({ User_Id: "", Name: "", Department: "", Pass: "" })} className="mt-2 bg-white text-black py-1">Clear</button>
+                        </>
+                    )}
                 </div>
             </div>
+
             {/* Confirm popup */}
             {
                 confirm.visible && (
