@@ -57,18 +57,29 @@ export default function PermissionsList({ permissions }: Props) {
     // --- keyboard ---
     const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (!confirm.visible) return;
-        // Enter จะทำงานเฉพาะตอน body หรือ div focus
-        if (!confirmRef.current || document.activeElement !== confirmRef.current) return;
 
-        if (e.key === "ArrowUp" || e.key === "ArrowDown") setChoice(prev => (prev === "Yes" ? "No" : "Yes"));
+        let currentChoice = choice;
+
+        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+            e.preventDefault();
+            currentChoice = choice === "Yes" ? "No" : "Yes";
+            setChoice(currentChoice);
+        }
+
         if (e.key === "Enter") {
-            if (choice === "Yes") {
+            e.preventDefault();
+            if (currentChoice === "Yes") {
                 if (confirm.type === "add") confirmAddPermission();
                 if (confirm.type === "delete" && confirm.id !== undefined) confirmDelete(confirm.id);
-            } else setConfirm({ visible: false, type: confirm.type });
+            } else {
+                setConfirm({ visible: false, type: confirm.type });
+                setForm({ PermissionName: "", Description: "" });
+            }
         }
+
         if (e.key === "Escape") setConfirm({ visible: false, type: confirm.type });
     };
+
 
     useEffect(() => {
         if (confirm.visible && confirmRef.current) {
@@ -79,13 +90,10 @@ export default function PermissionsList({ permissions }: Props) {
         }
     }, [confirm.visible]);
 
-
     return (
         <div className="flex flex-col justify-start items-start w-full mx-auto space-y-6 font-mono text-white bg-black min-h-screen p-4">
 
             <h2 className="text-2xl font-bold">Permissions</h2>
-
-
 
             {/* List */}
             <div className="space-y-3 w-[65%]">
@@ -145,33 +153,37 @@ export default function PermissionsList({ permissions }: Props) {
                 <div ref={confirmRef}
                     tabIndex={0} // ต้องมี tabIndex เพื่อให้ div รับ focus
                     onKeyDown={handleKey}
-                    className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
-                    <div className="bg-black text-white border border-white rounded-lg p-5 w-80">
-                        <div className="mb-3">
-                            {confirm.type === "add"
-                                ? `Add new permission "${form.PermissionName}"?`
-                                : "Are you sure you want to delete?"}
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <div
-                                className={`px-3 py-1 border cursor-pointer ${choice === "Yes" ? "bg-white text-black" : ""}`}
-                                onClick={() => {
-                                    setChoice("Yes");
-                                    if (confirm.type === "add") confirmAddPermission();
-                                    if (confirm.type === "delete" && confirm.id !== undefined) confirmDelete(confirm.id);
-                                }}
-                            >
-                                Yes
+                    className="relative"
+                >
+                    <div
+                        className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+                        <div className="bg-black text-white border border-white rounded-lg p-5 w-80">
+                            <div className="mb-3">
+                                {confirm.type === "add"
+                                    ? `Add new permission "${form.PermissionName}"?`
+                                    : "Are you sure you want to delete?"}
                             </div>
-                            <div
-                                className={`px-3 py-1 border cursor-pointer ${choice === "No" ? "bg-white text-black" : ""}`}
-                                onClick={() => { setChoice("No"); setConfirm({ visible: false, type: confirm.type }) }}
-                            >
-                                No
+                            <div className="flex flex-col gap-2">
+                                <div
+                                    className={`px-3 py-1 border cursor-pointer ${choice === "Yes" ? "bg-white text-black" : ""}`}
+                                    onClick={() => {
+                                        setChoice("Yes");
+                                        if (confirm.type === "add") confirmAddPermission();
+                                        if (confirm.type === "delete" && confirm.id !== undefined) confirmDelete(confirm.id);
+                                    }}
+                                >
+                                    Yes
+                                </div>
+                                <div
+                                    className={`px-3 py-1 border cursor-pointer ${choice === "No" ? "bg-white text-black" : ""}`}
+                                    onClick={() => { setChoice("No"); setConfirm({ visible: false, type: confirm.type }) }}
+                                >
+                                    No
+                                </div>
                             </div>
-                        </div>
-                        <div className="mt-3 text-xs text-gray-400">
-                            Use ↑ ↓ to select, Enter to confirm or click
+                            <div className="mt-3 text-xs text-gray-400">
+                                Use ↑ ↓ to select, Enter to confirm or click
+                            </div>
                         </div>
                     </div>
                 </div>

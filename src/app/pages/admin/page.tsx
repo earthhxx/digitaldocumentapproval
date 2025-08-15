@@ -16,7 +16,6 @@ export default function AdminAccessPage() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(0);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const dropdownOptionRef = useRef<HTMLDivElement>(null);
 
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);

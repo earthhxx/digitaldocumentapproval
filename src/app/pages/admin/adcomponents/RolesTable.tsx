@@ -58,17 +58,30 @@ export default function RolesList({ roles }: Props) {
   // --- keyboard ---
   const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!confirm.visible) return;
-    // Enter จะทำงานเฉพาะตอน body หรือ div focus
-    if (!confirmRef.current || document.activeElement !== confirmRef.current) return;
 
-    if (e.key === "ArrowUp" || e.key === "ArrowDown") setChoice(prev => (prev === "Yes" ? "No" : "Yes"));
+    let newChoice = choice;
+
+    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+      e.preventDefault();
+      newChoice = choice === "Yes" ? "No" : "Yes";
+      setChoice(newChoice);
+    }
+
     if (e.key === "Enter") {
-      if (choice === "Yes") {
+      e.preventDefault();
+      // ใช้ newChoice แทน choice เดิม
+      if (newChoice === "Yes") {
         if (confirm.type === "add") confirmAddRole();
         if (confirm.type === "delete" && confirm.id !== undefined) confirmDelete(confirm.id);
-      } else setConfirm({ visible: false, type: confirm.type });
+      } else {
+        setConfirm({ visible: false, type: confirm.type });
+        setForm({ RoleName: "", Description: "" });
+      }
     }
-    if (e.key === "Escape") setConfirm({ visible: false, type: confirm.type });
+
+    if (e.key === "Escape") {
+      setConfirm({ visible: false, type: confirm.type });
+    }
   };
 
   useEffect(() => {
