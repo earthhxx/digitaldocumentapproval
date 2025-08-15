@@ -283,14 +283,37 @@ export default function UsersList() {
                                 <option value="">Select User to Edit</option>
                                 {items.map(u => <option key={u.User_Id} value={u.User_Id}>{u.Name}</option>)}
                             </select>
-                            <input placeholder="User_Id" value={form.User_Id} onChange={e => setForm({ ...form, User_Id: e.target.value })} className="p-2 bg-black border border-white" />
-                            <input placeholder="Name" value={form.Name} onChange={e => setForm({ ...form, Name: e.target.value })} className="p-2 bg-black border border-white" />
-                            <input placeholder="Department" value={form.Department} onChange={e => setForm({ ...form, Department: e.target.value })} className="p-2 bg-black border border-white" />
-                            <input placeholder="Pass" value={form.Pass} onChange={e => setForm({ ...form, Pass: e.target.value })} className="p-2 bg-black border border-white" />
+
+                            {/* User_Id readonly */}
+                            <input
+                                placeholder="User_Id"
+                                value={form.User_Id}
+                                readOnly
+                                className="p-2 bg-gray-700 border border-white cursor-not-allowed"
+                            />
+                            <input
+                                placeholder="Name"
+                                value={form.Name}
+                                onChange={e => setForm({ ...form, Name: e.target.value })}
+                                className="p-2 bg-black border border-white"
+                            />
+                            <input
+                                placeholder="Department"
+                                value={form.Department}
+                                onChange={e => setForm({ ...form, Department: e.target.value })}
+                                className="p-2 bg-black border border-white"
+                            />
+                            <input
+                                placeholder="Pass"
+                                value={form.Pass}
+                                onChange={e => setForm({ ...form, Pass: e.target.value })}
+                                className="p-2 bg-black border border-white"
+                            />
                             <button onClick={triggerEditConfirm} className="mt-2 bg-white text-black py-1">Save</button>
                             <button onClick={() => setForm({ User_Id: "", Name: "", Department: "", Pass: "" })} className="mt-2 bg-white text-black py-1">Clear</button>
                         </>
                     )}
+
                 </div>
             </div>
 
