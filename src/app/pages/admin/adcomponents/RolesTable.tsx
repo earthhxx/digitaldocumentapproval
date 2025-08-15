@@ -45,7 +45,7 @@ export default function RolesList() {
   };
 
   const confirmAddRole = async () => {
-    const res = await fetch("/api/rolepermission/addRoles", {
+    const res = await fetch("/api/roletable/addRoles", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),

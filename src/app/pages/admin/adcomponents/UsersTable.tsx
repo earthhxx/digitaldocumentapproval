@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from "react";
 
 type User = {
-    id: number;
     User_Id: string;
     Name: string;
     Department: string;
@@ -20,9 +19,9 @@ type User = {
 export default function UsersList() {
     const [items, setItems] = useState<User[]>([]);
     const [form, setForm] = useState({ User_Id: "", Name: "", Department: "", Pass: "" });
-    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editingUserId, setEditingUserId] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<"add" | "edit">("add");
-    const [confirm, setConfirm] = useState<{ visible: boolean; type: "add" | "edit" | "delete" | null; id?: number }>({ visible: false, type: null });
+    const [confirm, setConfirm] = useState<{ visible: boolean; type: "add" | "edit" | "delete" | null; User_Id?: string }>({ visible: false, type: null });
     const [choice, setChoice] = useState<"Yes" | "No">("No");
     const confirmRef = useRef<HTMLDivElement>(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -32,7 +31,7 @@ export default function UsersList() {
 
     // --- Fetch on mount ---
     useEffect(() => {
-        const fetchRoles = async () => {
+        const fetchUsers = async () => {
             setLoading(true);
             setError(null);
             try {
@@ -40,12 +39,12 @@ export default function UsersList() {
                 const data = await res.json();
                 setItems(data.data ?? []);
             } catch (err: any) {
-                setError(err.message || "Error fetching permissions");
+                setError(err.message || "Error fetching users");
             } finally {
                 setLoading(false);
             }
         };
-        fetchRoles();
+        fetchUsers();
     }, []);
 
     // --- trigger confirm ---
@@ -55,32 +54,87 @@ export default function UsersList() {
     };
 
     const triggerEditConfirm = () => {
-        if (!editingId) return;
-        setConfirm({ visible: true, type: "edit", id: editingId });
+        if (!editingUserId) return;
+        setConfirm({ visible: true, type: "edit", User_Id: editingUserId });
     };
 
-    const triggerDeleteConfirm = (id: number) => {
-        setConfirm({ visible: true, type: "delete", id });
+    const triggerDeleteConfirm = (User_Id: string) => {
+        setConfirm({ visible: true, type: "delete", User_Id });
     };
 
     // --- actions ---
     const addUser = async () => {
-        const newUser: User = { ...form, id: Date.now(), CreateDate: new Date().toISOString() };
-        setItems(prev => [...prev, newUser]);
-        setForm({ User_Id: "", Name: "", Department: "", Pass: "" });
-        setConfirm({ visible: false, type: "add" });
+        try {
+            const res = await fetch("/api/usertable/adduser", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form),
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error || "Failed to add user");
+            }
+
+            const updatedUsers: User[] = await res.json();
+            setItems(updatedUsers);
+
+            setForm({ User_Id: "", Name: "", Department: "", Pass: "" });
+            setConfirm({ visible: false, type: "add" });
+
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message);
+        }
     };
 
-    const editUser = async (id: number) => {
-        setItems(prev => prev.map(u => (u.id === id ? { ...u, ...form } : u)));
-        setForm({ User_Id: "", Name: "", Department: "", Pass: "" });
-        setEditingId(null);
-        setConfirm({ visible: false, type: "edit" });
+    const editUser = async (User_Id: string) => {
+        try {
+            const res = await fetch("/api/usertable/edituser", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ User_Id: editingUserId, Name: form.Name, Department: form.Department, Pass: form.Pass })
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error || "Failed to edit user");
+            }
+
+            const updatedUsers: User[] = await res.json();
+            setItems(updatedUsers);
+
+            setForm({ User_Id: "", Name: "", Department: "", Pass: "" });
+            setEditingUserId(null);
+            setConfirm({ visible: false, type: "edit" });
+
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message);
+        }
     };
 
-    const deleteUser = async (id: number) => {
-        setItems(prev => prev.filter(u => u.id !== id));
-        setConfirm({ visible: false, type: "delete" });
+    const deleteUser = async (User_Id: string) => {
+        try {
+            const res = await fetch("/api/usertable/deleteuser", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ User_Id }),
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error || "Failed to delete user");
+            }
+
+            const updatedUsers: User[] = await res.json();
+            setItems(updatedUsers);
+            setConfirm({ visible: false, type: "delete" });
+
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message);
+        }
     };
 
     // --- keyboard navigation ---
@@ -98,17 +152,17 @@ export default function UsersList() {
             e.preventDefault();
             if (currentChoice === "Yes") {
                 if (confirm.type === "add") addUser();
-                if (confirm.type === "edit" && confirm.id) editUser(confirm.id);
-                if (confirm.type === "delete" && confirm.id) deleteUser(confirm.id);
+                if (confirm.type === "edit" && confirm.User_Id) editUser(confirm.User_Id);
+                if (confirm.type === "delete" && confirm.User_Id) deleteUser(confirm.User_Id);
             } else {
-                setConfirm({ visible: false, type: confirm.type, id: confirm.id });
+                setConfirm({ visible: false, type: confirm.type, User_Id: confirm.User_Id });
                 setForm({ User_Id: "", Name: "", Department: "", Pass: "" });
             }
             setChoice("No");
         }
 
         if (e.key === "Escape") {
-            setConfirm({ visible: false, type: confirm.type, id: confirm.id });
+            setConfirm({ visible: false, type: confirm.type, User_Id: confirm.User_Id });
             setChoice("No");
         }
     };
@@ -131,7 +185,7 @@ export default function UsersList() {
                         <thead>
                             <tr className="bg-black text-white">
                                 <th className="border px-2 py-1 w-[2%]">ID</th>
-                                <th className="border px-2 py-1 w-[2%]">User_Id</th>
+                                <th className="border px-2 py-1 w-[20%]">User_Id</th>
                                 <th className="border px-2 py-1 w-[20%]">Name</th>
                                 <th className="border px-2 py-1 w-[10%]">Department</th>
                                 <th className="border px-2 py-1 w-[2%]">Pass</th>
@@ -141,34 +195,34 @@ export default function UsersList() {
                         <tbody>
                             {items
                                 .filter(u =>
-                                    (u.Name ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                    (u.User_Id ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                    (u.Department ?? "").toLowerCase().includes(searchTerm.toLowerCase())
+                                    u.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    u.User_Id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    u.Department?.toLowerCase().includes(searchTerm.toLowerCase())
                                 )
-                                .map((u, i) => (
-                                    <tr key={u.id ?? i} className="hover:bg-white/10">
-                                        <td className="border px-2 py-1">{u.id}</td>
-                                        <td className="border px-2 py-1">{u.User_Id ?? "-"}</td>
-                                        <td className="border px-2 py-1">{u.Name ?? "-"}</td>
-                                        <td className="border px-2 py-1">{u.Department ?? "-"}</td>
-                                        <td className="border px-2 py-1">{u.Pass ?? "-"}</td>
+                                .map((u) => (
+                                    <tr key={u.User_Id} className="hover:bg-white/10">
+                                        <td className="border px-2 py-1">{u.User_Id}</td>
+                                        <td className="border px-2 py-1">{u.User_Id}</td>
+                                        <td className="border px-2 py-1">{u.Name}</td>
+                                        <td className="border px-2 py-1">{u.Department}</td>
+                                        <td className="border px-2 py-1">{u.Pass}</td>
                                         <td className="flex justify-center gap-1 border px-2 py-1">
                                             <button
                                                 className="px-2 py-1 bg-gray-700 hover:bg-gray-500"
                                                 onClick={() => {
                                                     setActiveTab("edit");
-                                                    setEditingId(u.id ?? null);
+                                                    setEditingUserId(u.User_Id);
                                                     setForm({
-                                                        User_Id: u.User_Id ?? "",
-                                                        Name: u.Name ?? "",
-                                                        Department: u.Department ?? "",
-                                                        Pass: u.Pass ?? ""
+                                                        User_Id: u.User_Id,
+                                                        Name: u.Name,
+                                                        Department: u.Department,
+                                                        Pass: u.Pass
                                                     });
                                                 }}
                                             >
                                                 Edit
                                             </button>
-                                            <button className="px-2 py-1 bg-red-700 hover:bg-red-500" onClick={() => triggerDeleteConfirm(u.id ?? 0)}>
+                                            <button className="px-2 py-1 bg-red-700 hover:bg-red-500" onClick={() => triggerDeleteConfirm(u.User_Id)}>
                                                 Delete
                                             </button>
                                         </td>
@@ -180,7 +234,6 @@ export default function UsersList() {
             ) : (
                 !loading && !error && <div>No users found.</div>
             )}
-
 
             {/* Add/Edit Form */}
             <div className="fixed z-50 bottom-4 right-0 bg-black w-[40%] p-4 border-2 rounded-md">
@@ -198,18 +251,8 @@ export default function UsersList() {
 
                 {/* Tabs */}
                 <div className="flex gap-2 mb-3">
-                    <button
-                        className={`px-3 py-1 border rounded ${activeTab === "add" ? "bg-white text-black" : ""}`}
-                        onClick={() => setActiveTab("add")}
-                    >
-                        Add
-                    </button>
-                    <button
-                        className={`px-3 py-1 border rounded ${activeTab === "edit" ? "bg-white text-black" : ""}`}
-                        onClick={() => setActiveTab("edit")}
-                    >
-                        Edit
-                    </button>
+                    <button className={`px-3 py-1 border rounded ${activeTab === "add" ? "bg-white text-black" : ""}`} onClick={() => setActiveTab("add")}>Add</button>
+                    <button className={`px-3 py-1 border rounded ${activeTab === "edit" ? "bg-white text-black" : ""}`} onClick={() => setActiveTab("edit")}>Edit</button>
                 </div>
 
                 {/* Form Content */}
@@ -224,21 +267,21 @@ export default function UsersList() {
                             <button onClick={() => setForm({ User_Id: "", Name: "", Department: "", Pass: "" })} className="mt-2 bg-white text-black py-1">Clear</button>
                         </>
                     )}
-                    {activeTab === "edit" && editingId && (
+                    {activeTab === "edit" && editingUserId && (
                         <>
                             <select
-                                value={editingId ?? ""}
+                                value={editingUserId ?? ""}
                                 onChange={e => {
-                                    const selected = items.find(u => u.id === Number(e.target.value));
+                                    const selected = items.find(u => u.User_Id === e.target.value);
                                     if (selected) {
-                                        setEditingId(selected.id);
+                                        setEditingUserId(selected.User_Id);
                                         setForm({ User_Id: selected.User_Id, Name: selected.Name, Department: selected.Department, Pass: selected.Pass });
                                     }
                                 }}
                                 className="p-2 bg-black border border-white"
                             >
                                 <option value="">Select User to Edit</option>
-                                {items.map(u => <option key={u.id} value={u.id}>{u.Name}</option>)}
+                                {items.map(u => <option key={u.User_Id} value={u.User_Id}>{u.Name}</option>)}
                             </select>
                             <input placeholder="User_Id" value={form.User_Id} onChange={e => setForm({ ...form, User_Id: e.target.value })} className="p-2 bg-black border border-white" />
                             <input placeholder="Name" value={form.Name} onChange={e => setForm({ ...form, Name: e.target.value })} className="p-2 bg-black border border-white" />
@@ -252,46 +295,39 @@ export default function UsersList() {
             </div>
 
             {/* Confirm popup */}
-            {
-                confirm.visible && (
-                    <div
-                        ref={confirmRef}
-                        tabIndex={0}
-                        onKeyDown={handleKey}
-                        className="fixed inset-0 flex items-center justify-center bg-black/70 z-50"
-                    >
-                        <div className="bg-black text-white p-5 border border-white rounded w-80 flex flex-col gap-3">
-                            <div>
-                                {confirm.type === "add" && `Add new user "${form.Name}"?`}
-                                {confirm.type === "edit" && `Save changes to "${form.Name}"?`}
-                                {confirm.type === "delete" && "Are you sure you want to delete?"}
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                <div
-                                    className={`px-3 py-1 border cursor-pointer ${choice === "Yes" ? "bg-white text-black" : ""}`}
-                                    onMouseEnter={() => setChoice("Yes")}
-                                    onClick={() => {
-                                        if (confirm.type === "add") addUser();
-                                        if (confirm.type === "edit" && confirm.id) editUser(confirm.id);
-                                        if (confirm.type === "delete" && confirm.id) deleteUser(confirm.id);
-                                        setChoice("No");
-                                    }}
-                                >
-                                    Yes
-                                </div>
-                                <div
-                                    className={`px-3 py-1 border cursor-pointer ${choice === "No" ? "bg-white text-black" : ""}`}
-                                    onMouseEnter={() => setChoice("No")}
-                                    onClick={() => setConfirm({ visible: false, type: confirm.type, id: confirm.id })}
-                                >
-                                    No
-                                </div>
-                            </div>
-                            <div className="text-xs text-gray-400">Use ↑ ↓ to select, Enter to confirm or click</div>
+            {confirm.visible && (
+                <div ref={confirmRef} tabIndex={0} onKeyDown={handleKey} className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+                    <div className="bg-black text-white p-5 border border-white rounded w-80 flex flex-col gap-3">
+                        <div>
+                            {confirm.type === "add" && `Add new user "${form.Name}"?`}
+                            {confirm.type === "edit" && `Save changes to "${form.Name}"?`}
+                            {confirm.type === "delete" && "Are you sure you want to delete?"}
                         </div>
+                        <div className="flex flex-col gap-2">
+                            <div
+                                className={`px-3 py-1 border cursor-pointer ${choice === "Yes" ? "bg-white text-black" : ""}`}
+                                onMouseEnter={() => setChoice("Yes")}
+                                onClick={() => {
+                                    if (confirm.type === "add") addUser();
+                                    if (confirm.type === "edit" && confirm.User_Id) editUser(confirm.User_Id);
+                                    if (confirm.type === "delete" && confirm.User_Id) deleteUser(confirm.User_Id);
+                                    setChoice("No");
+                                }}
+                            >
+                                Yes
+                            </div>
+                            <div
+                                className={`px-3 py-1 border cursor-pointer ${choice === "No" ? "bg-white text-black" : ""}`}
+                                onMouseEnter={() => setChoice("No")}
+                                onClick={() => setConfirm({ visible: false, type: confirm.type, User_Id: confirm.User_Id })}
+                            >
+                                No
+                            </div>
+                        </div>
+                        <div className="text-xs text-gray-400">Use ↑ ↓ to select, Enter to confirm or click</div>
                     </div>
-                )
-            }
-        </div >
+                </div>
+            )}
+        </div>
     );
 }
