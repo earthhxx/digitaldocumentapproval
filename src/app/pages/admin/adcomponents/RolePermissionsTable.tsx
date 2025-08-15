@@ -1,137 +1,230 @@
-import { useState } from "react";
-import { RolePermission as BaseRolePermission } from "../types";
-import { Plus, CheckCircle, Loader2, AlertCircle } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { RolePermission } from "../types";
 
-type RolePermission = Omit<BaseRolePermission, "RoleID"> & {
-  RoleID: number | string;
-  PermissionID: number | string;
-};
-
-type Props = { rolePermissions: RolePermission[] };
-
-export default function RolePermissionsList({ rolePermissions }: Props) {
-  const [items, setItems] = useState<RolePermission[]>(rolePermissions);
-  const [savingId, setSavingId] = useState<number | string | null>(null);
+export default function RolesPermissionList() {
+  const [items, setItems] = useState<RolePermission[]>([]);
   const [form, setForm] = useState({ RoleID: "", PermissionID: "" });
+  const confirmRef = useRef<HTMLDivElement>(null);
 
-  const handleChangeForm = (field: keyof typeof form, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Confirm add/delete
+  const [confirm, setConfirm] = useState<{ visible: boolean; type: "add" | "delete" | null; RoleID?: number | string; PermissionID?: string | number }>({
+    visible: false,
+    type: null,
+  });
+
+  const [choice, setChoice] = useState<"Yes" | "No">("No");
+
+  // --- Fetch on mount ---
+  useEffect(() => {
+    const fetchUserRoles = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/rolepermission/role-permissions");
+        const data = await res.json();
+        setItems(data.data ?? []);
+      } catch (err: any) {
+        setError(err.message || "Error fetching permissions");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserRoles();
+  }, []);
+
+  // --- ADD ---
+  // --- trigger add confirm ---
+  const triggerAddConfirm = () => {
+    if (!form.RoleID.trim() || !form.PermissionID.trim()) {
+      alert("กรุณากรอก RoleID และ PermissionID");
+      return;
+    }
+    setConfirm({ visible: true, type: "add" });
   };
 
-  const saveRolePermission = async (rp: RolePermission, isNew: boolean) => {
-    setSavingId(rp.RoleID);
-    try {
-      const res = await fetch(
-        isNew
-          ? `/api/role-permissions`
-          : `/api/role-permissions/${rp.RoleID}`,
-        {
-          method: isNew ? "POST" : "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(rp),
-        }
-      );
-      if (!res.ok) throw new Error("Failed to save");
 
-      if (isNew) {
-        const data = await res.json();
-        setItems(prev =>
-          prev.map(r =>
-            r.RoleID === rp.RoleID
-              ? { ...r, RoleID: data.RoleID }
-              : r
-          )
-        );
+  const confirmAddRolePermssions = async () => {
+    const res = await fetch("/api/rolepermission/addroleper", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ RoleID: form.RoleID, PermissionID: form.PermissionID }),
+    });
+
+    if (!res.ok) { alert("Failed to add role"); return; }
+
+    const updatedRoles: RolePermission[] = await res.json();
+    setItems(updatedRoles);
+    setForm({ RoleID: "", PermissionID: "" });
+    setConfirm({ visible: false, type: "add" });
+  };
+
+
+  // --- DELETE ---
+  const delPer = (RoleID: string | number, PermissionID: string | number) => {
+    setConfirm({ visible: true, type: "delete", RoleID, PermissionID });
+  };
+
+
+  const confirmDelete = async (RoleID: string | number, PermissionID: string | number) => {
+    const res = await fetch("/api/rolepermission/delroleper", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ RoleID, PermissionID }),
+    });
+
+    if (res.ok)
+      setItems(prev => prev.filter(r => !(r.RoleID === RoleID && r.PermissionID === PermissionID)));
+    else alert("Failed to delete Role Permissions");
+
+    setConfirm({ visible: false, type: "delete" });
+  };
+
+
+  // --- keyboard ---
+  const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!confirm.visible) return;
+
+    let currentChoice = choice;
+
+    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+      e.preventDefault();
+      currentChoice = choice === "Yes" ? "No" : "Yes";
+      setChoice(currentChoice);
+    }
+
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (currentChoice === "Yes") {
+        if (confirm.type === "add") confirmAddRolePermssions();
+        if (confirm.type === "delete" && confirm.RoleID !== undefined && confirm.PermissionID !== undefined) confirmDelete(confirm.RoleID, confirm.PermissionID);
+      } else {
+        // กรณีเลือก No
+        setConfirm({ visible: false, type: confirm.type });
+        setForm({ RoleID: "", PermissionID: "" });
       }
-    } catch (err) {
-      console.error(err);
-      alert("Save failed");
-    } finally {
-      setSavingId(null);
+      // **reset choice** กลับค่า default หลังกด Enter
+      setChoice("No");
+    }
+
+    if (e.key === "Escape") {
+      setConfirm({ visible: false, type: confirm.type });
+      setChoice("No"); // reset choice ด้วย
     }
   };
 
-  const addRolePermission = async () => {
-    if (!form.RoleID.trim() || !form.PermissionID.trim()) return;
-    const tempId = `new-${Date.now()}`;
-    const newRP: RolePermission = {
-      RoleID: tempId,
-      PermissionID: form.PermissionID,
-    };
-    setItems(prev => [...prev, newRP]);
-    setForm({ RoleID: "", PermissionID: "" });
-    await saveRolePermission(newRP, true);
-  };
+  useEffect(() => {
+    if (confirm.visible && confirmRef.current) {
+      confirmRef.current.focus();
+    } else {
+      // กลับ focus ไปที่ body หรือ input อื่น
+      document.body.focus();
+    }
+  }, [confirm.visible]);
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <h2 className="text-2xl font-bold">Role Permissions</h2>
+    <div className="flex flex-col justify-start items-start w-full mx-auto space-y-6 font-mono text-white bg-black min-h-screen p-4">
 
-      {/* Add Form */}
-      <div className="p-5 border rounded-2xl bg-white shadow-sm space-y-3">
-        <div className="text-lg font-medium flex items-center gap-2 text-blue-500">
-          <Plus className="w-5 h-5" /> Add New Role Permission
-        </div>
+
+      <h2 className="text-2xl font-bold">Roles Permissions</h2>
+
+      {loading && <div>Loading Roles Permissions...</div>}
+      {error && <div className="text-red-500">{error}</div>}
+
+      {!loading && !error && (
+        <>
+          {/* List */}
+          <div className="space-y-3 w-[65%]">
+            <table className="w-full border-collapse font-mono text-sm">
+              <thead>
+                <tr className="bg-black text-white">
+                  <th className="border border-gray-500 px-3 py-1 w-[20%] text-left">RoleID</th>
+                  <th className="border border-gray-500 px-3 py-1 text-left">Permissions</th>
+                  <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((u, index) => (
+                  <tr key={`${u.RoleID} - ${index}`} className="hover:bg-white/10">
+                    <td className="border border-gray-500 px-3 py-1">{u.RoleID}</td>
+                    <td className="border border-gray-500 px-3 py-1">{u.PermissionID}</td>
+                    <td className="flex justify-center border border-gray-500 px-3 py-1">
+                      <button
+                        onClick={() => delPer(u.RoleID, u.PermissionID)}
+                        className="px-2 py-1 bg-white text-black hover:bg-red-800"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      {/* CMD Style Floating Form */}
+      <div className="fixed flex flex-col right-0 bottom-100 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
+        <div className="text-sm font-bold mb-2">Add New Rolepermission</div>
+
         <input
-          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-          placeholder="Role ID"
+          className="w-full p-2 mb-2 bg-black text-white border border-white outline-none"
+          placeholder="RoleID"
           value={form.RoleID}
-          onChange={e => handleChangeForm("RoleID", e.target.value)}
+          onChange={e => setForm({ ...form, RoleID: e.target.value })}
         />
         <input
-          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-          placeholder="Permission ID"
+          className="w-full p-2 mb-3 bg-black text-white border border-white outline-none"
+          placeholder="PermissionID"
           value={form.PermissionID}
-          onChange={e => handleChangeForm("PermissionID", e.target.value)}
+          onChange={e => setForm({ ...form, PermissionID: e.target.value })}
+          onKeyDown={e => { if (e.key === "Enter") triggerAddConfirm(); }}
         />
-        <button
-          className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
-          onClick={addRolePermission}
-        >
-          <Plus className="w-4 h-4" /> Add Role Permission
+        <button className="w-full py-2 bg-white text-black hover:bg-gray-300" onClick={triggerAddConfirm}>
+          [ Enter ]
         </button>
       </div>
 
-      {/* Existing Role Permissions */}
-      <div className="space-y-3">
-        {items.map((rp, i) => {
-          const isNew = typeof rp.RoleID === "string";
-          const isSaving = savingId === rp.RoleID;
-          return (
-            <div
-              key={`${rp.RoleID}-${i}`} // <-- แก้ตรงนี้
-              className="p-4 border rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <div className="font-semibold text-gray-800">
-                    Role: {rp.RoleID}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    Permission: {rp.PermissionID}
-                  </div>
-                </div>
-                <div className="flex items-center gap-1 text-sm">
-                  {isSaving ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
-                  ) : isNew ? (
-                    <>
-                      <AlertCircle className="w-4 h-4 text-yellow-500" />
-                      <span className="text-yellow-600">New</span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span className="text-green-600">Saved</span>
-                    </>
-                  )}
-                </div>
+      {/* Confirm card */}
+      {confirm.visible && (
+        <div ref={confirmRef}
+          tabIndex={0} // ต้องมี tabIndex เพื่อให้ div รับ focus
+          onKeyDown={handleKey} className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+          <div className="bg-black text-white border border-white rounded-lg p-5 w-80">
+            <div className="mb-3">
+              {confirm.type === "add"
+                ? `Add new RolesPermission "${form.RoleID}"?`
+                : "Are you sure you want to delete?"}
+            </div>
+            <div className="flex flex-col gap-2">
+              <div
+                className={`px-3 py-1 border cursor-pointer ${choice === "Yes" ? "bg-white text-black" : ""}`}
+                onMouseEnter={() => setChoice("Yes")} // ← highlight เวลา hover
+                onClick={() => {
+                  if (confirm.type === "add") confirmAddRolePermssions();
+                  if (confirm.type === "delete" && confirm.RoleID !== undefined && confirm.PermissionID !== undefined) confirmDelete(confirm.RoleID, confirm.PermissionID);
+                  setChoice("No");
+                }}
+              >
+                Yes
+              </div>
+              <div
+                className={`px-3 py-1 border cursor-pointer ${choice === "No" ? "bg-white text-black" : ""}`}
+                onMouseEnter={() => setChoice("No")} // ← highlight เวลา hover
+                onClick={() => { setConfirm({ visible: false, type: confirm.type }); setChoice("No"); }}
+              >
+                No
               </div>
             </div>
-          );
-        })}
-      </div>
-
+            <div className="mt-3 text-xs text-gray-400">
+              Use ↑ ↓ to select, Enter to confirm or click
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

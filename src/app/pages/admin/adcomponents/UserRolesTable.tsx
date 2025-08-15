@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { UserRole } from "../types";
 
-export default function RolesList() {
+export default function UserRolesList() {
   const [items, setItems] = useState<UserRole[]>([]);
   const [form, setForm] = useState({ UserID: "", RoleID: "" });
   const confirmRef = useRef<HTMLDivElement>(null);

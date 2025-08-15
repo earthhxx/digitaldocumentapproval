@@ -96,7 +96,7 @@ export default function AdminAccessPage() {
                     {selected === "Roles" && <RolesTable />}
                     {selected === "Users" && <UsersTable />}
                     {selected === "UserRoles" && <UserRolesTable />}
-                    {/* {selected === "RolePermissions" && <RolePermissionsTable />} */}
+                    {selected === "RolePermissions" && <RolePermissionsTable />}
                 </div>
             </div>
         </ProtectedRoute>
