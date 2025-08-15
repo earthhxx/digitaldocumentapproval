@@ -171,6 +171,7 @@ export default function RolesList({ roles }: Props) {
             <div className="flex flex-col gap-2">
               <div
                 className={`px-3 py-1 border cursor-pointer ${choice === "Yes" ? "bg-white text-black" : ""}`}
+                onMouseEnter={() => setChoice("Yes")} // ← highlight เวลา hover
                 onClick={() => {
                   if (confirm.type === "add") confirmAddRole();
                   if (confirm.type === "delete" && confirm.id !== undefined) confirmDelete(confirm.id);
@@ -181,6 +182,7 @@ export default function RolesList({ roles }: Props) {
               </div>
               <div
                 className={`px-3 py-1 border cursor-pointer ${choice === "No" ? "bg-white text-black" : ""}`}
+                onMouseEnter={() => setChoice("No")} // ← highlight เวลา hover
                 onClick={() => { setConfirm({ visible: false, type: confirm.type }); setChoice("No"); }}
               >
                 No
