@@ -1,27 +1,28 @@
-// /pages/api/addPermissions
 import { NextRequest, NextResponse } from "next/server";
 import { getDashboardConnection } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
     const pool = await getDashboardConnection();
-    const insertResult = await pool.request()
+
+    // Insert
+    await pool.request()
       .input("RoleName", body.RoleName)
       .input("Description", body.Description)
       .query(`
         INSERT INTO [DASHBOARD].[dbo].[Roles] (RoleName, Description)
-        OUTPUT INSERTED.RoleID, INSERTED.RoleName, INSERTED.Description
         VALUES (@RoleName, @Description);
       `);
 
-    if (insertResult.recordset.length === 0) {
-      return NextResponse.json({ error: "Insert failed" }, { status: 400 });
-    }
+    // Fetch all sorted
+    const allRoles = await pool.request().query(`
+      SELECT RoleID, RoleName, Description
+      FROM [DASHBOARD].[dbo].[Roles]
+      ORDER BY RoleID DESC
+    `);
 
-    // ส่งแค่ row เดียวที่ insert
-    return NextResponse.json(insertResult.recordset[0]);
+    return NextResponse.json(allRoles.recordset);
 
   } catch (error) {
     console.error(error);

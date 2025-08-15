@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { Role } from "../types";
 
-type Props = { roles: Role[] };
 
-export default function RolesList({ roles }: Props) {
-  const [items, setItems] = useState<Role[]>(roles);
+
+export default function RolesList() {
+  const [items, setItems] = useState<Role[]>([]);
   const [form, setForm] = useState({ RoleName: "", Description: "" });
   const confirmRef = useRef<HTMLDivElement>(null);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Confirm add/delete
   const [confirm, setConfirm] = useState<{ visible: boolean; type: "add" | "delete" | null; id?: number | string }>({
@@ -16,6 +19,24 @@ export default function RolesList({ roles }: Props) {
 
   const [choice, setChoice] = useState<"Yes" | "No">("No");
 
+  // --- Fetch on mount ---
+  useEffect(() => {
+    const fetchRoles = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/roletable/roles");
+        console.log(res)
+        const data = await res.json();
+        setItems(data.data ?? []);
+      } catch (err: any) {
+        setError(err.message || "Error fetching permissions");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRoles();
+  }, []);
 
   // --- ADD ---
   // --- trigger add confirm ---
@@ -31,11 +52,19 @@ export default function RolesList({ roles }: Props) {
       body: JSON.stringify(form),
     });
 
-    const newRole: Role = await res.json();
-    setItems(prev => [...prev, newRole]);
+    if (!res.ok) {
+      alert("Failed to add role");
+      return;
+    }
+
+    // ตอนนี้ backend ส่ง array ทั้งหมดมาแล้ว
+    const updatedRoles: Role[] = await res.json();
+    setItems(updatedRoles);
+
     setForm({ RoleName: "", Description: "" });
     setConfirm({ visible: false, type: "add" });
   };
+
 
   // --- DELETE ---
   const delPer = (id: number | string) => {
@@ -103,36 +132,43 @@ export default function RolesList({ roles }: Props) {
 
       <h2 className="text-2xl font-bold">Roles</h2>
 
-      {/* List */}
-      <div className="space-y-3 w-[65%]">
-        <table className="w-full border-collapse font-mono text-sm">
-          <thead>
-            <tr className="bg-black text-white">
-              <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">ID</th>
-              <th className="border border-gray-500 px-3 py-1 w-[20%] text-left">Role Name</th>
-              <th className="border border-gray-500 px-3 py-1 text-left">Description</th>
-              <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map(p => (
-              <tr key={p.RoleID} className="hover:bg-white/10">
-                <td className="border border-gray-500 px-3 py-1">{p.RoleID}</td>
-                <td className="border border-gray-500 px-3 py-1">{p.RoleName}</td>
-                <td className="border border-gray-500 px-3 py-1">{p.Description || "-"}</td>
-                <td className="flex justify-center border border-gray-500 px-3 py-1">
-                  <button
-                    onClick={() => delPer(p.RoleID)}
-                    className="px-2 py-1 bg-white text-black hover:bg-red-800"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {loading && <div>Loading roles...</div>}
+      {error && <div className="text-red-500">{error}</div>}
+
+      {!loading && !error && (
+        <>
+          {/* List */}
+          <div className="space-y-3 w-[65%]">
+            <table className="w-full border-collapse font-mono text-sm">
+              <thead>
+                <tr className="bg-black text-white">
+                  <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">ID</th>
+                  <th className="border border-gray-500 px-3 py-1 w-[20%] text-left">Role Name</th>
+                  <th className="border border-gray-500 px-3 py-1 text-left">Description</th>
+                  <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map(p => (
+                  <tr key={p.RoleID} className="hover:bg-white/10">
+                    <td className="border border-gray-500 px-3 py-1">{p.RoleID}</td>
+                    <td className="border border-gray-500 px-3 py-1">{p.RoleName}</td>
+                    <td className="border border-gray-500 px-3 py-1">{p.Description || "-"}</td>
+                    <td className="flex justify-center border border-gray-500 px-3 py-1">
+                      <button
+                        onClick={() => delPer(p.RoleID)}
+                        className="px-2 py-1 bg-white text-black hover:bg-red-800"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
       {/* CMD Style Floating Form */}
       <div className="fixed flex flex-col right-0 bottom-100 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
