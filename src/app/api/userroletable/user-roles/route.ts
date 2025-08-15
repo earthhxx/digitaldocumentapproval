@@ -1,4 +1,4 @@
-// /pages/api/user-roles
+// /pages/api/userroletable/user-roles
 import { NextRequest, NextResponse } from "next/server";
 import { getDashboardConnection } from "@/lib/db";
 
