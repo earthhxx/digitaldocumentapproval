@@ -64,18 +64,20 @@ export default function AdminAccessPage() {
 
     useEffect(() => {
         fetchData(selected);
+        console.log('click')
     }, [selected]);
 
     // --- keyboard navigation ---
     const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (!dropdownOpen) return;
-        if (!dropdownRef.current || document.activeElement !== dropdownRef.current) return;
 
         if (e.key === "ArrowDown") {
             setHighlightedIndex(prev => (prev + 1) % options.length);
+            e.preventDefault();
         }
         if (e.key === "ArrowUp") {
             setHighlightedIndex(prev => (prev - 1 + options.length) % options.length);
+            e.preventDefault();
         }
         if (e.key === "Enter") {
             setSelected(options[highlightedIndex]);
@@ -85,6 +87,7 @@ export default function AdminAccessPage() {
             setDropdownOpen(false);
         }
     };
+
 
     // เวลา dropdown เปิด → focus
     useEffect(() => {
@@ -119,32 +122,38 @@ export default function AdminAccessPage() {
                     {/* Custom dropdown */}
                     <div
                         ref={dropdownRef}
-                        tabIndex={0} // ต้องมี tabIndex ถึงจะ focus ได้
+                        tabIndex={0} // focus ได้
                         onKeyDown={handleKey}
-                        className="bg-black text-white border border-white px-2 py-1 cursor-pointer"
-                        onClick={() => setDropdownOpen(prev => !prev)}
+                        className="relative"
                     >
-                        {selected}
+                        <div
+                            className="bg-black text-white border border-white px-2 py-1 cursor-pointer"
+                            onClick={() => setDropdownOpen(prev => !prev)}
+                        >
+                            {selected}
+                        </div>
+
+                        {dropdownOpen && (
+                            <div className="absolute top-full left-0 w-60 bg-black border border-white mt-1 z-10">
+                                {options.map((opt, index) => (
+                                    <div
+                                        key={opt}
+                                        className={`px-2 py-1 cursor-pointer ${index === highlightedIndex ? "bg-white text-black" : "text-white"}`}
+                                        onMouseEnter={() => setHighlightedIndex(index)}
+                                        onMouseDown={() => { // ใช้ mousedown ป้องกัน click-outside interrupt
+                                            setSelected(opt);
+                                            console.log('click');
+                                            setDropdownOpen(false);
+                                        }}
+                                    >
+                                        {opt}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
-                    {dropdownOpen && (
-                        <div ref={dropdownOptionRef} className="absolute top-full left-0 w-60 bg-black border border-white mt-1 z-10">
-                            {options.map((opt, index) => (
-                                <div
-                                    key={opt}
-                                    className={`px-2 py-1 cursor-pointer ${index === highlightedIndex ? "bg-white text-black" : "text-white"
-                                        }`}
-                                    onMouseEnter={() => setHighlightedIndex(index)}
-                                    onClick={() => {
-                                        setSelected(opt);
-                                        setDropdownOpen(false);
-                                    }}
-                                >
-                                    {opt}
-                                </div>
-                            ))}
-                        </div>
-                    )}
+
                 </div>
 
                 {loading && <div>Loading {selected}...</div>}

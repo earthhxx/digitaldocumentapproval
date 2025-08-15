@@ -116,10 +116,10 @@ export default function Sidebar() {
               )}
               {roles.includes("user") && (
                 <a
-                  href="/contracts"
+                  href="/dashboard"
                   className="hover:bg-green-700 p-3 rounded font-medium text-green-400"
                 >
-                  Contracts
+                  test
                 </a>
               )}
             </nav>
