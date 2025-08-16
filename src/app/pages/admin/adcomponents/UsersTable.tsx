@@ -176,28 +176,29 @@ export default function UsersList() {
     }, [confirm.visible]);
 
     return (
-        <div className="flex flex-col w-full p-4 bg-black text-white min-h-screen font-mono">
+        <div className="flex flex-col w-full p-4 bg-black text-white  font-mono">
             <h2 className="text-2xl font-bold mb-4">Users</h2>
 
             {!loading && !error && items.length > 0 ? (
-                <div className="mb-6 w-full">
-                    <table className="w-[60%] border-collapse text-sm">
-                        <thead>
-                            <tr className="bg-black text-white">
-                                <th className="border px-2 py-1 w-[2%]">ID</th>
-                                <th className="border px-2 py-1 w-[20%]">User_Id</th>
-                                <th className="border px-2 py-1 w-[20%]">Name</th>
-                                <th className="border px-2 py-1 w-[10%]">Department</th>
-                                <th className="border px-2 py-1 w-[2%]">Pass</th>
-                                <th className="border px-2 py-1 w-[2%]">Action</th>
+                <div className="mb-6 w-[60%] max-h-[75vh] overflow-auto custom-scrollbar border border-white ">
+                    <table className="w-full border-collapse text-sm">
+                        <thead className="sticky top-0 bg-black text-white z-10">
+                            <tr>
+                                <th className="border px-2 py-1 w-[5%]">ID</th>
+                                <th className="border px-2 py-1 w-[5%]">User_Id</th>
+                                <th className="border px-2 py-1 w-[25%]">Name</th>
+                                <th className="border px-2 py-1 w-[20%]">Department</th>
+                                <th className="border px-2 py-1 w-[10%]">Pass</th>
+                                <th className="border px-2 py-1 w-[20%]">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {items
-                                .filter(u =>
-                                    u.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                    u.User_Id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                    u.Department?.toLowerCase().includes(searchTerm.toLowerCase())
+                                .filter(
+                                    (u) =>
+                                        u.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                        u.User_Id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                        u.Department?.toLowerCase().includes(searchTerm.toLowerCase())
                                 )
                                 .map((u) => (
                                     <tr key={u.User_Id} className="hover:bg-white/10">
@@ -222,7 +223,10 @@ export default function UsersList() {
                                             >
                                                 Edit
                                             </button>
-                                            <button className="px-2 py-1 bg-red-700 hover:bg-red-500" onClick={() => triggerDeleteConfirm(u.User_Id)}>
+                                            <button
+                                                className="px-2 py-1 bg-red-700 hover:bg-red-500"
+                                                onClick={() => triggerDeleteConfirm(u.User_Id)}
+                                            >
                                                 Delete
                                             </button>
                                         </td>
@@ -232,7 +236,7 @@ export default function UsersList() {
                     </table>
                 </div>
             ) : (
-                !loading && !error && <div>No users found.</div>
+                !loading && !error && <div className="text-white">No users found.</div>
             )}
 
             {/* Add/Edit Form */}

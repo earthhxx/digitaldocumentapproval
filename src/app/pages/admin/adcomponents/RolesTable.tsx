@@ -128,7 +128,7 @@ export default function RolesList() {
   }, [confirm.visible]);
 
   return (
-    <div className="flex flex-col justify-start items-start w-full mx-auto space-y-6 font-mono text-white bg-black min-h-screen p-4">
+    <div className="flex flex-col justify-start items-start w-full mx-auto space-y-6 font-mono text-white bg-black p-4">
 
 
       <h2 className="text-2xl font-bold">Roles</h2>
@@ -139,7 +139,7 @@ export default function RolesList() {
       {!loading && !error && (
         <>
           {/* List */}
-          <div className="space-y-3 w-[60%]">
+          <div className="mb-6 w-[60%] max-h-[75vh] overflow-auto custom-scrollbar border border-white ">
             <table className="w-full border-collapse font-mono text-sm">
               <thead>
                 <tr className="bg-black text-white">

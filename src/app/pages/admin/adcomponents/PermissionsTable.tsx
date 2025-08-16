@@ -119,7 +119,7 @@ export default function PermissionsList() {
     }, [confirm.visible]);
 
     return (
-        <div className="flex flex-col justify-start items-start w-full mx-auto space-y-6 font-mono text-white bg-black min-h-screen p-4">
+        <div className="flex flex-col justify-start items-start w-full mx-auto space-y-6 font-mono text-white bg-black p-4">
             <h2 className="text-2xl font-bold">Permissions</h2>
 
             {loading && <div>Loading permissions...</div>}
@@ -128,8 +128,8 @@ export default function PermissionsList() {
             {!loading && !error && (
                 <>
                     {/* List */}
-                    <div className="space-y-3 w-[60%]">
-                        <table className="w-full border-collapse font-mono text-sm">
+                    <div className="mb-6 w-[60%] max-h-[75vh] overflow-auto custom-scrollbar border border-white ">
+                        <table className="w-full border-collapse text-sm">
                             <thead>
                                 <tr className="bg-black text-white">
                                     <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">ID</th>

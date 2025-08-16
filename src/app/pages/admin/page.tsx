@@ -7,8 +7,9 @@ import UsersTable from "./adcomponents/UsersTable";
 import UserRolesTable from "./adcomponents/UserRolesTable";
 import RolePermissionsTable from "./adcomponents/RolePermissionsTable";
 import ProtectedRoute from "@/app/components/ProtectedRoute";
+import Filteruser from "./adcomponents/filteruser";
 
-type ComponentType = "Permissions" | "Roles" | "Users" | "UserRoles" | "RolePermissions";
+type ComponentType = "Permissions" | "Roles" | "Users" | "UserRoles" | "RolePermissions" | "Filteruser";
 
 export default function AdminAccessPage() {
     const [selected, setSelected] = useState<ComponentType>("Permissions");
@@ -16,7 +17,7 @@ export default function AdminAccessPage() {
     const [highlightedIndex, setHighlightedIndex] = useState(0);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const options: ComponentType[] = ["Permissions", "Roles", "Users", "UserRoles", "RolePermissions"];
+    const options: ComponentType[] = ["Permissions", "Roles", "Users", "UserRoles", "RolePermissions", "Filteruser"];
 
     // --- keyboard navigation ---
     const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -60,8 +61,8 @@ export default function AdminAccessPage() {
 
     return (
         <ProtectedRoute>
-            <div className="p-4 font-mono text-white bg-black min-h-screen mt-20">
-                <div className="flex flex-col items-start gap-3 mb-4 relative">
+            <div className=" font-mono text-white bg-black pt-20">
+                <div className="flex flex-row items-center gap-3 mb-4 ">
                     <span className="font-bold">Select Component:</span>
                     {/* Custom dropdown */}
                     <div ref={dropdownRef} tabIndex={0} onKeyDown={handleKey} className="relative">
@@ -72,7 +73,7 @@ export default function AdminAccessPage() {
                             {selected}
                         </div>
                         {dropdownOpen && (
-                            <div className="absolute top-full left-0 w-60 bg-black border border-white mt-1 z-10">
+                            <div className="absolute top-full left-0 w-60 bg-black border border-white mt-1 z-50">
                                 {options.map((opt, index) => (
                                     <div
                                         key={opt}
@@ -91,13 +92,15 @@ export default function AdminAccessPage() {
                     </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="min-h-[60vh] max-h-[60vh]">
                     {selected === "Permissions" && <PermissionsTable />}
                     {selected === "Roles" && <RolesTable />}
                     {selected === "Users" && <UsersTable />}
                     {selected === "UserRoles" && <UserRolesTable />}
                     {selected === "RolePermissions" && <RolePermissionsTable />}
+                    {selected === "Filteruser" && <Filteruser />}
                 </div>
+
             </div>
         </ProtectedRoute>
     );
