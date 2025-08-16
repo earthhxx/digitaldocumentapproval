@@ -178,7 +178,7 @@ export default function RolesList() {
       )}
 
       {/* CMD Style Floating Form */}
-      <div className="fixed flex flex-col right-0 bottom-100 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
+      <div className="fixed flex flex-col right-0 bottom-0 w-[40%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
         {/* Search bar */}
         <div className="mb-4 z-40 top-4 right-0 w-full p-2 bg-black border border-white rounded flex flex-col sm:flex-row gap-2">
           <div className="flex items-center w-[25%]">Roles ID :</div>
