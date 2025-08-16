@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { UserRole } from "../types";
 
+
 export default function UserRolesList() {
   const [items, setItems] = useState<UserRole[]>([]);
+
+  
   const [form, setForm] = useState({ UserID: "", RoleID: "" });
   const confirmRef = useRef<HTMLDivElement>(null);
 
@@ -27,12 +30,29 @@ export default function UserRolesList() {
         const data = await res.json();
         setItems(data.data ?? []);
       } catch (err: any) {
-        setError(err.message || "Error fetching permissions");
+        setError(err.message || "Error fetching user-roles");
       } finally {
         setLoading(false);
       }
     };
     fetchUserRoles();
+  }, []);
+
+  useEffect(() => {
+    const fetchPermissions = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/permissiontable/permissions");
+        const data = await res.json();
+        setPermissionitems(data.data ?? []);
+      } catch (err: any) {
+        setError(err.message || "Error fetching permissions");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPermissions();
   }, []);
 
   // --- ADD ---
@@ -168,6 +188,7 @@ export default function UserRolesList() {
 
       {/* CMD Style Floating Form */}
       <div className="fixed flex flex-col right-0 bottom-100 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
+        
         <div className="text-sm font-bold mb-2">Add New UserRoles</div>
 
         <input

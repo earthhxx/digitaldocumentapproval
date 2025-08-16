@@ -29,7 +29,7 @@ export default function RolesList() {
         const data = await res.json();
         setItems(data.data ?? []);
       } catch (err: any) {
-        setError(err.message || "Error fetching permissions");
+        setError(err.message || "Error fetching roles");
       } finally {
         setLoading(false);
       }

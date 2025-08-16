@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { RolePermission } from "../types";
+import { Permission } from "../types";
+import { Role } from "../types";
 
 export default function RolesPermissionList() {
   const [items, setItems] = useState<RolePermission[]>([]);
+  const [rolesItems, setRolesItems] = useState<Role[]>([]);
+  const [permissionitems, setPermissionitems] = useState<Permission[]>([]);
   const [form, setForm] = useState({ RoleID: "", PermissionID: "" });
   const confirmRef = useRef<HTMLDivElement>(null);
 
@@ -33,6 +37,40 @@ export default function RolesPermissionList() {
       }
     };
     fetchUserRoles();
+  }, []);
+
+  useEffect(() => {
+    const fetchPermissions = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/permissiontable/permissions");
+        const data = await res.json();
+        setPermissionitems(data.data ?? []);
+      } catch (err: any) {
+        setError(err.message || "Error fetching permissions");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPermissions();
+  }, []);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/roletable/roles");
+        const data = await res.json();
+        setRolesItems(data.data ?? [])
+      } catch (err: any) {
+        setError(err.message || "Error fetching roles");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRoles();
   }, []);
 
   // --- ADD ---
@@ -167,26 +205,88 @@ export default function RolesPermissionList() {
       )}
 
       {/* CMD Style Floating Form */}
-      <div className="fixed flex flex-col right-0 bottom-100 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
-        <div className="text-sm font-bold mb-2">Add New Rolepermission</div>
+      <div className="fixed flex flex-col right-0 bottom-0 w-[30%] h-screen border border-white bg-black text-white p-4 rounded-lg shadow-lg space-y-4">
 
-        <input
-          className="w-full p-2 mb-2 bg-black text-white border border-white outline-none"
-          placeholder="RoleID"
-          value={form.RoleID}
-          onChange={e => setForm({ ...form, RoleID: e.target.value })}
-        />
-        <input
-          className="w-full p-2 mb-3 bg-black text-white border border-white outline-none"
-          placeholder="PermissionID"
-          value={form.PermissionID}
-          onChange={e => setForm({ ...form, PermissionID: e.target.value })}
-          onKeyDown={e => { if (e.key === "Enter") triggerAddConfirm(); }}
-        />
-        <button className="w-full py-2 bg-white text-black hover:bg-gray-300" onClick={triggerAddConfirm}>
-          [ Enter ]
-        </button>
+        {/* Roles Table */}
+        {!loading && !error && (
+          <div className="flex flex-col flex-1 min-h-0">
+            <h3 className="text-sm font-bold mb-2">Roles</h3>
+            <div className="flex-1 overflow-auto border custom-scrollbar border-gray-700 rounded-lg">
+              <table className="w-full border-collapse font-mono text-sm">
+                <thead className="sticky top-0 bg-black">
+                  <tr>
+                    <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">ID</th>
+                    <th className="border border-gray-500 px-3 py-1 w-[20%] text-left">Role Name</th>
+                    <th className="border border-gray-500 px-3 py-1 text-left">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rolesItems.map(p => (
+                    <tr key={p.RoleID} className="hover:bg-white/10">
+                      <td className="border border-gray-500 px-3 py-1">{p.RoleID}</td>
+                      <td className="border border-gray-500 px-3 py-1">{p.RoleName}</td>
+                      <td className="border border-gray-500 px-3 py-1">{p.Description || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Permissions Table */}
+        {!loading && !error && (
+          <div className="flex flex-col flex-1 min-h-0">
+            <h3 className="text-sm font-bold mb-2">Permissions</h3>
+            <div className="flex-1 overflow-auto custom-scrollbar border border-gray-700 rounded-lg">
+              <table className="w-full border-collapse font-mono text-sm">
+                <thead className="sticky top-0 bg-black">
+                  <tr>
+                    <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">ID</th>
+                    <th className="border border-gray-500 px-3 py-1 w-[20%] text-left">Permission Name</th>
+                    <th className="border border-gray-500 px-3 py-1 text-left">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {permissionitems.map(p => (
+                    <tr key={p.PermissionID} className="hover:bg-white/10">
+                      <td className="border border-gray-500 px-3 py-1">{p.PermissionID}</td>
+                      <td className="border border-gray-500 px-3 py-1">{p.PermissionName}</td>
+                      <td className="border border-gray-500 px-3 py-1">{p.Description || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Add New Section */}
+        <div>
+          <div className="text-sm font-bold mb-2">Add New Role Permission</div>
+          <input
+            className="w-full p-2 mb-2 bg-black text-white border border-white rounded outline-none"
+            placeholder="RoleID"
+            value={form.RoleID}
+            onChange={e => setForm({ ...form, RoleID: e.target.value })}
+          />
+          <input
+            className="w-full p-2 mb-3 bg-black text-white border border-white rounded outline-none"
+            placeholder="PermissionID"
+            value={form.PermissionID}
+            onChange={e => setForm({ ...form, PermissionID: e.target.value })}
+            onKeyDown={e => { if (e.key === "Enter") triggerAddConfirm(); }}
+          />
+          <button
+            className="w-full py-2 bg-white text-black font-bold rounded hover:bg-gray-300"
+            onClick={triggerAddConfirm}
+          >
+            [ Enter ]
+          </button>
+        </div>
+
       </div>
+
 
       {/* Confirm card */}
       {confirm.visible && (
