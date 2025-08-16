@@ -139,7 +139,7 @@ export default function RolesList() {
       {!loading && !error && (
         <>
           {/* List */}
-          <div className="space-y-3 w-[65%]">
+          <div className="space-y-3 w-[60%]">
             <table className="w-full border-collapse font-mono text-sm">
               <thead>
                 <tr className="bg-black text-white">
