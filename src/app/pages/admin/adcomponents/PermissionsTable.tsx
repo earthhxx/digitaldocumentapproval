@@ -6,7 +6,9 @@ export default function PermissionsList() {
     const [items, setItems] = useState<Permission[]>([]);
     const [form, setForm] = useState({ PermissionName: "", Description: "" });
     const confirmRef = useRef<HTMLDivElement>(null);
-
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm2, setSearchTerm2] = useState("");
+    const [searchTerm3, setSearchTerm3] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -137,21 +139,27 @@ export default function PermissionsList() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {items.map(p => (
-                                    <tr key={p.PermissionID} className="hover:bg-white/10">
-                                        <td className="border border-gray-500 px-3 py-1">{p.PermissionID}</td>
-                                        <td className="border border-gray-500 px-3 py-1">{p.PermissionName}</td>
-                                        <td className="border border-gray-500 px-3 py-1">{p.Description || "-"}</td>
-                                        <td className="flex justify-center border border-gray-500 px-3 py-1">
-                                            <button
-                                                onClick={() => delPer(p.PermissionID)}
-                                                className="px-2 py-1 bg-white text-black hover:bg-red-800"
-                                            >
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {items
+                                    .filter(u =>
+                                        String(u.PermissionID).toLowerCase().includes(searchTerm.toLowerCase()) &&
+                                        String(u.PermissionName).toLowerCase().includes(searchTerm2.toLowerCase()) &&
+                                        String(u.Description).toLowerCase().includes(searchTerm3.toLowerCase())
+                                    )
+                                    .map(p => (
+                                        <tr key={p.PermissionID} className="hover:bg-white/10">
+                                            <td className="border border-gray-500 px-3 py-1">{p.PermissionID}</td>
+                                            <td className="border border-gray-500 px-3 py-1">{p.PermissionName}</td>
+                                            <td className="border border-gray-500 px-3 py-1">{p.Description || "-"}</td>
+                                            <td className="flex justify-center border border-gray-500 px-3 py-1">
+                                                <button
+                                                    onClick={() => delPer(p.PermissionID)}
+                                                    className="px-2 py-1 bg-white text-black hover:bg-red-800"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
                             </tbody>
                         </table>
                     </div>
@@ -159,7 +167,43 @@ export default function PermissionsList() {
             )}
 
             {/* CMD Style Floating Form */}
-            <div className="fixed flex flex-col right-0 bottom-100 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
+            <div className="fixed flex flex-col right-0 bottom-0 w-[40%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
+                {/* Search bar */}
+                <div className="mb-4 z-40 top-4 right-0 w-full p-2 bg-black border border-white rounded flex flex-col sm:flex-row gap-2">
+                    <div className="flex items-center w-[25%]">Permission ID :</div>
+                    <input
+                        type="text"
+                        placeholder="Search by ID"
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        className="flex-1 p-2 bg-black border border-white text-white rounded"
+                    />
+                </div>
+
+                {/* Search bar */}
+                <div className="mb-4 z-40 top-4 right-0 w-full p-2 bg-black border border-white rounded flex flex-col sm:flex-row gap-2">
+                    <div className="flex items-center w-[25%]">Permission Name :</div>
+                    <input
+                        type="text"
+                        placeholder="Search by Permission Name"
+                        value={searchTerm2}
+                        onChange={e => setSearchTerm2(e.target.value)}
+                        className="flex-1 p-2 bg-black border border-white text-white rounded"
+                    />
+                </div>
+
+                {/* Search bar */}
+                <div className="mb-4 z-40 top-4 right-0 w-full p-2 bg-black border border-white rounded flex flex-col sm:flex-row gap-2">
+                    <div className="flex items-center w-[25%]">FIND Desciption :</div>
+                    <input
+                        type="text"
+                        placeholder="Search by Desciption"
+                        value={searchTerm3}
+                        onChange={e => setSearchTerm3(e.target.value)}
+                        className="flex-1 p-2 bg-black border border-white text-white rounded"
+                    />
+                </div>
+
                 <div className="text-sm font-bold mb-2">Add New Permission</div>
                 <input
                     className="w-full p-2 mb-2 bg-black text-white border border-white outline-none"
