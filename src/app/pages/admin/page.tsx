@@ -63,7 +63,7 @@ export default function AdminAccessPage() {
         <ProtectedRoute>
             <div className=" font-mono text-white bg-black pt-20">
                 <div className="flex flex-row items-center gap-3 mb-4 ">
-                    <span className="font-bold">Select Component:</span>
+                    <span className="font-bold ps-4">Select Function :</span>
                     {/* Custom dropdown */}
                     <div ref={dropdownRef} tabIndex={0} onKeyDown={handleKey} className="relative">
                         <div
