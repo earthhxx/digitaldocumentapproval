@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { UserRole } from "../types";
-
+import { Role } from "../types";
 
 export default function UserRolesList() {
   const [items, setItems] = useState<UserRole[]>([]);
 
-  
+  const [rolesItems, setRolesItems] = useState<Role[]>([]);
   const [form, setForm] = useState({ UserID: "", RoleID: "" });
   const confirmRef = useRef<HTMLDivElement>(null);
 
@@ -39,20 +39,20 @@ export default function UserRolesList() {
   }, []);
 
   useEffect(() => {
-    const fetchPermissions = async () => {
+    const fetchRoles = async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/permissiontable/permissions");
+        const res = await fetch("/api/roletable/roles");
         const data = await res.json();
-        setPermissionitems(data.data ?? []);
+        setRolesItems(data.data ?? [])
       } catch (err: any) {
-        setError(err.message || "Error fetching permissions");
+        setError(err.message || "Error fetching roles");
       } finally {
         setLoading(false);
       }
     };
-    fetchPermissions();
+    fetchRoles();
   }, []);
 
   // --- ADD ---
@@ -187,8 +187,32 @@ export default function UserRolesList() {
       )}
 
       {/* CMD Style Floating Form */}
-      <div className="fixed flex flex-col right-0 bottom-100 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
-        
+      <div className="fixed flex flex-col right-0 bottom-0 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
+        {!loading && !error && (
+          <div className="flex flex-col flex-1 min-h-0 mb-4">
+            <h3 className="text-sm font-bold mb-2">Roles</h3>
+            <div className="flex-1 overflow-auto border custom-scrollbar border-gray-700 rounded-lg">
+              <table className="w-full border-collapse font-mono text-sm">
+                <thead className="sticky top-0 bg-black">
+                  <tr>
+                    <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">ID</th>
+                    <th className="border border-gray-500 px-3 py-1 w-[20%] text-left">Role Name</th>
+                    <th className="border border-gray-500 px-3 py-1 text-left">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rolesItems.map(p => (
+                    <tr key={p.RoleID} className="hover:bg-white/10">
+                      <td className="border border-gray-500 px-3 py-1">{p.RoleID}</td>
+                      <td className="border border-gray-500 px-3 py-1">{p.RoleName}</td>
+                      <td className="border border-gray-500 px-3 py-1">{p.Description || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
         <div className="text-sm font-bold mb-2">Add New UserRoles</div>
 
         <input
