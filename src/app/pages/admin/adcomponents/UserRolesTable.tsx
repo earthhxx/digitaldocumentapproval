@@ -157,13 +157,13 @@ export default function UserRolesList() {
       {!loading && !error && (
         <>
           {/* List */}
-          <div className="space-y-3 w-[65%]">
+          <div className="space-y-3 w-[45%]">
             <table className="w-full border-collapse font-mono text-sm">
               <thead>
                 <tr className="bg-black text-white">
-                  <th className="border border-gray-500 px-3 py-1 w-[20%] text-left">UserID</th>
-                  <th className="border border-gray-500 px-3 py-1 text-left">RoleID</th>
-                  <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">Action</th>
+                  <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">UserID</th>
+                  <th className="border border-gray-500 px-3 py-1 text-left w-[5%]">RoleID</th>
+                  <th className="border border-gray-500 px-3 py-1 w-[0.1%] text-left">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -193,7 +193,7 @@ export default function UserRolesList() {
       )}
 
       {/* CMD Style Floating Form */}
-      <div className="fixed flex flex-col right-0 bottom-0 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
+      <div className="fixed flex flex-col right-0 bottom-0 w-[45%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
 
         {/* Search bar */}
         <div className="mb-4 z-40 top-4 right-0 w-full p-2 bg-black border border-white rounded flex flex-col sm:flex-row gap-2">
