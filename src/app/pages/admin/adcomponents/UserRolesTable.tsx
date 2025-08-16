@@ -27,7 +27,7 @@ export default function UserRolesList() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/userroletable/user-roles");
+        const res = await fetch("/api/admin/userroletable/user-roles");
         const data = await res.json();
         setItems(data.data ?? []);
       } catch (err: any) {
@@ -44,7 +44,7 @@ export default function UserRolesList() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/roletable/roles");
+        const res = await fetch("/api/admin/roletable/roles");
         const data = await res.json();
         setRolesItems(data.data ?? [])
       } catch (err: any) {
@@ -68,7 +68,7 @@ export default function UserRolesList() {
 
 
   const confirmAddRole = async () => {
-    const res = await fetch("/api/userroletable/adduserrole", {
+    const res = await fetch("/api/admin/userroletable/adduserrole", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ UserID: form.UserID, RoleID: form.RoleID }),
@@ -90,7 +90,7 @@ export default function UserRolesList() {
 
 
   const confirmDelete = async (UserID: number | string, RoleID: number | string) => {
-    const res = await fetch("/api/userroletable/deluserrole", {
+    const res = await fetch("/api/admin/userroletable/deluserrole", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ UserID, RoleID }),

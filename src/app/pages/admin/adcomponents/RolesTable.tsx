@@ -27,7 +27,7 @@ export default function RolesList() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/roletable/roles");
+        const res = await fetch("/api/admin/roletable/roles");
         const data = await res.json();
         setItems(data.data ?? []);
       } catch (err: any) {
@@ -47,7 +47,7 @@ export default function RolesList() {
   };
 
   const confirmAddRole = async () => {
-    const res = await fetch("/api/roletable/addRoles", {
+    const res = await fetch("/api/admin/roletable/addRoles", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
@@ -73,7 +73,7 @@ export default function RolesList() {
   };
 
   const confirmDelete = async (id: number | string) => {
-    const res = await fetch("/api/rolepermission/delRoles", {
+    const res = await fetch("/api/admin/rolepermission/delRoles", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ RoleID: id }),

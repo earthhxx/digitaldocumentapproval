@@ -22,7 +22,7 @@ export default function FilterUser() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/checkuser");
+        const res = await fetch("/api/admin/checkuser");
         if (!res.ok) throw new Error("Failed to fetch users");
         const data: User[] = await res.json();
         setUsers(data);

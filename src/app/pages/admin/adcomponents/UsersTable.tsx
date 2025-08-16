@@ -35,7 +35,7 @@ export default function UsersList() {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch("/api/usertable/users");
+                const res = await fetch("/api/admin/usertable/users");
                 const data = await res.json();
                 setItems(data.data ?? []);
             } catch (err: any) {
@@ -65,7 +65,7 @@ export default function UsersList() {
     // --- actions ---
     const addUser = async () => {
         try {
-            const res = await fetch("/api/usertable/adduser", {
+            const res = await fetch("/api/admin/usertable/adduser", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(form),
@@ -90,7 +90,7 @@ export default function UsersList() {
 
     const editUser = async (User_Id: string) => {
         try {
-            const res = await fetch("/api/usertable/edituser", {
+            const res = await fetch("/api/admin/usertable/edituser", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ User_Id: editingUserId, Name: form.Name, Department: form.Department, Pass: form.Pass })
@@ -116,7 +116,7 @@ export default function UsersList() {
 
     const deleteUser = async (User_Id: string) => {
         try {
-            const res = await fetch("/api/usertable/deleteuser", {
+            const res = await fetch("/api/admin/usertable/deleteuser", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ User_Id }),

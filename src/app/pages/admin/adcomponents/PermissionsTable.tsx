@@ -26,7 +26,7 @@ export default function PermissionsList() {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch("/api/permissiontable/permissions");
+                const res = await fetch("/api/admin/permissiontable/permissions");
                 const data = await res.json();
                 setItems(data.data ?? []);
             } catch (err: any) {
@@ -45,7 +45,7 @@ export default function PermissionsList() {
     };
 
     const confirmAddPermission = async () => {
-        const res = await fetch("/api/permissiontable/addPermissions", {
+        const res = await fetch("/api/admin/permissiontable/addPermissions", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),
@@ -68,7 +68,7 @@ export default function PermissionsList() {
     };
 
     const confirmDelete = async (id: number | string) => {
-        const res = await fetch("/api/permissiontable/delPermissions", {
+        const res = await fetch("/api/admin/permissiontable/delPermissions", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ PermissionID: id }),

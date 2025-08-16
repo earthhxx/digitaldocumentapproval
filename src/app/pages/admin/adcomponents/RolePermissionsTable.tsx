@@ -29,7 +29,7 @@ export default function RolesPermissionList() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/rolepermission/role-permissions");
+        const res = await fetch("/api/admin/rolepermission/role-permissions");
         const data = await res.json();
         setItems(data.data ?? []);
       } catch (err: any) {
@@ -46,7 +46,7 @@ export default function RolesPermissionList() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/permissiontable/permissions");
+        const res = await fetch("/api/admin/permissiontable/permissions");
         const data = await res.json();
         setPermissionitems(data.data ?? []);
       } catch (err: any) {
@@ -63,7 +63,7 @@ export default function RolesPermissionList() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/roletable/roles");
+        const res = await fetch("/api/admin/roletable/roles");
         const data = await res.json();
         setRolesItems(data.data ?? [])
       } catch (err: any) {
@@ -87,7 +87,7 @@ export default function RolesPermissionList() {
 
 
   const confirmAddRolePermssions = async () => {
-    const res = await fetch("/api/rolepermission/addroleper", {
+    const res = await fetch("/api/admin/rolepermission/addroleper", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ RoleID: form.RoleID, PermissionID: form.PermissionID }),
@@ -109,7 +109,7 @@ export default function RolesPermissionList() {
 
 
   const confirmDelete = async (RoleID: string | number, PermissionID: string | number) => {
-    const res = await fetch("/api/rolepermission/delroleper", {
+    const res = await fetch("/api/admin/rolepermission/delroleper", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ RoleID, PermissionID }),
