@@ -7,6 +7,8 @@ export default function RolesPermissionList() {
   const [items, setItems] = useState<RolePermission[]>([]);
   const [rolesItems, setRolesItems] = useState<Role[]>([]);
   const [permissionitems, setPermissionitems] = useState<Permission[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm2, setSearchTerm2] = useState("");
   const [form, setForm] = useState({ RoleID: "", PermissionID: "" });
   const confirmRef = useRef<HTMLDivElement>(null);
 
@@ -184,20 +186,24 @@ export default function RolesPermissionList() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((u, index) => (
-                  <tr key={`${u.RoleID} - ${index}`} className="hover:bg-white/10">
-                    <td className="border border-gray-500 px-3 py-1">{u.RoleID}</td>
-                    <td className="border border-gray-500 px-3 py-1">{u.PermissionID}</td>
-                    <td className="flex justify-center border border-gray-500 px-3 py-1">
-                      <button
-                        onClick={() => delPer(u.RoleID, u.PermissionID)}
-                        className="px-2 py-1 bg-white text-black hover:bg-red-800"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {items
+                  .filter(u =>
+                    String(u.RoleID).toLowerCase().includes(searchTerm.toLowerCase()) &&
+                    String(u.PermissionID).toLowerCase().includes(searchTerm2.toLowerCase()))
+                  .map((u, index) => (
+                    <tr key={`${u.RoleID} - ${index}`} className="hover:bg-white/10">
+                      <td className="border border-gray-500 px-3 py-1">{u.RoleID}</td>
+                      <td className="border border-gray-500 px-3 py-1">{u.PermissionID}</td>
+                      <td className="flex justify-center border border-gray-500 px-3 py-1">
+                        <button
+                          onClick={() => delPer(u.RoleID, u.PermissionID)}
+                          className="px-2 py-1 bg-white text-black hover:bg-red-800"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
@@ -206,7 +212,29 @@ export default function RolesPermissionList() {
 
       {/* CMD Style Floating Form */}
       <div className="fixed flex flex-col right-0 bottom-0 w-[40%] h-screen border border-white bg-black text-white p-4 rounded-lg shadow-lg space-y-4">
+        {/* Search bar */}
+        <div className="mb-4 z-40 top-4 right-0 w-full p-2 bg-black border border-white rounded flex flex-col sm:flex-row gap-2">
+          <div className="flex items-center w-[25%]">FIND ROLES :</div>
+          <input
+            type="text"
+            placeholder="Search Roles ID"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="flex-1 p-2 bg-black border border-white text-white rounded"
+          />
+        </div>
 
+        {/* Search bar */}
+        <div className="mb-4 z-40 top-4 right-0 w-full p-2 bg-black border border-white rounded flex flex-col sm:flex-row gap-2">
+          <div className="flex items-center w-[25%]">FIND PERMISSIONS :</div>
+          <input
+            type="text"
+            placeholder="Search Permission ID"
+            value={searchTerm2}
+            onChange={e => setSearchTerm2(e.target.value)}
+            className="flex-1 p-2 bg-black border border-white text-white rounded"
+          />
+        </div>
         {/* Roles Table */}
         {!loading && !error && (
           <div className="flex flex-col flex-1 min-h-0">

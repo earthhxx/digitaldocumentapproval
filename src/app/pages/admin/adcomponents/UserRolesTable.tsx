@@ -4,8 +4,9 @@ import { Role } from "../types";
 
 export default function UserRolesList() {
   const [items, setItems] = useState<UserRole[]>([]);
-
   const [rolesItems, setRolesItems] = useState<Role[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm2, setSearchTerm2] = useState("");
   const [form, setForm] = useState({ UserID: "", RoleID: "" });
   const confirmRef = useRef<HTMLDivElement>(null);
 
@@ -166,20 +167,25 @@ export default function UserRolesList() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((u, index) => (
-                  <tr key={`${u.UserID} - ${index}`} className="hover:bg-white/10">
-                    <td className="border border-gray-500 px-3 py-1">{u.UserID}</td>
-                    <td className="border border-gray-500 px-3 py-1">{u.RoleID}</td>
-                    <td className="flex justify-center border border-gray-500 px-3 py-1">
-                      <button
-                        onClick={() => delPer(u.UserID, u.RoleID)}
-                        className="px-2 py-1 bg-white text-black hover:bg-red-800"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {items
+                  .filter(u =>
+                    String(u.UserID).toLowerCase().includes(searchTerm.toLowerCase()) &&
+                    String(u.RoleID).toLowerCase().includes(searchTerm2.toLowerCase())
+                  )
+                  .map((u, index) => (
+                    <tr key={`${u.UserID} - ${index}`} className="hover:bg-white/10">
+                      <td className="border border-gray-500 px-3 py-1">{u.UserID}</td>
+                      <td className="border border-gray-500 px-3 py-1">{u.RoleID}</td>
+                      <td className="flex justify-center border border-gray-500 px-3 py-1">
+                        <button
+                          onClick={() => delPer(u.UserID, u.RoleID)}
+                          className="px-2 py-1 bg-white text-black hover:bg-red-800"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
@@ -188,6 +194,32 @@ export default function UserRolesList() {
 
       {/* CMD Style Floating Form */}
       <div className="fixed flex flex-col right-0 bottom-0 w-[30%] border border-white bg-black text-white p-4 rounded-lg shadow-lg">
+
+        {/* Search bar */}
+        <div className="mb-4 z-40 top-4 right-0 w-full p-2 bg-black border border-white rounded flex flex-col sm:flex-row gap-2">
+          <div className="flex items-center w-[25%]">FIND USER :</div>
+          <input
+            type="text"
+            placeholder="Search by UserID"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="flex-1 p-2 bg-black border border-white text-white rounded"
+          />
+        </div>
+
+        {/* Search bar */}
+        <div className="mb-4 z-40 top-4 right-0 w-full p-2 bg-black border border-white rounded flex flex-col sm:flex-row gap-2">
+          <div className="flex items-center w-[25%]">FIND ROLES :</div>
+          <input
+            type="text"
+            placeholder="Search by Roles"
+            value={searchTerm2}
+            onChange={e => setSearchTerm2(e.target.value)}
+            className="flex-1 p-2 bg-black border border-white text-white rounded"
+          />
+        </div>
+
+
         {!loading && !error && (
           <div className="flex flex-col flex-1 min-h-0 mb-4">
             <h3 className="text-sm font-bold mb-2">Roles</h3>
