@@ -26,8 +26,12 @@ export default function FilterUser() {
         if (!res.ok) throw new Error("Failed to fetch users");
         const data: User[] = await res.json();
         setUsers(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError(String(err)); // fallback สำหรับค่าอื่น ๆ
+        }
       } finally {
         setLoading(false);
       }
@@ -49,13 +53,13 @@ export default function FilterUser() {
       : true;
     const matchesRole = searchRole
       ? user.roles.some((r) =>
-          r.toLowerCase().includes(searchRole.toLowerCase())
-        )
+        r.toLowerCase().includes(searchRole.toLowerCase())
+      )
       : true;
     const matchesPermission = searchPermission
       ? user.permissions.some((p) =>
-          p.toLowerCase().includes(searchPermission.toLowerCase())
-        )
+        p.toLowerCase().includes(searchPermission.toLowerCase())
+      )
       : true;
 
     return matchesUserID && matchesName && matchesRole && matchesPermission;

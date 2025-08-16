@@ -38,8 +38,12 @@ export default function UsersList() {
                 const res = await fetch("/api/admin/usertable/users");
                 const data = await res.json();
                 setItems(data.data ?? []);
-            } catch (err: any) {
-                setError(err.message || "Error fetching users");
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError(String(err)); // fallback สำหรับค่าอื่น ๆ
+                }
             } finally {
                 setLoading(false);
             }
@@ -82,9 +86,12 @@ export default function UsersList() {
             setForm({ User_Id: "", Name: "", Department: "", Pass: "" });
             setConfirm({ visible: false, type: "add" });
 
-        } catch (err: any) {
-            console.error(err);
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError(String(err)); // fallback สำหรับค่าอื่น ๆ
+            }
         }
     };
 
@@ -108,9 +115,12 @@ export default function UsersList() {
             setEditingUserId(null);
             setConfirm({ visible: false, type: "edit" });
 
-        } catch (err: any) {
-            console.error(err);
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError(String(err)); // fallback สำหรับค่าอื่น ๆ
+            }
         }
     };
 
@@ -131,9 +141,12 @@ export default function UsersList() {
             setItems(updatedUsers);
             setConfirm({ visible: false, type: "delete" });
 
-        } catch (err: any) {
-            console.error(err);
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError(String(err)); // fallback สำหรับค่าอื่น ๆ
+            }
         }
     };
 

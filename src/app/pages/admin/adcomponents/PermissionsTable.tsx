@@ -29,8 +29,12 @@ export default function PermissionsList() {
                 const res = await fetch("/api/admin/permissiontable/permissions");
                 const data = await res.json();
                 setItems(data.data ?? []);
-            } catch (err: any) {
-                setError(err.message || "Error fetching permissions");
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError(String(err)); // fallback สำหรับค่าอื่น ๆ
+                }
             } finally {
                 setLoading(false);
             }

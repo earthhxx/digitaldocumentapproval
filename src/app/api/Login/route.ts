@@ -5,17 +5,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { getDashboardConnection } from "../../../../lib/db";
 
-type Data =
-    | { error: string }
-    | {
-        userId: number;
-        username: string;
-        fullName: string;
-        roles: string[];
-        permissions: string[];
-        token: string;
-    };
-
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();

@@ -4,12 +4,14 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
+
+const publicPaths = ["/login", "/register"];
+
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth(); // ต้องมี isLoading จาก context ด้วย
   const router = useRouter();
   const pathname = usePathname();
 
-  const publicPaths = ["/login", "/register"];
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && !publicPaths.includes(pathname)) {

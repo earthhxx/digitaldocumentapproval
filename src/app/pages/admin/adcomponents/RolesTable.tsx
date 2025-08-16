@@ -30,8 +30,12 @@ export default function RolesList() {
         const res = await fetch("/api/admin/roletable/roles");
         const data = await res.json();
         setItems(data.data ?? []);
-      } catch (err: any) {
-        setError(err.message || "Error fetching roles");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError(String(err)); // fallback สำหรับค่าอื่น ๆ
+        }
       } finally {
         setLoading(false);
       }

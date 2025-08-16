@@ -1,8 +1,8 @@
 // /pages/api/permissions
-import { NextRequest, NextResponse } from "next/server";
-import { getDashboardConnection } from "../../../../../lib/db";
+import {  NextResponse } from "next/server";
+import { getDashboardConnection } from "../../../../../../lib/db";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const pool = await getDashboardConnection();
 
