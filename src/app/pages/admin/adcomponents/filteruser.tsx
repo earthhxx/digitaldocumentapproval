@@ -78,7 +78,7 @@ export default function FilterUser() {
 
   return (
     <div className="bg-black min-h-screen text-white font-mono p-4">
-      <h1 className="text-2xl font-bold mb-4">Admin - Check Users</h1>
+      <h1 className="text-2xl font-bold mb-4">Admin - Check Users Access</h1>
 
       {/* Search inputs fixed */}
       <div className=" top-0 bg-black z-10 p-2 mb-4 border-b border-white flex flex-wrap gap-2">
