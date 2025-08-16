@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import sql from "mssql";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { getDashboardConnection } from "@/lib/db";
+import { getDashboardConnection } from "../../../../lib/db";
 
 type Data =
     | { error: string }

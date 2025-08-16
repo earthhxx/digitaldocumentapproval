@@ -1,9 +1,16 @@
 // /pages/api/checkuser.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getDashboardConnection } from "@/lib/db";
+import { getDashboardConnection } from "../../../../lib/db";
 import sql from "mssql";
+import { useAuth } from "../../context/AuthContext";
 
 export async function GET(req: NextRequest) {
+  const { user } = useAuth();
+  const roles = user?.roles.includes("admin")
+  if (!roles) {
+    return alert('No access')
+  }
+
   try {
     const pool = await getDashboardConnection();
 

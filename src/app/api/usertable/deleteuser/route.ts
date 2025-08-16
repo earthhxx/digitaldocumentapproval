@@ -1,6 +1,6 @@
 // /pages/api/usertable/deleteuser.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getDashboardConnection } from "@/lib/db";
+import { getDashboardConnection } from "../../../../../lib/db";
 
 export async function POST(req: NextRequest) {
     try {
