@@ -174,13 +174,13 @@ export default function RolesPermissionList() {
       {!loading && !error && (
         <>
           {/* List */}
-          <div className="space-y-3 w-[65%]">
+          <div className="space-y-3 w-[50%]">
             <table className="w-full border-collapse font-mono text-sm">
               <thead>
                 <tr className="bg-black text-white">
-                  <th className="border border-gray-500 px-3 py-1 w-[20%] text-left">RoleID</th>
-                  <th className="border border-gray-500 px-3 py-1 text-left">Permissions</th>
-                  <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">Action</th>
+                  <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">RoleID</th>
+                  <th className="border border-gray-500 px-3 py-1 w-[5%] text-left">Permissions</th>
+                  <th className="border border-gray-500 px-3 py-1 w-[0.1%] text-left">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -205,7 +205,7 @@ export default function RolesPermissionList() {
       )}
 
       {/* CMD Style Floating Form */}
-      <div className="fixed flex flex-col right-0 bottom-0 w-[30%] h-screen border border-white bg-black text-white p-4 rounded-lg shadow-lg space-y-4">
+      <div className="fixed flex flex-col right-0 bottom-0 w-[40%] h-screen border border-white bg-black text-white p-4 rounded-lg shadow-lg space-y-4">
 
         {/* Roles Table */}
         {!loading && !error && (
