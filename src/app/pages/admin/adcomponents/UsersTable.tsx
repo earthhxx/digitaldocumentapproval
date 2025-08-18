@@ -95,12 +95,12 @@ export default function UsersList() {
         }
     };
 
-    const editUser = async (User_Id: string) => {
+    const editUser = async (User_Id:string) => {
         try {
             const res = await fetch("/api/admin/usertable/edituser", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ User_Id: editingUserId, Name: form.Name, Department: form.Department, Pass: form.Pass })
+                body: JSON.stringify({ User_Id: User_Id, Name: form.Name, Department: form.Department, Pass: form.Pass })
             });
 
             if (!res.ok) {
