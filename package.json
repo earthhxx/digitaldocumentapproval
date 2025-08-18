@@ -12,6 +12,7 @@
     "@headlessui/react": "^2.2.7",
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.1",
+    "jose": "^6.0.12",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.539.0",
     "mssql": "^11.0.1",

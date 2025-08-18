@@ -27,7 +27,18 @@ export default function RolesList() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/admin/roletable/roles");
+        const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
+        if (!token) {
+          setError("No token found. Please login.");
+          setLoading(false);
+          return;
+        }
+        const res = await fetch("/api/admin/roletable/roles", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+        });
         const data = await res.json();
         setItems(data.data ?? []);
       } catch (err: unknown) {
@@ -51,9 +62,18 @@ export default function RolesList() {
   };
 
   const confirmAddRole = async () => {
+    const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
+    if (!token) {
+      setError("No token found. Please login.");
+      setLoading(false);
+      return;
+    }
     const res = await fetch("/api/admin/roletable/addRoles", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify(form),
     });
 
@@ -77,9 +97,18 @@ export default function RolesList() {
   };
 
   const confirmDelete = async (id: number | string) => {
+    const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
+    if (!token) {
+      setError("No token found. Please login.");
+      setLoading(false);
+      return;
+    }
     const res = await fetch("/api/admin/rolepermission/delRoles", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ RoleID: id }),
     });
 

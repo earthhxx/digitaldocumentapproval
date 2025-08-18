@@ -1,19 +1,18 @@
 // /middleware.ts
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { jwtVerify, JWTPayload } from "jose";
 
 export type JwtPayload = {
-  userId: number | string;   // มาจาก tb_im_employee.User_Id
-  username: string;          // userrow.Name
-  fullName: string;          // userrow.Name
-  roles: string[];           // จากตาราง Roles
-  permissions: string[];     // จากตาราง Permissions
-  iat?: number;              // auto-gen โดย JWT (issued at)
-  exp?: number;              // auto-gen โดย JWT (expired time)
+  userId: number | string;
+  username: string;
+  fullName: string;
+  roles: string[];
+  permissions: string[];
+  iat?: number;
+  exp?: number;
 };
 
-export function middleware(req: NextRequest) {
-
+export async function middleware(req: NextRequest) {
   console.log("✅ Middleware triggered");
   const { pathname } = req.nextUrl;
   console.log("🔹 Incoming request pathname:", pathname);
@@ -32,18 +31,14 @@ export function middleware(req: NextRequest) {
     console.log("🔹 Token extracted:", token);
 
     try {
+      // แปลง secret เป็น Uint8Array สำหรับ Web Crypto
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
-      const decodedRaw = jwt.verify(token, process.env.JWT_SECRET!);
-
-      if (typeof decodedRaw !== "object" || decodedRaw === null) {
-        return NextResponse.json({ error: "Invalid token" }, { status: 403 });
-      }
-
-      const decoded = decodedRaw as JwtPayload;
-      console.log("🔹 Decoded JWT:", decoded);
+      const { payload } = await jwtVerify(token, secret) as { payload: JWTPayload & JwtPayload };
+      console.log("🔹 Decoded JWT:", payload);
 
       // ตรวจ roles
-      if (!decoded.roles || !decoded.roles.includes("admin")) {
+      if (!payload.roles || !payload.roles.includes("admin")) {
         console.log("❌ Forbidden: user is not admin");
         return NextResponse.json({ error: "Forbidden: admin only" }, { status: 403 });
       }

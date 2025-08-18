@@ -32,10 +32,22 @@ export default function UsersList() {
     // --- Fetch on mount ---
     useEffect(() => {
         const fetchUsers = async () => {
+            const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
+            if (!token) {
+                setError("No token found. Please login.");
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch("/api/admin/usertable/users");
+                const res = await fetch("/api/admin/usertable/users", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                });
                 const data = await res.json();
                 setItems(data.data ?? []);
             } catch (err: unknown) {
@@ -69,9 +81,18 @@ export default function UsersList() {
     // --- actions ---
     const addUser = async () => {
         try {
+            const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
+            if (!token) {
+                setError("No token found. Please login.");
+                setLoading(false);
+                return;
+            }
             const res = await fetch("/api/admin/usertable/adduser", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify(form),
             });
 
@@ -95,11 +116,20 @@ export default function UsersList() {
         }
     };
 
-    const editUser = async (User_Id:string) => {
+    const editUser = async (User_Id: string) => {
         try {
+            const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
+            if (!token) {
+                setError("No token found. Please login.");
+                setLoading(false);
+                return;
+            }
             const res = await fetch("/api/admin/usertable/edituser", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({ User_Id: User_Id, Name: form.Name, Department: form.Department, Pass: form.Pass })
             });
 
@@ -126,9 +156,19 @@ export default function UsersList() {
 
     const deleteUser = async (User_Id: string) => {
         try {
+            const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
+            if (!token) {
+                setError("No token found. Please login.");
+                setLoading(false);
+                return;
+            }
+
             const res = await fetch("/api/admin/usertable/deleteuser", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({ User_Id }),
             });
 

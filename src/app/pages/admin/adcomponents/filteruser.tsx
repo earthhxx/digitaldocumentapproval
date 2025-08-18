@@ -21,8 +21,19 @@ export default function FilterUser() {
 
   useEffect(() => {
     const fetchUsers = async () => {
+      const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
+      if (!token) {
+        setError("No token found. Please login.");
+        setLoading(false);
+        return;
+      }
       try {
-        const res = await fetch("/api/admin/checkuser");
+        const res = await fetch("/api/admin/checkuser", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
         if (!res.ok) throw new Error("Failed to fetch users");
         const data: User[] = await res.json();
         setUsers(data);
