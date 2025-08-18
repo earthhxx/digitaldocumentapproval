@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
                 roles,
                 permissions,
             },
-            process.env.JWT_SECRET || "your-secret-key",
+            process.env.JWT_SECRET!,
             { expiresIn: "8h" }
         );
 

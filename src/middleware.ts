@@ -33,10 +33,13 @@ export function middleware(req: NextRequest) {
 
     try {
 
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET || "your-secret-key"
-      ) as JwtPayload;
+      const decodedRaw = jwt.verify(token, process.env.JWT_SECRET!);
+
+      if (typeof decodedRaw !== "object" || decodedRaw === null) {
+        return NextResponse.json({ error: "Invalid token" }, { status: 403 });
+      }
+
+      const decoded = decodedRaw as JwtPayload;
       console.log("🔹 Decoded JWT:", decoded);
 
       // ตรวจ roles
