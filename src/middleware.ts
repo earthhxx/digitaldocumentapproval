@@ -2,7 +2,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
+export type JwtPayload = {
+  userId: number | string;   // มาจาก tb_im_employee.User_Id
+  username: string;          // userrow.Name
+  fullName: string;          // userrow.Name
+  roles: string[];           // จากตาราง Roles
+  permissions: string[];     // จากตาราง Permissions
+  iat?: number;              // auto-gen โดย JWT (issued at)
+  exp?: number;              // auto-gen โดย JWT (expired time)
+};
+
 export function middleware(req: NextRequest) {
+
+  console.log("✅ Middleware triggered");
   const { pathname } = req.nextUrl;
   console.log("🔹 Incoming request pathname:", pathname);
 
@@ -20,7 +32,11 @@ export function middleware(req: NextRequest) {
     console.log("🔹 Token extracted:", token);
 
     try {
-      const decoded: any = jwt.verify(token, process.env.JWT_SECRET || "your-secret-key");
+
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET || "your-secret-key"
+      ) as JwtPayload;
       console.log("🔹 Decoded JWT:", decoded);
 
       // ตรวจ roles
@@ -42,5 +58,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/admin", "/api/admin/:path*"],
+  matcher: ["/:path*"],
 };
