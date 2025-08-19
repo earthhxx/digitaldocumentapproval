@@ -1,10 +1,10 @@
-// LoginForm.tsx
 "use client";
 import { useState } from "react";
-import { setCookie } from "cookies-next"; // ถ้าใช้ Next.js + cookies-next library
+import { setCookie } from "cookies-next";
+import { jwtDecode } from "jwt-decode";
 
 type Props = {
-    onLoginSuccess: (token: string) => void;
+    onLoginSuccess: (token: string, user: { userId: string; fullName: string; roles: string[] }) => void;
 };
 
 export default function LoginForm({ onLoginSuccess }: Props) {
@@ -14,7 +14,7 @@ export default function LoginForm({ onLoginSuccess }: Props) {
     const clearForm = () => {
         setUsername("");
         setPassword("");
-    }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -22,43 +22,44 @@ export default function LoginForm({ onLoginSuccess }: Props) {
         try {
             const res = await fetch("/api/Login", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password }),
             });
 
             const data = await res.json();
 
             if (res.ok && data.token) {
-                // เก็บ token ลง cookie (HttpOnly, Secure)
+                // เก็บ token ลง cookie
                 setCookie("auth_token", data.token, {
-                    httpOnly: true,   // ป้องกัน JS เข้าถึง
-                    secure: process.env.NODE_ENV === "production", // ส่งเฉพาะ HTTPS
-                    path: "/",        // cookie ใช้ได้ทุกหน้า
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                    path: "/",
                     sameSite: "strict",
-                    maxAge: 60 * 60 * 24 * 7, // 7 วัน
+                    maxAge: 60 * 60 * 24 * 7,
                 });
 
-                // ล้างฟอร์ม
-                clearForm();
+                // decode token เพื่อสร้าง user object
+                const decoded = jwtDecode<{ userId: string; fullName: string; roles: string | string[] }>(data.token);
+                const user = {
+                    userId: decoded.userId,
+                    fullName: decoded.fullName,
+                    roles: Array.isArray(decoded.roles) ? decoded.roles : [decoded.roles],
+                };
 
-                // แจ้งผู้ใช้ว่า login สำเร็จ
+                clearForm();
                 alert("Login สำเร็จ");
 
-                // แจ้ง Sidebar ว่า login สำเร็จ (สามารถอ่านจาก cookie ใน layout/SSR ได้)
-                onLoginSuccess(data.token);
-
+                // แจ้ง AuthProvider / Sidebar ทันที
+                onLoginSuccess(data.token, user);
             } else {
                 alert(data.error || "Login ล้มเหลว");
-                clearForm(); // ล้างฟอร์มเมื่อ login ล้มเหลว
+                clearForm();
             }
         } catch (error) {
             alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
             console.error(error);
         }
     };
-
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 z-50">
@@ -78,7 +79,9 @@ export default function LoginForm({ onLoginSuccess }: Props) {
                 required
             />
             <div className="flex justify-center items-center w-full">
-                <button className="bg-green-900 rounded-4xl px-4 py-2 w-[50%]" type="submit">Login</button>
+                <button className="bg-green-900 rounded-4xl px-4 py-2 w-[50%]" type="submit">
+                    Login
+                </button>
             </div>
         </form>
     );
