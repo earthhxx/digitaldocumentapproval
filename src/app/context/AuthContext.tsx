@@ -1,40 +1,84 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import  { jwtDecode }from "jwt-decode";
 import { useRouter } from "next/navigation";
 
-export interface User {
+interface User {
   userId: string;
   fullName: string;
+  username?: string; // optional
   roles: string[];
+}
+
+interface DecodedToken {
+  userId: string;
+  fullName: string;
+  roles: string | string[];
 }
 
 interface AuthContextType {
   user: User | null;
-  setUser: (user: User | null) => void;
+  token: string | null;
+  login: (token: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
-}
-
-interface AuthProviderProps {
-  children: React.ReactNode;
-  initialUser?: User | null;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children, initialUser }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(initialUser || null);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      setUser(JSON.parse(storedUser));
+    }
+
+    setIsLoading(false);
+  }, []);
+
+  const login = (token: string) => {
+    try {
+      const decoded = jwtDecode<DecodedToken>(token);
+
+      const userData: User = {
+        userId: decoded.userId,
+        fullName: decoded.fullName,
+        roles: Array.isArray(decoded.roles) ? decoded.roles : [decoded.roles],
+      };
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      setToken(token);
+      setUser(userData);
+      router.push('/pages/loginhome')
+    } catch (error) {
+      console.error("Invalid token during login", error);
+    }
+  };
+
   const logout = () => {
-    document.cookie = "auth_token=; path=/; max-age=0"; // ลบ cookie
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setToken(null);
     setUser(null);
     router.push("/");
   };
 
+  const isAuthenticated = !!token;
+
   return (
     <AuthContext.Provider
-      value={{ user, setUser, logout, isAuthenticated: !!user }}
+      value={{ user, token, login, logout, isAuthenticated, isLoading }}
     >
       {children}
     </AuthContext.Provider>

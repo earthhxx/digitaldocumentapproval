@@ -6,7 +6,7 @@ import RolesTable from "./adcomponents/RolesTable";
 import UsersTable from "./adcomponents/UsersTable";
 import UserRolesTable from "./adcomponents/UserRolesTable";
 import RolePermissionsTable from "./adcomponents/RolePermissionsTable";
-import ProtectedRoute from "@/app/components/ProtectedRoute";
+import ProtectedRoute from "../../components/ProtectedRoute";
 import Filteruser from "./adcomponents/filteruser";
 
 type ComponentType = "Permissions" | "Roles" | "Users" | "UserRoles" | "RolePermissions" | "Filteruser";

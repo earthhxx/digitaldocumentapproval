@@ -1,39 +1,43 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 import Sidebar from "./components/Sidebar";
-import { AuthProvider, User } from "./context/AuthContext";
+import { AuthProvider } from "../app/context/AuthContext";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "My App",
   description: "PDF Approval System",
 };
 
-async function getUserFromCookie(): Promise<User | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
-
-  if (!token) return null;
-
-  try {
-    const decoded = jwt.decode(token) as { userId: string; fullName: string; roles: string[] };
-    return decoded ? { userId: decoded.userId, fullName: decoded.fullName, roles: decoded.roles } : null;
-  } catch {
-    return null;
-  }
-}
-
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const user = await getUserFromCookie();
-
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en">
-      <body className="flex w-full h-screen">
-        <AuthProvider initialUser={user}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-screen flex`}
+      >
+        <AuthProvider>
           <Sidebar />
-          <main className="flex-1 overflow-auto">{children}</main>
+          <main className="flex-1">
+            
+              {children}
+
+          </main>
         </AuthProvider>
+
       </body>
     </html>
   );
