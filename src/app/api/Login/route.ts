@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     if (!username || !password) {
       return NextResponse.json({ error: "กรุณากรอก username และ password" }, { status: 400 });
     }
-
+    console.log(username, password);
     const pool = await getDashboardConnection();
 
     const userResult = await pool.request()
