@@ -1,6 +1,7 @@
 // LoginForm.tsx
 "use client";
 import { useState } from "react";
+import { setCookie } from "cookies-next"; // ถ้าใช้ Next.js + cookies-next library
 
 type Props = {
     onLoginSuccess: (token: string) => void;
@@ -30,14 +31,24 @@ export default function LoginForm({ onLoginSuccess }: Props) {
             const data = await res.json();
 
             if (res.ok && data.token) {
-                // เก็บ token ลง localStorage
-                localStorage.setItem("token", data.token);
+                // เก็บ token ลง cookie (HttpOnly, Secure)
+                setCookie("auth_token", data.token, {
+                    httpOnly: true,   // ป้องกัน JS เข้าถึง
+                    secure: process.env.NODE_ENV === "production", // ส่งเฉพาะ HTTPS
+                    path: "/",        // cookie ใช้ได้ทุกหน้า
+                    sameSite: "strict",
+                    maxAge: 60 * 60 * 24 * 7, // 7 วัน
+                });
+
                 // ล้างฟอร์ม
                 clearForm();
+
                 // แจ้งผู้ใช้ว่า login สำเร็จ
                 alert("Login สำเร็จ");
-                // แจ้ง Sidebar ว่า login สำเร็จ พร้อมส่ง token
+
+                // แจ้ง Sidebar ว่า login สำเร็จ (สามารถอ่านจาก cookie ใน layout/SSR ได้)
                 onLoginSuccess(data.token);
+
             } else {
                 alert(data.error || "Login ล้มเหลว");
                 clearForm(); // ล้างฟอร์มเมื่อ login ล้มเหลว

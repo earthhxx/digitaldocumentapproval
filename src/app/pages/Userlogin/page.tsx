@@ -1,35 +1,29 @@
-"use client";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
+// import Navbar from "@/components/Navbar";
 
-import { useAuth } from "../../context/AuthContext";
-import Link from "next/link";
+export default async function LoginHomeLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("auth_token")?.value;
 
-export default function Home() {
-  const { user } = useAuth();
-  const roles = user?.roles || [];
-
-  if (!user) {
-    return (
-      <div className="w-screen h-screen flex items-center justify-center text-2xl">
-        Loading...
-      </div>
-    );
+  let user: any = null;
+  if (token) {
+    try {
+      user = jwt.decode(token);
+    } catch { }
   }
 
   return (
     <div className="w-screen h-screen flex flex-col bg-gray-100">
-      {/* Navbar */}
-      <nav className="w-full flex justify-between items-center bg-white shadow p-4">
-        <div className="font-bold text-lg">MyApp</div>
-        <div className="flex gap-4">
-          {roles.includes("admin") && <Link href="/admin">Admin</Link>}
-          {roles.includes("user") && <Link href="/dashboard">Dashboard</Link>}
-          <Link href="/profile">Profile</Link>
-        </div>
-      </nav>
+      {/* <Navbar user={user} /> */}
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center text-6xl text-black text-center">
-        WELCOME, {user.fullName || ""}
+        WELCOME, {user?.fullName || ""}
       </main>
     </div>
   );
