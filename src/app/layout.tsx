@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Sidebar from "./components/Sidebar";
-import { AuthProvider } from "../app/context/AuthContext";
+import Sidebar, { User } from "./components/Sidebar";
 import { Geist, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers"; // สำหรับ SSR cookie
+import { jwtVerify } from "jose";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -19,25 +20,40 @@ export const metadata: Metadata = {
   description: "PDF Approval System",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  // --- SSR: อ่าน cookie ---
+  const cookieStore = await cookies();
+  const token = cookieStore.get("auth_token")?.value;
+
+  let initialUser: User | null = null;
+  if (token) {
+    try {
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+      const { payload } = await jwtVerify(token, secret);
+
+      initialUser = {
+        userId: payload.userId as string,
+        fullName: payload.fullName as string,
+        roles: Array.isArray(payload.roles)
+          ? payload.roles
+          : [payload.roles as string],
+      };
+    } catch {
+      initialUser = null;
+    }
+  }
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-screen flex`}
       >
-        <AuthProvider>
-          <Sidebar />
-          <main className="flex-1">
-            
-              {children}
-
-          </main>
-        </AuthProvider>
-
+        <Sidebar initialUser={initialUser} />
+        <main className="flex-1">{children}</main>
       </body>
     </html>
   );
