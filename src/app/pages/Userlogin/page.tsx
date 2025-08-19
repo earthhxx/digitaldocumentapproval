@@ -1,30 +1,32 @@
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
-// import Navbar from "@/components/Navbar";
+import FM_IT_03 from "./FM_IT_03";
 
-export default async function LoginHomeLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+interface UserPayload {
+  userId?: number | string;
+  username?: string;
+  fullName?: string;
+  roles?: string[];
+}
+
+// ฟังก์ชัน server component จะถูก SSR
+export default async function FM_IT_03Page() {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value;
 
-  let user: any = null;
+  let user: UserPayload | null = null;
   if (token) {
     try {
-      user = jwt.decode(token);
-    } catch { }
+      user = jwt.decode(token) as UserPayload;
+    } catch {
+      user = null;
+    }
   }
 
-  return (
-    <div className="w-screen h-screen flex flex-col bg-gray-100">
-      {/* <Navbar user={user} /> */}
+  // ตรวจสิทธิ์
+  if (!user || !user.roles?.includes("user")) {
+    return <p>Access Denied</p>; // หรือ redirect
+  }
 
-      {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center text-6xl text-black text-center">
-        WELCOME, {user?.fullName || ""}
-      </main>
-    </div>
-  );
+  return <FM_IT_03 user={user} />; // ส่ง user เป็น prop
 }
