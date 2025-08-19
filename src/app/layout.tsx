@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers"; // สำหรับ SSR cookie
 import { jwtVerify } from "jose";
 import "./globals.css";
+import { AuthProvider } from "./context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,8 +53,11 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-screen flex`}
       >
-        <Sidebar initialUser={initialUser} />
-        <main className="flex-1">{children}</main>
+        <AuthProvider initialUser={initialUser}>
+          <Sidebar />
+          <main className="flex-1">{children}</main>
+        </AuthProvider>
+
       </body>
     </html>
   );

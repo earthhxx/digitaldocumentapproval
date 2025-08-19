@@ -1,85 +1,38 @@
+// app/context/AuthContext.tsx
 "use client";
-import { createContext, useContext, useState, useEffect } from "react";
-import  { jwtDecode }from "jwt-decode";
-import { useRouter } from "next/navigation";
 
-interface User {
-  userId: string;
-  fullName: string;
-  username?: string; // optional
-  roles: string[];
-}
-
-interface DecodedToken {
-  userId: string;
-  fullName: string;
-  roles: string | string[];
-}
+import React, { createContext, useState, useContext, ReactNode } from "react";
+import { User } from "../components/Sidebar";
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
-  login: (token: string) => void;
+  login: (user: User) => void;
   logout: () => void;
-  isAuthenticated: boolean;
-  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
+export const AuthProvider = ({
+  children,
+  initialUser,
+}: {
+  children: ReactNode;
+  initialUser?: User | null;
+}) => {
+  const [user, setUser] = useState<User | null>(initialUser || null);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    }
-
-    setIsLoading(false);
-  }, []);
-
-  const login = (token: string) => {
-    try {
-      const decoded = jwtDecode<DecodedToken>(token);
-
-      const userData: User = {
-        userId: decoded.userId,
-        fullName: decoded.fullName,
-        roles: Array.isArray(decoded.roles) ? decoded.roles : [decoded.roles],
-      };
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(userData));
-
-      setToken(token);
-      setUser(userData);
-      router.push('/')
-    } catch (error) {
-      console.error("Invalid token during login", error);
-    }
+  const login = (newUser: User) => {
+    setUser(newUser);
+    // cookie ต้องถูกเซ็ตแล้วจาก API Login
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setToken(null);
+  const logout = async () => {
+    await fetch("/api/Logout", { method: "POST" });
     setUser(null);
-    router.push("/");
   };
-
-  const isAuthenticated = !!token;
 
   return (
-    <AuthContext.Provider
-      value={{ user, token, login, logout, isAuthenticated, isLoading }}
-    >
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
