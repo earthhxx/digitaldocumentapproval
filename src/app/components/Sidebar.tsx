@@ -42,7 +42,17 @@ export default function Sidebar({ initialUser }: SidebarProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  const logout = () => setUser(null);
+  const logout = async () => {
+    try {
+      await fetch("/api/Logout", { method: "POST" });
+      setUser(null); // reset UI state
+      window.location.href = "/"; // redirect ไปหน้า login
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+  };
+
+
 
   if (!mounted) return null;
 

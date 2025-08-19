@@ -6,7 +6,6 @@ import RolesTable from "./adcomponents/RolesTable";
 import UsersTable from "./adcomponents/UsersTable";
 import UserRolesTable from "./adcomponents/UserRolesTable";
 import RolePermissionsTable from "./adcomponents/RolePermissionsTable";
-import ProtectedRoute from "../../components/ProtectedRoute";
 import Filteruser from "./adcomponents/filteruser";
 
 type ComponentType = "Permissions" | "Roles" | "Users" | "UserRoles" | "RolePermissions" | "Filteruser";
@@ -60,48 +59,48 @@ export default function AdminAccessPage() {
     }, []);
 
     return (
-        <ProtectedRoute>
-            <div className=" font-mono text-white bg-black pt-20">
-                <div className="flex flex-row items-center gap-3 mb-4 ">
-                    <span className="font-bold ps-4">Select Function :</span>
-                    {/* Custom dropdown */}
-                    <div ref={dropdownRef} tabIndex={0} onKeyDown={handleKey} className="relative">
-                        <div
-                            className="bg-black text-white border border-white px-2 py-1 cursor-pointer"
-                            onClick={() => setDropdownOpen(prev => !prev)}
-                        >
-                            {selected}
-                        </div>
-                        {dropdownOpen && (
-                            <div className="absolute top-full left-0 w-60 bg-black border border-white mt-1 z-50">
-                                {options.map((opt, index) => (
-                                    <div
-                                        key={opt}
-                                        className={`px-2 py-1 cursor-pointer ${index === highlightedIndex ? "bg-white text-black" : "text-white"}`}
-                                        onMouseEnter={() => setHighlightedIndex(index)}
-                                        onMouseDown={() => {
-                                            setSelected(opt);
-                                            setDropdownOpen(false);
-                                        }}
-                                    >
-                                        {opt}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+
+        <div className=" font-mono text-white bg-black pt-20">
+            <div className="flex flex-row items-center gap-3 mb-4 ">
+                <span className="font-bold ps-4">Select Function :</span>
+                {/* Custom dropdown */}
+                <div ref={dropdownRef} tabIndex={0} onKeyDown={handleKey} className="relative">
+                    <div
+                        className="bg-black text-white border border-white px-2 py-1 cursor-pointer"
+                        onClick={() => setDropdownOpen(prev => !prev)}
+                    >
+                        {selected}
                     </div>
+                    {dropdownOpen && (
+                        <div className="absolute top-full left-0 w-60 bg-black border border-white mt-1 z-50">
+                            {options.map((opt, index) => (
+                                <div
+                                    key={opt}
+                                    className={`px-2 py-1 cursor-pointer ${index === highlightedIndex ? "bg-white text-black" : "text-white"}`}
+                                    onMouseEnter={() => setHighlightedIndex(index)}
+                                    onMouseDown={() => {
+                                        setSelected(opt);
+                                        setDropdownOpen(false);
+                                    }}
+                                >
+                                    {opt}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
-
-                <div className="min-h-[60vh] max-h-[60vh]">
-                    {selected === "Permissions" && <PermissionsTable />}
-                    {selected === "Roles" && <RolesTable />}
-                    {selected === "Users" && <UsersTable />}
-                    {selected === "UserRoles" && <UserRolesTable />}
-                    {selected === "RolePermissions" && <RolePermissionsTable />}
-                    {selected === "Filteruser" && <Filteruser />}
-                </div>
-
             </div>
-        </ProtectedRoute>
+
+            <div className="min-h-[60vh] max-h-[60vh]">
+                {selected === "Permissions" && <PermissionsTable />}
+                {selected === "Roles" && <RolesTable />}
+                {selected === "Users" && <UsersTable />}
+                {selected === "UserRoles" && <UserRolesTable />}
+                {selected === "RolePermissions" && <RolePermissionsTable />}
+                {selected === "Filteruser" && <Filteruser />}
+            </div>
+
+        </div>
+
     );
 }
