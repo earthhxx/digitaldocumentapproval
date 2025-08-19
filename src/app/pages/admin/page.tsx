@@ -20,15 +20,7 @@ type ComponentType =
 export default function AdminAccessPage() {
   const { user } = useAuth();
 
-  // ถ้าไม่มี user หรือไม่ใช่ admin
-  if (!user || !user.roles.includes("admin")) {
-    return (
-      <div className="flex flex-col justify-center items-center w-full h-screen bg-red-50 text-red-800 font-bold text-2xl">
-        YOU HAVE NO ACCESS
-      </div>
-    );
-  }
-
+  // --- เรียก Hooks ทุกตัวที่ top level ---
   const [selected, setSelected] = useState<ComponentType>("Permissions");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
@@ -79,16 +71,22 @@ export default function AdminAccessPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // --- Conditional render ---
+  const isAdmin = user?.roles.includes("admin");
+
+  if (!isAdmin) {
+    return (
+      <div className="flex flex-col justify-center items-center w-full h-screen bg-red-50 text-red-800 font-bold text-2xl">
+        YOU HAVE NO ACCESS
+      </div>
+    );
+  }
+
   return (
     <div className="font-mono text-white bg-black pt-20">
       <div className="flex flex-row items-center gap-3 mb-4 ">
         <span className="font-bold ps-4">Select Function :</span>
-        <div
-          ref={dropdownRef}
-          tabIndex={0}
-          onKeyDown={handleKey}
-          className="relative"
-        >
+        <div ref={dropdownRef} tabIndex={0} onKeyDown={handleKey} className="relative">
           <div
             className="bg-black text-white border border-white px-2 py-1 cursor-pointer"
             onClick={() => setDropdownOpen((prev) => !prev)}
