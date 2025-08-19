@@ -4,7 +4,6 @@ import { useAuth } from "../context/AuthContext";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 
-
 export default function Sidebar() {
   const { user, login, logout, isAuthenticated } = useAuth();
   const [mounted, setMounted] = useState(false);
@@ -100,7 +99,7 @@ export default function Sidebar() {
             <nav className="flex flex-col gap-3 p-6 flex-1 w-full">
               {isAuthenticated && (
                 <a
-                  href="/pages/loginhome"
+                  href="/"
                   className="hover:bg-gray-700 bg-gray-700/30 p-3 rounded font-medium"
                 >
                   Home

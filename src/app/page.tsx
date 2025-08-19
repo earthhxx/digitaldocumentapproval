@@ -41,7 +41,7 @@ export default async function WelcomePage() {
         </p>
         {!user && (
           <p className="text-sm text-gray-500">
-            Use the sidebar to login and access your dashboard.
+            Use the sidebar to login and access your Roles.
           </p>
         )}
       </div>

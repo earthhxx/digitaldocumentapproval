@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       setToken(token);
       setUser(userData);
-      router.push('/pages/loginhome')
+      router.push('/')
     } catch (error) {
       console.error("Invalid token during login", error);
     }
