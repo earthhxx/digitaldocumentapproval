@@ -45,11 +45,11 @@ export default function FMModalTrigger({ id }: FMModalTriggerProps) {
         เปิด PDF
       </button>
 
-      {showPDF && (
+      {showPDF && ( 
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
           <div className="relative w-full max-w-[95vw] h-[95vh] bg-white rounded-xl shadow-lg flex flex-col">
-            <div className="flex justify-between items-center p-4 bg-gray-100 border-b rounded-t-xl">
-              <h2 className="text-lg font-semibold text-gray-800">PDF Viewer</h2>
+            <div className="absolute right-0 p-4 ">
+              {/* <h2 className="text-lg font-semibold text-gray-800">PDF Viewer</h2> */}
               <button
                 className="text-white bg-red-600 hover:bg-red-700 rounded-full w-10 h-10 flex items-center justify-center text-2xl"
                 onClick={() => setShowPDF(false)}
@@ -58,7 +58,7 @@ export default function FMModalTrigger({ id }: FMModalTriggerProps) {
               </button>
             </div>
 
-            <iframe src={pdfUrl} className="w-full h-full border-none flex-1" title="PDF Viewer" />
+            <iframe src={pdfUrl} className="w-full h-full border-none flex-1 " title="PDF Viewer" />
 
             <div className="absolute bottom-4 right-4 flex gap-4">
               <button
