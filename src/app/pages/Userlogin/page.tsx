@@ -33,7 +33,7 @@ export default async function UserLoginPage() {
     <div className="flex flex-col items-center justify-center h-screen">
       <p className="mb-4">ยินดีต้อนรับ {user.fullName}</p>
       <Link
-        href="/Userlogin/FM_IT_03"
+        href="/pages/Userlogin/FM_IT_03"
         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
       >
         เข้าสู่ FM_IT_03

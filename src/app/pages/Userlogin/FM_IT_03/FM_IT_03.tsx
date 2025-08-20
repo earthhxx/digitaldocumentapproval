@@ -28,13 +28,14 @@ const columns: Column[] = [
   { key: "DetailName", label: "ข้อมูลรายระเอียด" },
 ];
 
-export default async function FM_IT_03({ user }: FM_IT_03Props) {
-  const ishaveRole = user.roles?.includes("IT")
-  const permissions = user.permissions
-  console.log(permissions);
-  if (!ishaveRole) {
-    redirect("/"); // หรือ /login
+function authCheck(user: UserPayload | null) {
+  if (!user || !user.roles?.includes("IT")) {
+    redirect("/"); // SSR redirect
   }
+}
+
+export default async function FM_IT_03({ user }: FM_IT_03Props) {
+  authCheck(user); // ✅ รันบน server ก่อน render
   // SSR fetch data
   let data: DataRow[] = [];
   let error = "";
