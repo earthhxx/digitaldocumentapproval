@@ -30,11 +30,11 @@ export default function RolesPermissionList() {
       setLoading(true);
       setError(null);
       try {
-
-
         const res = await fetch("/api/admin/rolepermission/role-permissions", {
-
+          method: "GET",
+          credentials: "include", // ✅ สำคัญ
         });
+        if (!res.ok) throw new Error("Failed to fetch role permissions");
         const data = await res.json();
         setItems(data.data ?? []);
       } catch (err: unknown) {
@@ -50,31 +50,22 @@ export default function RolesPermissionList() {
     fetchUserRoles();
   }, []);
 
+
+  // --- Permissions ---
   useEffect(() => {
     const fetchPermissions = async () => {
-      const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-      if (!token) {
-        setError("No token found. Please login.");
-        setLoading(false);
-        return;
-      }
       setLoading(true);
       setError(null);
       try {
         const res = await fetch("/api/admin/permissiontable/permissions", {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          },
+          method: "GET",
+          credentials: "include", // ✅ ส่ง cookie ไปแทน
         });
+        if (!res.ok) throw new Error("Failed to fetch permissions");
         const data = await res.json();
         setPermissionitems(data.data ?? []);
       } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError(String(err)); // fallback สำหรับค่าอื่น ๆ
-        }
+        setError(err instanceof Error ? err.message : String(err));
       } finally {
         setLoading(false);
       }
@@ -82,31 +73,21 @@ export default function RolesPermissionList() {
     fetchPermissions();
   }, []);
 
+  // --- Roles ---
   useEffect(() => {
     const fetchRoles = async () => {
-      const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-      if (!token) {
-        setError("No token found. Please login.");
-        setLoading(false);
-        return;
-      }
       setLoading(true);
       setError(null);
       try {
         const res = await fetch("/api/admin/roletable/roles", {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          },
+          method: "GET",
+          credentials: "include", // ✅ ส่ง cookie
         });
+        if (!res.ok) throw new Error("Failed to fetch roles");
         const data = await res.json();
-        setRolesItems(data.data ?? [])
+        setRolesItems(data.data ?? []);
       } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError(String(err)); // fallback สำหรับค่าอื่น ๆ
-        }
+        setError(err instanceof Error ? err.message : String(err));
       } finally {
         setLoading(false);
       }
@@ -125,24 +106,18 @@ export default function RolesPermissionList() {
   };
 
 
+  // --- ADD ---
   const confirmAddRolePermssions = async () => {
-    const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-    if (!token) {
-      setError("No token found. Please login.");
-      setLoading(false);
-      return;
-    }
     const res = await fetch("/api/admin/rolepermission/addroleper", {
       method: "POST",
+      credentials: "include", // ✅ ส่ง cookie
       headers: {
-        "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ RoleID: form.RoleID, PermissionID: form.PermissionID }),
     });
 
     if (!res.ok) { alert("Failed to add role"); return; }
-
     const updatedRoles: RolePermission[] = await res.json();
     setItems(updatedRoles);
     setForm({ RoleID: "", PermissionID: "" });
@@ -156,17 +131,12 @@ export default function RolesPermissionList() {
   };
 
 
+  // --- DELETE ---
   const confirmDelete = async (RoleID: string | number, PermissionID: string | number) => {
-    const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-    if (!token) {
-      setError("No token found. Please login.");
-      setLoading(false);
-      return;
-    }
     const res = await fetch("/api/admin/rolepermission/delroleper", {
       method: "POST",
+      credentials: "include", // ✅ ส่ง cookie
       headers: {
-        "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ RoleID, PermissionID }),
@@ -178,7 +148,6 @@ export default function RolesPermissionList() {
 
     setConfirm({ visible: false, type: "delete" });
   };
-
 
   // --- keyboard ---
   const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {

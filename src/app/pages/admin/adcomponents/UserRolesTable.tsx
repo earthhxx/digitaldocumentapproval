@@ -21,24 +21,20 @@ export default function UserRolesList() {
 
   const [choice, setChoice] = useState<"Yes" | "No">("No");
 
-  // --- Fetch on mount ---
+  // --- Fetch UserRoles ---
   useEffect(() => {
     const fetchUserRoles = async () => {
       setLoading(true);
       setError(null);
       try {
- 
         const res = await fetch("/api/admin/userroletable/user-roles", {
-       
+          credentials: "include", // ✅ ส่ง cookie อัตโนมัติ
         });
         const data = await res.json();
         setItems(data.data ?? []);
       } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError(String(err)); // fallback สำหรับค่าอื่น ๆ
-        }
+        if (err instanceof Error) setError(err.message);
+        else setError(String(err));
       } finally {
         setLoading(false);
       }
@@ -46,31 +42,20 @@ export default function UserRolesList() {
     fetchUserRoles();
   }, []);
 
+  // --- Fetch Roles ---
   useEffect(() => {
     const fetchRoles = async () => {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-      if (!token) {
-        setError("No token found. Please login.");
-        setLoading(false);
-        return;
-      }
       try {
         const res = await fetch("/api/admin/roletable/roles", {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          },
+          credentials: "include", // ✅ ส่ง cookie อัตโนมัติ
         });
         const data = await res.json();
-        setRolesItems(data.data ?? [])
+        setRolesItems(data.data ?? []);
       } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError(String(err)); // fallback สำหรับค่าอื่น ๆ
-        }
+        if (err instanceof Error) setError(err.message);
+        else setError(String(err));
       } finally {
         setLoading(false);
       }
@@ -89,28 +74,32 @@ export default function UserRolesList() {
   };
 
 
+  // --- ADD ---
   const confirmAddRole = async () => {
-    const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-    if (!token) {
-      setError("No token found. Please login.");
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/userroletable/adduserrole", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({ UserID: form.UserID, RoleID: form.RoleID }),
+      });
+
+      if (!res.ok) { alert("Failed to add role"); return; }
+
+      const updatedRoles: UserRole[] = await res.json();
+      setItems(updatedRoles);
+      setForm({ UserID: "", RoleID: "" });
+      setConfirm({ visible: false, type: "add" });
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message);
+      else setError(String(err));
+    } finally {
       setLoading(false);
-      return;
     }
-    const res = await fetch("/api/admin/userroletable/adduserrole", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ UserID: form.UserID, RoleID: form.RoleID }),
-    });
-
-    if (!res.ok) { alert("Failed to add role"); return; }
-
-    const updatedRoles: UserRole[] = await res.json();
-    setItems(updatedRoles);
-    setForm({ UserID: "", RoleID: "" });
-    setConfirm({ visible: false, type: "add" });
   };
 
 
@@ -120,29 +109,32 @@ export default function UserRolesList() {
   };
 
 
+  // --- DELETE ---
   const confirmDelete = async (UserID: number | string, RoleID: number | string) => {
-    const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-    if (!token) {
-      setError("No token found. Please login.");
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/userroletable/deluserrole", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({ UserID, RoleID }),
+      });
+
+      if (res.ok)
+        setItems(prev => prev.filter(u => !(u.UserID === UserID && u.RoleID === RoleID)));
+      else alert("Failed to delete Role");
+
+      setConfirm({ visible: false, type: "delete" });
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message);
+      else setError(String(err));
+    } finally {
       setLoading(false);
-      return;
     }
-    const res = await fetch("/api/admin/userroletable/deluserrole", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ UserID, RoleID }),
-    });
-
-    if (res.ok)
-      setItems(prev => prev.filter(u => !(u.UserID === UserID && u.RoleID === RoleID)));
-    else alert("Failed to delete Role");
-
-    setConfirm({ visible: false, type: "delete" });
   };
-
 
   // --- keyboard ---
   const handleKey = (e: React.KeyboardEvent<HTMLDivElement>) => {

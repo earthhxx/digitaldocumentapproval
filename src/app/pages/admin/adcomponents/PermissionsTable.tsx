@@ -23,12 +23,12 @@ export default function PermissionsList() {
     // --- Fetch on mount ---
     useEffect(() => {
         const fetchPermissions = async () => {
-      
             setLoading(true);
             setError(null);
             try {
                 const res = await fetch("/api/admin/permissiontable/permissions", {
-            
+                    method: "GET",
+                    credentials: "include", // ✅ สำคัญ
                 });
                 const data = await res.json();
                 setItems(data.data ?? []);
@@ -52,30 +52,30 @@ export default function PermissionsList() {
     };
 
     const confirmAddPermission = async () => {
-        const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-        if (!token) {
-            setError("No token found. Please login.");
-            setLoading(false);
-            return;
+        try {
+            const res = await fetch("/api/admin/permissiontable/addPermissions", {
+                method: "POST",
+                credentials: "include", // <<<<<<<< สำคัญ
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(form),
+            });
+
+            if (!res.ok) {
+                throw new Error(`Failed: ${res.status}`);
+            }
+
+            // API ควรส่งกลับเป็น list updated
+            const updatedPermissions: Permission[] = await res.json();
+            setItems(updatedPermissions);
+
+            // reset form
+            setForm({ PermissionName: "", Description: "" });
+            setConfirm({ visible: false, type: "add" });
+        } catch (err: any) {
+            setError(err.message);
         }
-        const res = await fetch("/api/admin/permissiontable/addPermissions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(form),
-        });
-
-        // ให้ API ส่งกลับเป็นรายการทั้งหมด
-        const updatedPermissions: Permission[] = await res.json();
-
-        // เซ็ตตรงๆ จาก API
-        setItems(updatedPermissions);
-
-        // เคลียร์ฟอร์ม
-        setForm({ PermissionName: "", Description: "" });
-        setConfirm({ visible: false, type: "add" });
     };
 
     // --- DELETE ---
@@ -84,25 +84,25 @@ export default function PermissionsList() {
     };
 
     const confirmDelete = async (id: number | string) => {
-        const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-        if (!token) {
-            setError("No token found. Please login.");
-            setLoading(false);
-            return;
+        try {
+            const res = await fetch("/api/admin/permissiontable/delPermissions", {
+                method: "POST",
+                credentials: "include", // <<<<<<<< สำคัญ
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ PermissionID: id }),
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to delete permission");
+            }
+
+            setItems(prev => prev.filter(p => p.PermissionID !== id));
+            setConfirm({ visible: false, type: "delete" });
+        } catch (err: any) {
+            setError(err.message);
         }
-        const res = await fetch("/api/admin/permissiontable/delPermissions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ PermissionID: id }),
-        });
-
-        if (res.ok) setItems(prev => prev.filter(p => p.PermissionID !== id));
-        else alert("Failed to delete permission");
-
-        setConfirm({ visible: false, type: "delete" });
     };
 
     // --- keyboard ---

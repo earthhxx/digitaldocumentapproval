@@ -27,9 +27,10 @@ export default function RolesList() {
       setLoading(true);
       setError(null);
       try {
-    
+
         const res = await fetch("/api/admin/roletable/roles", {
-     
+          method: "GET",
+          credentials: "include", // ✅ สำคัญ
         });
         const data = await res.json();
         setItems(data.data ?? []);
@@ -53,33 +54,36 @@ export default function RolesList() {
     setConfirm({ visible: true, type: "add" });
   };
 
+  // --- ADD ---
   const confirmAddRole = async () => {
-    const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-    if (!token) {
-      setError("No token found. Please login.");
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/roletable/addRoles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include", // ✅ ใช้ cookie
+        body: JSON.stringify(form),
+      });
+
+      if (!res.ok) {
+        alert("Failed to add role");
+        return;
+      }
+
+      const updatedRoles: Role[] = await res.json();
+      setItems(updatedRoles);
+
+      setForm({ RoleName: "", Description: "" });
+      setConfirm({ visible: false, type: "add" });
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message);
+      else setError(String(err));
+    } finally {
       setLoading(false);
-      return;
     }
-    const res = await fetch("/api/admin/roletable/addRoles", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(form),
-    });
-
-    if (!res.ok) {
-      alert("Failed to add role");
-      return;
-    }
-
-    // ตอนนี้ backend ส่ง array ทั้งหมดมาแล้ว
-    const updatedRoles: Role[] = await res.json();
-    setItems(updatedRoles);
-
-    setForm({ RoleName: "", Description: "" });
-    setConfirm({ visible: false, type: "add" });
   };
 
 
@@ -88,26 +92,30 @@ export default function RolesList() {
     setConfirm({ visible: true, type: "delete", id });
   };
 
+  // --- DELETE ---
   const confirmDelete = async (id: number | string) => {
-    const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-    if (!token) {
-      setError("No token found. Please login.");
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/rolepermission/delRoles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include", // ✅ ใช้ cookie
+        body: JSON.stringify({ RoleID: id }),
+      });
+
+      if (res.ok) setItems(prev => prev.filter(p => p.RoleID !== id));
+      else alert("Failed to delete Role");
+
+      setConfirm({ visible: false, type: "delete" });
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message);
+      else setError(String(err));
+    } finally {
       setLoading(false);
-      return;
     }
-    const res = await fetch("/api/admin/rolepermission/delRoles", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ RoleID: id }),
-    });
-
-    if (res.ok) setItems(prev => prev.filter(p => p.RoleID !== id));
-    else alert("Failed to delete Role");
-
-    setConfirm({ visible: false, type: "delete" });
   };
 
   // --- keyboard ---

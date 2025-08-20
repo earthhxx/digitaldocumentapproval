@@ -29,24 +29,20 @@ export default function UsersList() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // --- Fetch on mount ---
+    // --- Fetch users ---
     useEffect(() => {
         const fetchUsers = async () => {
-   
             setLoading(true);
             setError(null);
             try {
                 const res = await fetch("/api/admin/usertable/users", {
-              
+                    credentials: "include", // ✅ ส่ง cookie อัตโนมัติ
                 });
                 const data = await res.json();
                 setItems(data.data ?? []);
             } catch (err: unknown) {
-                if (err instanceof Error) {
-                    setError(err.message);
-                } else {
-                    setError(String(err)); // fallback สำหรับค่าอื่น ๆ
-                }
+                if (err instanceof Error) setError(err.message);
+                else setError(String(err));
             } finally {
                 setLoading(false);
             }
@@ -69,115 +65,84 @@ export default function UsersList() {
         setConfirm({ visible: true, type: "delete", User_Id });
     };
 
-    // --- actions ---
+    // --- Add user ---
     const addUser = async () => {
+        setLoading(true);
+        setError(null);
         try {
-            const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-            if (!token) {
-                setError("No token found. Please login.");
-                setLoading(false);
-                return;
-            }
             const res = await fetch("/api/admin/usertable/adduser", {
                 method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify(form),
             });
-
             if (!res.ok) {
                 const err = await res.json();
                 throw new Error(err.error || "Failed to add user");
             }
-
             const updatedUsers: User[] = await res.json();
             setItems(updatedUsers);
-
             setForm({ User_Id: "", Name: "", Department: "", Pass: "" });
             setConfirm({ visible: false, type: "add" });
-
         } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError(String(err)); // fallback สำหรับค่าอื่น ๆ
-            }
+            if (err instanceof Error) setError(err.message);
+            else setError(String(err));
+        } finally {
+            setLoading(false);
         }
     };
 
+    // --- Edit user ---
     const editUser = async (User_Id: string) => {
+        setLoading(true);
+        setError(null);
         try {
-            const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-            if (!token) {
-                setError("No token found. Please login.");
-                setLoading(false);
-                return;
-            }
             const res = await fetch("/api/admin/usertable/edituser", {
                 method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ User_Id: User_Id, Name: form.Name, Department: form.Department, Pass: form.Pass })
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ User_Id, Name: form.Name, Department: form.Department, Pass: form.Pass }),
             });
-
             if (!res.ok) {
                 const err = await res.json();
                 throw new Error(err.error || "Failed to edit user");
             }
-
             const updatedUsers: User[] = await res.json();
             setItems(updatedUsers);
-
             setForm({ User_Id: "", Name: "", Department: "", Pass: "" });
             setEditingUserId(null);
             setConfirm({ visible: false, type: "edit" });
-
         } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError(String(err)); // fallback สำหรับค่าอื่น ๆ
-            }
+            if (err instanceof Error) setError(err.message);
+            else setError(String(err));
+        } finally {
+            setLoading(false);
         }
     };
 
+    // --- Delete user ---
     const deleteUser = async (User_Id: string) => {
+        setLoading(true);
+        setError(null);
         try {
-            const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-            if (!token) {
-                setError("No token found. Please login.");
-                setLoading(false);
-                return;
-            }
-
             const res = await fetch("/api/admin/usertable/deleteuser", {
                 method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify({ User_Id }),
             });
-
             if (!res.ok) {
                 const err = await res.json();
                 throw new Error(err.error || "Failed to delete user");
             }
-
             const updatedUsers: User[] = await res.json();
             setItems(updatedUsers);
             setConfirm({ visible: false, type: "delete" });
-
         } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError(String(err)); // fallback สำหรับค่าอื่น ๆ
-            }
+            if (err instanceof Error) setError(err.message);
+            else setError(String(err));
+        } finally {
+            setLoading(false);
         }
     };
 
