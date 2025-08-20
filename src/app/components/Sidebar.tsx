@@ -91,7 +91,7 @@ export default function Sidebar() {
                 )}
                 {roles.includes("user") && (
                   <a href="/pages/Userlogin" className="hover:bg-red-700 bg-red-700/30 p-3 rounded font-medium text-red-400">
-                    TEST PAGE
+                    D-APPROVE
                   </a>
                 )}
               </nav>

@@ -25,19 +25,44 @@ export default async function UserLoginPage() {
   }
 
   if (!user || !user.roles?.includes("user")) {
-    return <p>Access Denied</p>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <p className="text-red-600 text-xl font-semibold">Access Denied</p>
+      </div>
+    );
   }
 
-  // แสดงปุ่ม SSR navigate
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <p className="mb-4">ยินดีต้อนรับ {user.fullName}</p>
-      <Link
-        href="/pages/Userlogin/FM_IT_03"
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-      >
-        เข้าสู่ FM_IT_03
-      </Link>
+    <div className="flex flex-col items-center justify-start min-h-screen bg-gradient-to-br from-blue-900 to-blue-700 text-white font-['Kanit'] px-6">
+      <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-10 mt-[5%] w-[70%] text-center ">
+        <h1 className="text-4xl font-bold mb-6 tracking-wider uppercase">
+          D-Approve
+        </h1>
+        <p className="mb-8 text-blue-100/90">
+          ยินดีต้อนรับ {user.fullName} <br />
+          เลือกเอกสารเพื่อดำเนินการ
+        </p>
+        <div className="grid grid-cols-5 gap-4 overflow-auto max-h-[80vh] custom-scrollbar">
+          <Link
+            href="/pages/Userlogin/FM_IT_03"
+            className=" inline-block px-6 py-3 bg-blue-600 hover:bg-blue-500 transition-colors rounded-lg text-lg font-semibold shadow-md"
+          >
+            FM_IT_03 - 1
+          </Link>
+          <Link
+            href="/pages/Userlogin/FM_IT_03"
+            className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-500 transition-colors rounded-lg text-lg font-semibold shadow-md"
+          >
+            FM_IT_03 - 2
+          </Link>
+          <Link
+            href="/pages/Userlogin/FM_IT_03"
+            className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-500 transition-colors rounded-lg text-lg font-semibold shadow-md"
+          >
+            FM_IT_03 - 3
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
