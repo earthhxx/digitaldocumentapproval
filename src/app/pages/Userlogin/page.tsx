@@ -1,3 +1,4 @@
+// pages/Userlogin/page.tsx
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import FM_IT_03 from "./FM_IT_03";
@@ -9,8 +10,7 @@ interface UserPayload {
   roles?: string[];
 }
 
-// ฟังก์ชัน server component จะถูก SSR
-export default async function FM_IT_03Page() {
+export default async function UserLoginPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value;
 
@@ -23,10 +23,10 @@ export default async function FM_IT_03Page() {
     }
   }
 
-  // ตรวจสิทธิ์
   if (!user || !user.roles?.includes("user")) {
-    return <p>Access Denied</p>; // หรือ redirect
+    return <p>Access Denied</p>; // หรือ redirect ไปหน้า login
   }
 
-  return <FM_IT_03 user={user} />; // ส่ง user เป็น prop
+  // ส่ง prop user ลงไปให้ FM_IT_03
+  return <FM_IT_03 />;
 }
