@@ -34,6 +34,7 @@ export default function LoginForm({ onLoginSuccess }: Props) {
                     userId: data.userId,
                     fullName: data.fullName,
                     roles: data.roles,
+                    permissions: data.permsissions,
                 });
             } else {
                 alert(data.error || "Login ล้มเหลว ❌");
