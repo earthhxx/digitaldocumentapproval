@@ -1,6 +1,8 @@
 // app/pages/Userlogin/FM_IT_03.tsx
 import React from "react";
 import FMModalTrigger from "./components/FMModalTrigger";
+import type { UserPayload } from "../Userlogin/page";
+import { redirect } from "next/navigation";
 
 interface DataRow {
   id: string;
@@ -15,6 +17,10 @@ interface Column {
   label: string;
 }
 
+interface FM_IT_03Props {
+  user: UserPayload;
+}
+
 const columns: Column[] = [
   { key: "Date", label: "วันที่ร้องขอ" },
   { key: "NameThi", label: "ชื่อThai" },
@@ -22,7 +28,13 @@ const columns: Column[] = [
   { key: "DetailName", label: "ข้อมูลรายระเอียด" },
 ];
 
-export default async function FM_IT_03() {
+export default async function FM_IT_03({ user }: FM_IT_03Props) {
+  const ishaveRole = user.roles?.includes("IT")
+  const permissions = user.permissions
+  console.log(permissions);
+  if (!ishaveRole) {
+    redirect("/"); // หรือ /login
+  }
   // SSR fetch data
   let data: DataRow[] = [];
   let error = "";

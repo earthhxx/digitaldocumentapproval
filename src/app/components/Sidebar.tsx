@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useAuth } from "../context/AuthContext";
 
-export interface User { userId: string; fullName: string; roles: string[]; }
+export interface User { userId: string; fullName: string; roles: string[]; permissions:string[]; }
 
 export default function Sidebar() {
   const { user, login, logout } = useAuth();

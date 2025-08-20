@@ -3,11 +3,12 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import FM_IT_03 from "./FM_IT_03";
 
-interface UserPayload {
+export interface UserPayload {
   userId?: number | string;
   username?: string;
   fullName?: string;
   roles?: string[];
+  permissions? :string[];
 }
 
 export default async function UserLoginPage() {
@@ -28,5 +29,5 @@ export default async function UserLoginPage() {
   }
 
   // ส่ง prop user ลงไปให้ FM_IT_03
-  return <FM_IT_03 />;
+  return <FM_IT_03 user={user}/>;
 }

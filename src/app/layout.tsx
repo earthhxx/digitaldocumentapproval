@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import Sidebar, { User } from "./components/Sidebar";
+import Sidebar from "./components/Sidebar";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers"; // สำหรับ SSR cookie
 import { jwtVerify } from "jose";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
+
+export interface User { userId: string; fullName: string; roles: string[]; permissions:string[]; }
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,23 +44,26 @@ export default async function RootLayout({
         roles: Array.isArray(payload.roles)
           ? payload.roles
           : [payload.roles as string],
+        permissions: Array.isArray(payload.permissions)
+          ? payload.permissions
+          : [payload.permissions as string],
       };
-    } catch {
-      initialUser = null;
+      } catch {
+        initialUser = null;
+      }
     }
+
+return (
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-screen flex`}
+        >
+          <AuthProvider initialUser={initialUser}>
+            <Sidebar />
+            <main className="flex-1">{children}</main>
+          </AuthProvider>
+
+        </body>
+      </html>
+    );
   }
-
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-screen flex`}
-      >
-        <AuthProvider initialUser={initialUser}>
-          <Sidebar />
-          <main className="flex-1">{children}</main>
-        </AuthProvider>
-
-      </body>
-    </html>
-  );
-}
