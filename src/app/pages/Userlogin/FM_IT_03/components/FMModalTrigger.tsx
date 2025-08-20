@@ -3,12 +3,18 @@
 import React, { useState } from "react";
 import SupervisorPopup from "./BT_SupervisorPage";
 import Manager from "./BT_ManagerPage";
+import { useAuth } from "@/app/context/AuthContext";
 
 interface FMModalTriggerProps {
   id: string;
 }
 
+
+
 export default function FMModalTrigger({ id }: FMModalTriggerProps) {
+  const { user } = useAuth();
+
+
   const [showPDF, setShowPDF] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
   const [showSupervisorPopup, setShowSupervisorPopup] = useState(false);
@@ -45,7 +51,7 @@ export default function FMModalTrigger({ id }: FMModalTriggerProps) {
         เปิด PDF
       </button>
 
-      {showPDF && ( 
+      {showPDF && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
           <div className="relative w-full max-w-[95vw] h-[95vh] bg-white rounded-xl shadow-lg flex flex-col">
             <div className="absolute right-0 p-4 ">
@@ -61,18 +67,22 @@ export default function FMModalTrigger({ id }: FMModalTriggerProps) {
             <iframe src={pdfUrl} className="w-full h-full border-none flex-1 " title="PDF Viewer" />
 
             <div className="absolute bottom-4 right-4 flex gap-4">
-              <button
-                className="px-5 py-2 bg-blue-600 text-white rounded-lg"
-                onClick={() => setShowSupervisorPopup(true)}
-              >
-                สำหรับหัวหน้างาน
-              </button>
-              <button
-                className="px-5 py-2 bg-green-600 text-white rounded-lg"
-                onClick={() => setShowManagerPopup(true)}
-              >
-                สำหรับผู้จัดการ
-              </button>
+              {user?.permissions?.includes("Check") && (
+                <button
+                  className="px-5 py-2 bg-blue-600 text-white rounded-lg"
+                  onClick={() => setShowSupervisorPopup(true)}
+                >
+                  สำหรับหัวหน้างาน
+                </button>
+              )}
+              {user?.permissions?.includes("Appove") && (
+                <button
+                  className="px-5 py-2 bg-green-600 text-white rounded-lg"
+                  onClick={() => setShowManagerPopup(true)}
+                >
+                  สำหรับผู้จัดการ
+                </button>
+              )}
             </div>
 
             {showSupervisorPopup && (
