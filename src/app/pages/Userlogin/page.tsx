@@ -1,14 +1,14 @@
 // pages/Userlogin/page.tsx
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
-import FM_IT_03 from "./FM_IT_03";
+import Link from "next/link";
 
 export interface UserPayload {
   userId?: number | string;
   username?: string;
   fullName?: string;
   roles?: string[];
-  permissions? :string[];
+  permissions?: string[];
 }
 
 export default async function UserLoginPage() {
@@ -25,9 +25,19 @@ export default async function UserLoginPage() {
   }
 
   if (!user || !user.roles?.includes("user")) {
-    return <p>Access Denied</p>; // หรือ redirect ไปหน้า login
+    return <p>Access Denied</p>;
   }
 
-  // ส่ง prop user ลงไปให้ FM_IT_03
-  return <FM_IT_03 user={user}/>;
+  // แสดงปุ่ม SSR navigate
+  return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <p className="mb-4">ยินดีต้อนรับ {user.fullName}</p>
+      <Link
+        href="/Userlogin/FM_IT_03"
+        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+      >
+        เข้าสู่ FM_IT_03
+      </Link>
+    </div>
+  );
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import SupervisorPopup from "../components/BT_SupervisorPage";
-import Manager from "../components/BT_ManagerPage";
+import SupervisorPopup from "./BT_SupervisorPage";
+import Manager from "./BT_ManagerPage";
 
 interface FMModalTriggerProps {
   id: string;

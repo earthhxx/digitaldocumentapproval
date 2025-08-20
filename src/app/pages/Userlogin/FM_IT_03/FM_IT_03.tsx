@@ -1,7 +1,7 @@
 // app/pages/Userlogin/FM_IT_03.tsx
 import React from "react";
 import FMModalTrigger from "./components/FMModalTrigger";
-import type { UserPayload } from "../Userlogin/page";
+import type { UserPayload } from "../page";
 import { redirect } from "next/navigation";
 
 interface DataRow {
