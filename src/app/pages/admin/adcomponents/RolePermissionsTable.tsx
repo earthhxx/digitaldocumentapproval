@@ -30,18 +30,10 @@ export default function RolesPermissionList() {
       setLoading(true);
       setError(null);
       try {
-        const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-        if (!token) {
-          setError("No token found. Please login.");
-          setLoading(false);
-          return;
-        }
+
 
         const res = await fetch("/api/admin/rolepermission/role-permissions", {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          },
+
         });
         const data = await res.json();
         setItems(data.data ?? []);

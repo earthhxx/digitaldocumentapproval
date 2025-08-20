@@ -19,7 +19,18 @@ type ComponentType =
 
 export default function AdminAccessPage() {
   const { user } = useAuth();
+  const roles = user?.roles ?? [];
+  const isAdmin = roles.includes("admin"); // ถ้าหน้านี้ "เฉพาะแอดมินเข้าได้" ให้กลับเงื่อนไขด้านล่าง
 
+  // NOTE: ถ้าหน้านี้ "ไม่ให้แอดมินเข้า" ใช้แบบนี้ (ตามโค้ดเดิม)
+  if (!user) {
+    return <div className="p-4 text-white">Loading user info...</div>;
+  }
+
+  // ถ้าไม่ใช่ admin → บล็อก
+  if (!isAdmin) {
+    return <div className="flex justify-center items-center w-full h-full p-4 text-red-500 ">NO ACCESS</div>;
+  }
   // --- เรียก Hooks ทุกตัวที่ top level ---
   const [selected, setSelected] = useState<ComponentType>("Permissions");
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -71,16 +82,7 @@ export default function AdminAccessPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // --- Conditional render ---
-  const isAdmin = user?.roles.includes("admin");
 
-  if (!isAdmin) {
-    return (
-      <div className="flex flex-col justify-center items-center w-full h-screen bg-red-50 text-red-800 font-bold text-2xl">
-        YOU HAVE NO ACCESS
-      </div>
-    );
-  }
 
   return (
     <div className="font-mono text-white bg-black pt-20">
@@ -98,9 +100,8 @@ export default function AdminAccessPage() {
               {options.map((opt, index) => (
                 <div
                   key={opt}
-                  className={`px-2 py-1 cursor-pointer ${
-                    index === highlightedIndex ? "bg-white text-black" : "text-white"
-                  }`}
+                  className={`px-2 py-1 cursor-pointer ${index === highlightedIndex ? "bg-white text-black" : "text-white"
+                    }`}
                   onMouseEnter={() => setHighlightedIndex(index)}
                   onMouseDown={() => {
                     setSelected(opt);

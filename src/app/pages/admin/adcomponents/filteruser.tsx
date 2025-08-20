@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type User = {
   userId: number;
@@ -19,84 +19,88 @@ export default function FilterUser() {
   const [searchRole, setSearchRole] = useState("");
   const [searchPermission, setSearchPermission] = useState("");
 
+  // 2) ดึงข้อมูลโดยพึ่ง cookie (middleware จะตรวจให้) — ไม่ต้องแนบ Authorization header
   useEffect(() => {
+    const ac = new AbortController();
+
     const fetchUsers = async () => {
-      const token = localStorage.getItem("token"); // หรือที่คุณเก็บ token
-      if (!token) {
-        setError("No token found. Please login.");
-        setLoading(false);
-        return;
-      }
       try {
+        setLoading(true);
+        setError(null);
+
         const res = await fetch("/api/admin/checkuser", {
+          method: "GET",
+          credentials: "include", // สำคัญ: ให้ส่ง cookie แนบไปด้วย
           headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
+            "Accept": "application/json",
+          },
+          signal: ac.signal,
         });
-        if (!res.ok) throw new Error("Failed to fetch users");
-        const data: User[] = await res.json();
-        setUsers(data);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError(String(err)); // fallback สำหรับค่าอื่น ๆ
+
+        if (res.status === 401 || res.status === 403) {
+          throw new Error("Unauthorized. Your session may be invalid.");
         }
+        if (!res.ok) {
+          throw new Error(`Failed to fetch users (${res.status})`);
+        }
+
+        const data: User[] = await res.json();
+        setUsers(Array.isArray(data) ? data : []);
+      } catch (err: unknown) {
+        if ((err as any)?.name === "AbortError") return;
+        setError(err instanceof Error ? err.message : String(err));
       } finally {
         setLoading(false);
       }
     };
 
     fetchUsers();
+    return () => ac.abort();
   }, []);
 
   if (loading) return <div className="p-4 text-white">Loading users...</div>;
   if (error) return <div className="p-4 text-red-500">Error: {error}</div>;
 
-  // filter users
-  const filteredUsers = users.filter((user) => {
-    const matchesUserID = searchUserID
-      ? user.userId.toString().includes(searchUserID)
-      : true;
-    const matchesName = searchName
-      ? user.fullName.toLowerCase().includes(searchName.toLowerCase())
-      : true;
-    const matchesRole = searchRole
-      ? user.roles.some((r) =>
-        r.toLowerCase().includes(searchRole.toLowerCase())
-      )
-      : true;
-    const matchesPermission = searchPermission
-      ? user.permissions.some((p) =>
-        p.toLowerCase().includes(searchPermission.toLowerCase())
-      )
-      : true;
-
-    return matchesUserID && matchesName && matchesRole && matchesPermission;
-  });
+  // 3) Helper: escape ตัวอักษรพิเศษใน regex
+  const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
   const highlightText = (text: string, search: string) => {
     if (!search) return text;
-    const regex = new RegExp(`(${search})`, "gi");
+    const regex = new RegExp(`(${escapeRegExp(search)})`, "gi");
     const parts = text.split(regex);
     return parts.map((part, i) =>
       regex.test(part) ? (
-        <span key={i} className="bg-yellow-400 text-black font-bold">
-          {part}
-        </span>
+        <span key={i} className="bg-yellow-400 text-black font-bold">{part}</span>
       ) : (
-        part
+        <span key={i}>{part}</span>
       )
     );
   };
+
+  // 4) ป้องกัน undefined บางฟิลด์ + ใช้ useMemo ลดคำนวณซ้ำ
+  const filteredUsers = useMemo(() => {
+    const qId = searchUserID.trim();
+    const qName = searchName.trim().toLowerCase();
+    const qRole = searchRole.trim().toLowerCase();
+    const qPerm = searchPermission.trim().toLowerCase();
+
+    return users.filter((u) => {
+      const roles = u.roles ?? [];
+      const perms = u.permissions ?? [];
+      const matchesUserID = qId ? String(u.userId).includes(qId) : true;
+      const matchesName = qName ? u.fullName.toLowerCase().includes(qName) : true;
+      const matchesRole = qRole ? roles.some((r) => r.toLowerCase().includes(qRole)) : true;
+      const matchesPermission = qPerm ? perms.some((p) => p.toLowerCase().includes(qPerm)) : true;
+      return matchesUserID && matchesName && matchesRole && matchesPermission;
+    });
+  }, [users, searchUserID, searchName, searchRole, searchPermission]);
 
   return (
     <div className="bg-black min-h-screen text-white font-mono p-4">
       <h1 className="text-2xl font-bold mb-4">Admin - Check Users Access</h1>
 
-      {/* Search inputs fixed */}
-      <div className=" top-0 bg-black z-10 p-2 mb-4 border-b border-white flex flex-wrap gap-2">
+      {/* Search bar — ทำ sticky จริง */}
+      <div className="sticky top-0 bg-black z-20 p-2 mb-4 border-b border-white flex flex-wrap gap-2">
         <input
           type="text"
           placeholder="Search User ID"
@@ -127,39 +131,36 @@ export default function FilterUser() {
         />
       </div>
 
-      <div className="overflow-x-auto max-h-[65vh] border border-white custom-scrollbar">
+      <div className="overflow-x-auto max-h-[65vh] border border-white">
         <table className="min-w-full border-collapse">
-          <thead className="sticky top-0 bg-gray-900 z-5">
+          <thead className="sticky top-0 bg-gray-900 z-10">
             <tr>
-              <th className="p-2 border border-white">User ID</th>
-              <th className="p-2 border border-white">Full Name</th>
-              <th className="p-2 border border-white">Roles</th>
-              <th className="p-2 border border-white">Permissions</th>
+              <th className="p-2 border border-white text-left">User ID</th>
+              <th className="p-2 border border-white text-left">Full Name</th>
+              <th className="p-2 border border-white text-left">Roles</th>
+              <th className="p-2 border border-white text-left">Permissions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredUsers.map((user) => (
-              <tr key={user.userId} className="hover:bg-gray-700">
+            {filteredUsers.map((u) => (
+              <tr key={u.userId} className="hover:bg-gray-700">
                 <td className="p-2 border border-white">
-                  {highlightText(user.userId.toString(), searchUserID)}
+                  {highlightText(String(u.userId), searchUserID)}
                 </td>
                 <td className="p-2 border border-white">
-                  {highlightText(user.fullName, searchName)}
+                  {highlightText(u.fullName, searchName)}
                 </td>
                 <td className="p-2 border border-white">
-                  {highlightText(user.roles.join(", "), searchRole)}
+                  {highlightText((u.roles ?? []).join(", "), searchRole)}
                 </td>
                 <td className="p-2 border border-white">
-                  {highlightText(user.permissions.join(", "), searchPermission)}
+                  {highlightText((u.permissions ?? []).join(", "), searchPermission)}
                 </td>
               </tr>
             ))}
             {filteredUsers.length === 0 && (
               <tr>
-                <td
-                  colSpan={4}
-                  className="p-2 border border-white text-center text-gray-400"
-                >
+                <td colSpan={4} className="p-2 border border-white text-center text-gray-400">
                   No users found
                 </td>
               </tr>
