@@ -3,11 +3,17 @@
 
 import React, { useState, useEffect } from "react";
 
+interface ApproveItem {
+    id: number;
+    NameThi: string;
+    source: string;
+}
+
 interface ApproveData {
     totalAll: number;
     totals: Record<string, number>;
-    data: { id: number; name: string; source: string }[];
-    error?: string;   // เพิ่ม option นี้
+    data: ApproveItem[];
+    error?: string;
 }
 
 export interface UserPayload {
@@ -24,42 +30,52 @@ interface DApproveTableProps {
 }
 
 export default function DApproveTable({ user, initialData }: DApproveTableProps) {
-
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
-    const [limit] = useState(10);
+    const [limit] = useState(5);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
     const [approveData, setApproveData] = useState<ApproveData>(initialData);
 
     const fetchData = async (newOffset = 0, query = "") => {
         setLoading(true);
+        setError("");
         try {
-            const res = await fetch("/api/D-approve/D-approve", {
+            const res = await fetch("/api/D-approve", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ offset: newOffset, limit, search: query }),
                 credentials: "include",
+                body: JSON.stringify({
+                    offset: newOffset,
+                    limit,
+                    search: query,
+                    statusType: "check",       // เพิ่มให้ตรงกับ module
+                    permissions: user.permissions || [], // ต้องส่งมาด้วย
+                }),
             });
 
             if (res.ok) {
                 const data = await res.json();
                 setApproveData(data);
                 setOffset(newOffset);
+            } else {
+                setError("Failed to fetch data");
             }
         } catch (err) {
             console.error(err);
+            setError("Server error");
         } finally {
             setLoading(false);
         }
     };
 
-    // --- Search handler ---
-    const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        fetchData(0, search); // search → offset reset 0
-    };
+    // --- Debounced search ---
+    useEffect(() => {
+        const timer = setTimeout(() => fetchData(0, search), 500);
+        return () => clearTimeout(timer);
+    }, [search]);
 
-    // --- Pagination handler ---
+    // --- Pagination handlers ---
     const handlePrev = () => {
         if (offset - limit >= 0) fetchData(offset - limit, search);
     };
@@ -71,22 +87,19 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
         <div className="p-4 bg-white shadow rounded">
             <h2 className="text-xl font-semibold mb-4">Document Approval</h2>
 
+            {/* Error */}
+            {error && <div className="text-red-500 mb-2">{error}</div>}
+
             {/* Search */}
-            <form onSubmit={handleSearch} className="mb-4 flex gap-2">
+            <div className="mb-4 flex gap-2">
                 <input
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search name..."
+                    placeholder="Search by Name..."
                     className="border border-gray-300 rounded px-3 py-1 flex-1"
                 />
-                <button
-                    type="submit"
-                    className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
-                >
-                    Search
-                </button>
-            </form>
+            </div>
 
             {/* Totals */}
             <div className="mb-2 text-gray-700">
@@ -120,7 +133,7 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
                             approveData.data.map((doc) => (
                                 <tr key={`${doc.source}-${doc.id}`} className="hover:bg-gray-50">
                                     <td className="border border-gray-300 px-3 py-1">{doc.id}</td>
-                                    <td className="border border-gray-300 px-3 py-1">{doc.name}</td>
+                                    <td className="border border-gray-300 px-3 py-1">{doc.NameThi}</td>
                                     <td className="border border-gray-300 px-3 py-1">{doc.source}</td>
                                 </tr>
                             ))

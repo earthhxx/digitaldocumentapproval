@@ -18,7 +18,7 @@ export interface ApproveData {
 
 export async function getDApproveData({
   offset = 0,
-  limit = 10,
+  limit = 0,
   search = "",
   statusType = "",
   permissions = [],
