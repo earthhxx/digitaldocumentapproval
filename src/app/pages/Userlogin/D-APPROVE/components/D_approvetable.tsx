@@ -7,6 +7,7 @@ interface ApproveData {
     totalAll: number;
     totals: Record<string, number>;
     data: { id: number; name: string; source: string }[];
+    error?: string;   // เพิ่ม option นี้
 }
 
 export interface UserPayload {

@@ -1,14 +1,9 @@
+// src/app/pages/Userlogin/D-APPROVE/page.tsx
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
-import DApproveTable from "./components/D_approvetable"; // SPA component
-
-export interface UserPayload {
-  userId?: number | string;
-  username?: string;
-  fullName?: string;
-  roles?: string[];
-  permissions?: string[];
-}
+import DApproveTable from "./components/D_approvetable";
+import type { UserPayload, ApproveData } from "@/app/types/types"; // แนะนำแยก type ไว้ไฟล์เฉพาะ
+import { getDApproveData } from "@/lib/modules/DApproveModule";
 
 export default async function UserLoginPage() {
   const cookieStore = await cookies();
@@ -28,15 +23,15 @@ export default async function UserLoginPage() {
     return <div>Access Denied</div>;
   }
 
-  // --- SSR fetch API initial load ---
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/D-approve/D-approve`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ offset: 0, limit: 10, search: "", statusType: "check" }),
-    credentials: "include",
+  // 🔥 เรียก Module ตรง ๆ ไม่ fetch API
+  const initialData = await getDApproveData({
+    offset: 0,
+    limit: 10,
+    search: "",
+    statusType: "check",
+    permissions: user.permissions || [],
   });
-
-  const initialData = res.ok ? await res.json() : { totalAll: 0, totals: {}, data: [] };
+  console.log(initialData)
 
   return <DApproveTable initialData={initialData} user={user} />;
 }
