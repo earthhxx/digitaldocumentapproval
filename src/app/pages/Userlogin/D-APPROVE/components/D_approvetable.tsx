@@ -4,145 +4,153 @@
 import React, { useState, useEffect } from "react";
 
 interface ApproveData {
-  totalAll: number;
-  totals: Record<string, number>;
-  data: { id: number; name: string; source: string }[];
+    totalAll: number;
+    totals: Record<string, number>;
+    data: { id: number; name: string; source: string }[];
+}
+
+export interface UserPayload {
+    userId?: number | string;
+    username?: string;
+    fullName?: string;
+    roles?: string[];
+    permissions?: string[];
 }
 
 interface DApproveTableProps {
-  initialData: ApproveData;
+    user: UserPayload;
+    initialData: ApproveData;
 }
 
-export default function DApproveTable({ initialData }: DApproveTableProps) {
-  const [search, setSearch] = useState("");
-  const [offset, setOffset] = useState(0);
-  const [limit] = useState(10);
-  const [loading, setLoading] = useState(false);
-  const [approveData, setApproveData] = useState<ApproveData>(initialData);
+export default function DApproveTable({ user, initialData }: DApproveTableProps) {
 
-  const fetchData = async (newOffset = 0, query = "") => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/D-approve/D-approve", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ offset: newOffset, limit, search: query }),
-        credentials: "include",
-      });
+    const [search, setSearch] = useState("");
+    const [offset, setOffset] = useState(0);
+    const [limit] = useState(10);
+    const [loading, setLoading] = useState(false);
+    const [approveData, setApproveData] = useState<ApproveData>(initialData);
 
-      if (res.ok) {
-        const data = await res.json();
-        setApproveData(data);
-        setOffset(newOffset);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchData = async (newOffset = 0, query = "") => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/D-approve/D-approve", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ offset: newOffset, limit, search: query }),
+                credentials: "include",
+            });
 
-  // --- Search handler ---
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    fetchData(0, search); // search → offset reset 0
-  };
+            if (res.ok) {
+                const data = await res.json();
+                setApproveData(data);
+                setOffset(newOffset);
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  // --- Pagination handler ---
-  const handlePrev = () => {
-    if (offset - limit >= 0) fetchData(offset - limit, search);
-  };
-  const handleNext = () => {
-    if (offset + limit < approveData.totalAll) fetchData(offset + limit, search);
-  };
+    // --- Search handler ---
+    const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        fetchData(0, search); // search → offset reset 0
+    };
 
-  return (
-    <div className="p-4 bg-white shadow rounded">
-      <h2 className="text-xl font-semibold mb-4">Document Approval</h2>
+    // --- Pagination handler ---
+    const handlePrev = () => {
+        if (offset - limit >= 0) fetchData(offset - limit, search);
+    };
+    const handleNext = () => {
+        if (offset + limit < approveData.totalAll) fetchData(offset + limit, search);
+    };
 
-      {/* Search */}
-      <form onSubmit={handleSearch} className="mb-4 flex gap-2">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search name..."
-          className="border border-gray-300 rounded px-3 py-1 flex-1"
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
-        >
-          Search
-        </button>
-      </form>
+    return (
+        <div className="p-4 bg-white shadow rounded">
+            <h2 className="text-xl font-semibold mb-4">Document Approval</h2>
 
-      {/* Totals */}
-      <div className="mb-2 text-gray-700">
-        Total documents: {approveData.totalAll}
-      </div>
+            {/* Search */}
+            <form onSubmit={handleSearch} className="mb-4 flex gap-2">
+                <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search name..."
+                    className="border border-gray-300 rounded px-3 py-1 flex-1"
+                />
+                <button
+                    type="submit"
+                    className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+                >
+                    Search
+                </button>
+            </form>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-3 py-1">ID</th>
-              <th className="border border-gray-300 px-3 py-1">Name</th>
-              <th className="border border-gray-300 px-3 py-1">Source Table</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={3} className="text-center py-4">
-                  Loading...
-                </td>
-              </tr>
-            ) : approveData.data.length === 0 ? (
-              <tr>
-                <td colSpan={3} className="text-center py-4 text-gray-500">
-                  No data found
-                </td>
-              </tr>
-            ) : (
-              approveData.data.map((doc) => (
-                <tr key={`${doc.source}-${doc.id}`} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 px-3 py-1">{doc.id}</td>
-                  <td className="border border-gray-300 px-3 py-1">{doc.name}</td>
-                  <td className="border border-gray-300 px-3 py-1">{doc.source}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+            {/* Totals */}
+            <div className="mb-2 text-gray-700">
+                Total documents: {approveData.totalAll}
+            </div>
 
-      {/* Pagination */}
-      <div className="mt-4 flex justify-between">
-        <button
-          onClick={handlePrev}
-          disabled={offset === 0 || loading}
-          className={`px-3 py-1 rounded ${
-            offset === 0 || loading
-              ? "bg-gray-200 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-600"
-          }`}
-        >
-          Previous
-        </button>
-        <button
-          onClick={handleNext}
-          disabled={offset + limit >= approveData.totalAll || loading}
-          className={`px-3 py-1 rounded ${
-            offset + limit >= approveData.totalAll || loading
-              ? "bg-gray-200 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-600"
-          }`}
-        >
-          Next
-        </button>
-      </div>
-    </div>
-  );
+            {/* Table */}
+            <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr className="bg-gray-100">
+                            <th className="border border-gray-300 px-3 py-1">ID</th>
+                            <th className="border border-gray-300 px-3 py-1">Name</th>
+                            <th className="border border-gray-300 px-3 py-1">Source Table</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading ? (
+                            <tr>
+                                <td colSpan={3} className="text-center py-4">
+                                    Loading...
+                                </td>
+                            </tr>
+                        ) : approveData.data.length === 0 ? (
+                            <tr>
+                                <td colSpan={3} className="text-center py-4 text-gray-500">
+                                    No data found
+                                </td>
+                            </tr>
+                        ) : (
+                            approveData.data.map((doc) => (
+                                <tr key={`${doc.source}-${doc.id}`} className="hover:bg-gray-50">
+                                    <td className="border border-gray-300 px-3 py-1">{doc.id}</td>
+                                    <td className="border border-gray-300 px-3 py-1">{doc.name}</td>
+                                    <td className="border border-gray-300 px-3 py-1">{doc.source}</td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="mt-4 flex justify-between">
+                <button
+                    onClick={handlePrev}
+                    disabled={offset === 0 || loading}
+                    className={`px-3 py-1 rounded ${offset === 0 || loading
+                        ? "bg-gray-200 cursor-not-allowed"
+                        : "bg-blue-500 text-white hover:bg-blue-600"
+                        }`}
+                >
+                    Previous
+                </button>
+                <button
+                    onClick={handleNext}
+                    disabled={offset + limit >= approveData.totalAll || loading}
+                    className={`px-3 py-1 rounded ${offset + limit >= approveData.totalAll || loading
+                        ? "bg-gray-200 cursor-not-allowed"
+                        : "bg-blue-500 text-white hover:bg-blue-600"
+                        }`}
+                >
+                    Next
+                </button>
+            </div>
+        </div>
+    );
 }

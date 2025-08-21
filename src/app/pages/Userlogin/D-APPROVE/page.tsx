@@ -17,10 +17,9 @@ interface ApproveData {
   totals: Record<string, number>;
   data: { id: number; name: string; source: string }[];
 }
-
-interface UserLoginPageProps {
+interface DApproveTableProps {
   user: UserPayload;
-  approveData: ApproveData;
+  initialData: ApproveData;
 }
 
 export default async function UserLoginPage() {
@@ -62,6 +61,6 @@ export default async function UserLoginPage() {
 
   // --- 5. ส่ง data เป็น props ให้ component SPA ---
   return (
-    <DApproveTable initialData={approveData} />
+    <DApproveTable user={user} initialData={approveData} />
   );
 }
