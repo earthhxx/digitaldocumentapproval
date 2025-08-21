@@ -37,18 +37,23 @@ export async function getDApproveData({
 
   // --- dynamic query ---
   const queries = permissions.filter(t => tableMap[t]).map(t => {
-    let whereClause = `name LIKE @search`;
+    let whereClause = `[Date] LIKE @search`;
     if (statusType === "check") whereClause += ` AND StatusCheck IS NULL`;
     else if (statusType === "approve") whereClause += ` AND StatusApprove IS NULL`;
 
-    return `SELECT *, '${t}' AS source FROM ${tableMap[t]} WHERE ${whereClause}`;
+    return `SELECT id, [Date] AS date, '${t}' AS source FROM ${tableMap[t]} WHERE ${whereClause}`;
   });
+
 
   if (!queries.length) return { totalAll: 0, totals: {}, data: [] };
 
   const finalQuery =
     queries.join(" UNION ALL ") +
-    ` ORDER BY id OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY`;
+    ` ORDER BY date DESC OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY`;
+
+  // console.log(finalQuery);
+  // test
+  //  SELECT id, [Date] AS date, 'FM_GA_04' AS source FROM[DASHBOARD].[dbo].[tb_appove_FM_GA_04] WHERE[Date] LIKE '%%' AND StatusCheck IS NULL UNION ALL SELECT id, [Date] AS date, 'FM_IT_03' AS source FROM[DASHBOARD].[dbo].[tb_appove_FM_IT_03] WHERE[Date] LIKE '%%' AND StatusCheck IS NULL ORDER BY date DESC OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY
 
   const dataResult = await pool
     .request()
@@ -57,9 +62,8 @@ export async function getDApproveData({
     .input("limit", sql.Int, limit)
     .query(finalQuery);
 
-  const countQueries = permissions
-    .filter(t => tableMap[t])
-    .map(t => `(SELECT COUNT(*) FROM ${tableMap[t]} WHERE name LIKE @search) AS ${t}`)
+  const countQueries = permissions.filter(t => tableMap[t])
+    .map(t => `(SELECT COUNT(*) FROM ${tableMap[t]} WHERE [Date] LIKE @search) AS ${t}`)
     .join(", ");
 
   const totalCountsResult = await pool
