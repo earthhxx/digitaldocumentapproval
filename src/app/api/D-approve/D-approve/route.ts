@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import sql from "mssql";
 import { getDashboardConnection } from "../../../../../lib/db";
-import jwt from "jsonwebtoken";
-interface UserPayload {
+import jwt from "jsonwebtoken"; interface UserPayload {
     userId: string | number;
     fullName: string;
     roles: string[];
@@ -11,47 +10,49 @@ interface UserPayload {
 
 export async function POST(req: NextRequest) {
     try {
-        // ✅ อ่าน cookie จาก request
+        const pool = await getDashboardConnection();
+
+        // --- 1. อ่าน cookie ---
         const authToken = req.cookies.get("auth_token")?.value;
+        if (!authToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        if (!authToken) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        // ✅ decode JWT
+        // --- 2. decode JWT ---
         const secret = process.env.JWT_SECRET || "your_secret_key";
         let payload: UserPayload;
         try {
             payload = jwt.verify(authToken, secret) as UserPayload;
-        } catch (err) {
+        } catch {
             return NextResponse.json({ error: "Invalid token" }, { status: 401 });
         }
-        
-        const userPermissions = payload.permissions;
+
+        const userPermissions = payload.permissions; // ["FM_IT_03","FM_GA_04"]
 
         const body = await req.json();
         const { offset = 0, limit = 10, search = "" } = body;
 
-        const pool = await getDashboardConnection();
+        // --- 3. ดึง TableMaster mapping ---
+        const tablesResult = await pool.request()
+            .query(`
+        SELECT table_name, db_table_name
+        FROM TableMaster
+        WHERE table_name IN (${userPermissions.map(t => `'${t}'`).join(",")})
+      `);
 
-        const tableMap: Record<string, string> = {
-            "FM_IT_03": "[DASHBOARD].[dbo].[tb_appove_FM_IT_03]",
-            "FM_GA_03": "[DASHBOARD].[dbo].[tb_appove_FM_GA_03]",
-            "FM_GA_04": "[DASHBOARD].[dbo].[tb_appove_FM_GA_04]"
-        };
+        const tableMap: Record<string, string> = {};
+        tablesResult.recordset.forEach(row => {
+            tableMap[row.table_name] = row.db_table_name;
+        });
 
-        // --- 1. สร้าง query ดึงข้อมูล dynamic ตาม permission ---
+        // --- 4. สร้าง dynamic query ---
         const queries = userPermissions
-            .filter(t => tableMap[t])
+            .filter(t => tableMap[t]) // กรอง table ที่มี mapping จริง
             .map(t => `
         SELECT id, name, '${t}' AS source
         FROM ${tableMap[t]}
         WHERE name LIKE @search
       `);
 
-        if (queries.length === 0) {
-            return NextResponse.json({ totalAll: 0, data: [] });
-        }
+        if (queries.length === 0) return NextResponse.json({ totalAll: 0, data: [] });
 
         const finalQuery = queries.join(" UNION ALL ") + `
       ORDER BY id
@@ -59,14 +60,14 @@ export async function POST(req: NextRequest) {
       FETCH NEXT @limit ROWS ONLY
     `;
 
-        // --- 2. ดึงข้อมูล ---
+        // --- 5. ดึงข้อมูล ---
         const dataResult = await pool.request()
             .input("search", sql.VarChar, `%${search}%`)
             .input("offset", sql.Int, offset)
             .input("limit", sql.Int, limit)
             .query(finalQuery);
 
-        // --- 3. ดึง total count แยก table ---
+        // --- 6. ดึง total count แยก table ---
         const countQueries = userPermissions
             .filter(t => tableMap[t])
             .map(t => `(SELECT COUNT(*) FROM ${tableMap[t]} WHERE name LIKE @search) AS ${t}`)
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
         const totals = totalCountsResult.recordset[0];
         const totalAll = Object.values(totals).reduce((sum, val) => Number(sum) + Number(val), 0);
 
-        // --- 4. ส่ง response ---
+        // --- 7. ส่ง response ---
         return NextResponse.json({
             totalAll,
             totals,      // { FM_IT_03: 50, FM_GA_04: 30 }
