@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 interface ApproveData {
     totalAll: number;
     totals: Record<string, number>;
-    data: { id: number; name: string; source: string }[];
+    data: { id: number; name: string; source: string; date?: string }[];
     error?: string;
 }
 
@@ -57,32 +57,31 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
         }
     };
 
-    // --- Search handler ---
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         fetchData(0, search, tab);
     };
 
-    // --- Tab change handler ---
     const handleTabChange = (newTab: "check" | "approve") => {
         setTab(newTab);
-        setOffset(0); // reset offset
-        setApproveData({ totalAll: 0, totals: {}, data: [] }); // reset data
-        fetchData(0, search, newTab); // fetch tab ใหม่
+        setOffset(0);
+        setApproveData({ totalAll: 0, totals: {}, data: [] });
+        fetchData(0, search, newTab);
     };
 
-
     return (
-        <div className="p-4 bg-white shadow rounded">
-            <h2 className="text-xl font-semibold mb-4">Document Approval</h2>
+        <div className="p-6 bg-white shadow-lg rounded-lg h-screen">
+            <h2 className="flex justify-center items-center  text-4xl font-bold mb-5 text-gray-800 mt-4">Document Approval</h2>
 
             {/* Tabs */}
-            <div className="flex mb-4 border-b">
+            <div className="flex mb-5 border-b border-gray-300">
                 {(["check", "approve"] as const).map((t) => (
                     <button
                         key={t}
                         onClick={() => handleTabChange(t)}
-                        className={`px-4 py-2 -mb-px font-medium border-b-2 ${tab === t ? "border-blue-500 text-blue-500" : "border-transparent text-gray-500 hover:text-gray-700"
+                        className={`px-5 py-2 font-medium border-b-2 transition-colors duration-200 ${tab === t
+                            ? "border-blue-600 text-blue-600"
+                            : "border-transparent text-gray-500 hover:text-gray-700"
                             }`}
                     >
                         {t === "check" ? "Check" : "Approve"}
@@ -91,56 +90,61 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
             </div>
 
             {/* Search */}
-            <form onSubmit={handleSearch} className="mb-4 flex gap-2">
+            <form onSubmit={handleSearch} className="mb-5 flex gap-3 text-black">
                 <input
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search name..."
-                    className="border border-gray-300 rounded px-3 py-1 flex-1"
+                    placeholder="Search document..."
+                    className="border border-gray-300 rounded-md px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
                 />
+
                 <button
                     type="submit"
-                    className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+                    className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-colors"
                 >
                     Search
                 </button>
             </form>
 
             {/* Totals */}
-            <div className="mb-2 text-gray-700">
-                Total documents: {approveData.totalAll}
+            <div className="mb-3 text-gray-600 font-medium">
+                Total documents: <span className="text-blue-600">{approveData.totalAll}</span>
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            <th className="border border-gray-300 px-3 py-1">ID</th>
-                            <th className="border border-gray-300 px-3 py-1">Name</th>
-                            <th className="border border-gray-300 px-3 py-1">Source Table</th>
+            <div className="overflow-x-auto h-[60vh] custom-scrollbar rounded-lg shadow-sm border border-gray-200">
+                <table className="min-w-full bg-white border-collapse text-black">
+                    <thead className="bg-gray-100 ">
+                        <tr>
+                            <th className="text-left px-4 py-2 font-medium ">ID</th>
+                            <th className="text-left px-4 py-2 font-medium ">Name</th>
+                            <th className="text-left px-4 py-2 font-medium ">Source</th>
+                            <th className="text-left px-4 py-2 font-medium ">Date</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan={3} className="text-center py-4">
+                                <td colSpan={4} className="text-center py-6 ">
                                     Loading...
                                 </td>
                             </tr>
                         ) : approveData.data.length === 0 ? (
                             <tr>
-                                <td colSpan={3} className="text-center py-4 text-gray-500">
+                                <td colSpan={4} className="text-center py-6 ">
                                     No data found
                                 </td>
                             </tr>
                         ) : (
                             approveData.data.map((doc) => (
-                                <tr key={`${doc.source}-${doc.id}`} className="hover:bg-gray-50">
-                                    <td className="border border-gray-300 px-3 py-1">{doc.id}</td>
-                                    <td className="border border-gray-300 px-3 py-1">{doc.name}</td>
-                                    <td className="border border-gray-300 px-3 py-1">{doc.source}</td>
+                                <tr key={`${doc.source}-${doc.id}`} className="hover:bg-gray-50 transition-colors">
+                                    <td className="px-4 py-2 border-t border-gray-200">{doc.id}</td>
+                                    <td className="px-4 py-2 border-t border-gray-200">{doc.name}</td>
+                                    <td className="px-4 py-2 border-t border-gray-200">{doc.source}</td>
+                                    <td className="px-4 py-2 border-t border-gray-200">
+                                        {doc.date ? new Date(doc.date).toLocaleDateString() : "-"}
+                                    </td>
                                 </tr>
                             ))
                         )}
@@ -149,13 +153,13 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
             </div>
 
             {/* Pagination */}
-            <div className="mt-4 flex justify-between">
+            <div className="mt-5 flex justify-between items-center">
                 <button
                     onClick={() => fetchData(Math.max(offset - limit, 0), search, tab)}
                     disabled={offset === 0 || loading}
-                    className={`px-3 py-1 rounded ${offset === 0 || loading
-                            ? "bg-gray-200 cursor-not-allowed"
-                            : "bg-blue-500 text-white hover:bg-blue-600"
+                    className={`px-4 py-2 rounded-md ${offset === 0 || loading
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                         }`}
                 >
                     Previous
@@ -163,9 +167,9 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
                 <button
                     onClick={() => fetchData(offset + limit, search, tab)}
                     disabled={offset + limit >= approveData.totalAll || loading}
-                    className={`px-3 py-1 rounded ${offset + limit >= approveData.totalAll || loading
-                            ? "bg-gray-200 cursor-not-allowed"
-                            : "bg-blue-500 text-white hover:bg-blue-600"
+                    className={`px-4 py-2 rounded-md ${offset + limit >= approveData.totalAll || loading
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                         }`}
                 >
                     Next
