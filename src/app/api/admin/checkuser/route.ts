@@ -1,6 +1,6 @@
 // /pages/api/checkuser.ts
 import { NextResponse } from "next/server";
-import { getDashboardConnection } from "../../../../../lib/db";
+import { getDashboardConnection } from "../../../../lib/db";
 import sql from "mssql";
 
 export async function GET() {

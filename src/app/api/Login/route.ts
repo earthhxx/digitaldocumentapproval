@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import sql from "mssql";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
-import { getDashboardConnection } from "../../../../lib/db";
+import { getDashboardConnection } from "../../../lib/db";
 
 export type JwtPayload = {
   userId: number | string;

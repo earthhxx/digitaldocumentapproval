@@ -1,6 +1,6 @@
 // /pages/api/userroletable/user-roles
 import { NextResponse } from "next/server";
-import { getDashboardConnection } from "../../../../../../lib/db";
+import { getDashboardConnection } from "../../../../../lib/db";
 
 export async function GET() {
     try {
