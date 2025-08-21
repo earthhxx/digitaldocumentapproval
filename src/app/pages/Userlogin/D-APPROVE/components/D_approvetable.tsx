@@ -1,22 +1,15 @@
-// src/app/pages/Userlogin/D-APPROVE/components/D_approvetable.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
 
-interface ApproveItem {
-    id: number;
-    NameThi: string;
-    source: string;
-}
-
 interface ApproveData {
     totalAll: number;
     totals: Record<string, number>;
-    data: ApproveItem[];
+    data: { id: number; name: string; source: string }[];
     error?: string;
 }
 
-export interface UserPayload {
+interface UserPayload {
     userId?: number | string;
     username?: string;
     fullName?: string;
@@ -34,72 +27,85 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
     const [offset, setOffset] = useState(0);
     const [limit] = useState(5);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
     const [approveData, setApproveData] = useState<ApproveData>(initialData);
+    const [tab, setTab] = useState<"check" | "approve">("check");
 
-    const fetchData = async (newOffset = 0, query = "") => {
+    const fetchData = async (newOffset = 0, query = "", newTab: "check" | "approve" = tab) => {
         setLoading(true);
-        setError("");
         try {
             const res = await fetch("/api/D-approve", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                credentials: "include",
                 body: JSON.stringify({
                     offset: newOffset,
                     limit,
                     search: query,
-                    statusType: "check",       // เพิ่มให้ตรงกับ module
-                    permissions: user.permissions || [], // ต้องส่งมาด้วย
+                    statusType: newTab,
+                    permissions: user.permissions || [],
                 }),
+                credentials: "include",
             });
-
             if (res.ok) {
                 const data = await res.json();
                 setApproveData(data);
                 setOffset(newOffset);
-            } else {
-                setError("Failed to fetch data");
             }
         } catch (err) {
             console.error(err);
-            setError("Server error");
         } finally {
             setLoading(false);
         }
     };
 
-    // --- Debounced search ---
-    useEffect(() => {
-        const timer = setTimeout(() => fetchData(0, search), 500);
-        return () => clearTimeout(timer);
-    }, [search]);
+    // --- Search handler ---
+    const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        fetchData(0, search, tab);
+    };
 
-    // --- Pagination handlers ---
-    const handlePrev = () => {
-        if (offset - limit >= 0) fetchData(offset - limit, search);
+    // --- Tab change handler ---
+    const handleTabChange = (newTab: "check" | "approve") => {
+        setTab(newTab);
+        setOffset(0); // reset offset
+        setApproveData({ totalAll: 0, totals: {}, data: [] }); // reset data
+        fetchData(0, search, newTab); // fetch tab ใหม่
     };
-    const handleNext = () => {
-        if (offset + limit < approveData.totalAll) fetchData(offset + limit, search);
-    };
+
 
     return (
         <div className="p-4 bg-white shadow rounded">
             <h2 className="text-xl font-semibold mb-4">Document Approval</h2>
 
-            {/* Error */}
-            {error && <div className="text-red-500 mb-2">{error}</div>}
+            {/* Tabs */}
+            <div className="flex mb-4 border-b">
+                {(["check", "approve"] as const).map((t) => (
+                    <button
+                        key={t}
+                        onClick={() => handleTabChange(t)}
+                        className={`px-4 py-2 -mb-px font-medium border-b-2 ${tab === t ? "border-blue-500 text-blue-500" : "border-transparent text-gray-500 hover:text-gray-700"
+                            }`}
+                    >
+                        {t === "check" ? "Check" : "Approve"}
+                    </button>
+                ))}
+            </div>
 
             {/* Search */}
-            <div className="mb-4 flex gap-2">
+            <form onSubmit={handleSearch} className="mb-4 flex gap-2">
                 <input
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search by Name..."
+                    placeholder="Search name..."
                     className="border border-gray-300 rounded px-3 py-1 flex-1"
                 />
-            </div>
+                <button
+                    type="submit"
+                    className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+                >
+                    Search
+                </button>
+            </form>
 
             {/* Totals */}
             <div className="mb-2 text-gray-700">
@@ -133,7 +139,7 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
                             approveData.data.map((doc) => (
                                 <tr key={`${doc.source}-${doc.id}`} className="hover:bg-gray-50">
                                     <td className="border border-gray-300 px-3 py-1">{doc.id}</td>
-                                    <td className="border border-gray-300 px-3 py-1">{doc.NameThi}</td>
+                                    <td className="border border-gray-300 px-3 py-1">{doc.name}</td>
                                     <td className="border border-gray-300 px-3 py-1">{doc.source}</td>
                                 </tr>
                             ))
@@ -145,21 +151,21 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
             {/* Pagination */}
             <div className="mt-4 flex justify-between">
                 <button
-                    onClick={handlePrev}
+                    onClick={() => fetchData(Math.max(offset - limit, 0), search, tab)}
                     disabled={offset === 0 || loading}
                     className={`px-3 py-1 rounded ${offset === 0 || loading
-                        ? "bg-gray-200 cursor-not-allowed"
-                        : "bg-blue-500 text-white hover:bg-blue-600"
+                            ? "bg-gray-200 cursor-not-allowed"
+                            : "bg-blue-500 text-white hover:bg-blue-600"
                         }`}
                 >
                     Previous
                 </button>
                 <button
-                    onClick={handleNext}
+                    onClick={() => fetchData(offset + limit, search, tab)}
                     disabled={offset + limit >= approveData.totalAll || loading}
                     className={`px-3 py-1 rounded ${offset + limit >= approveData.totalAll || loading
-                        ? "bg-gray-200 cursor-not-allowed"
-                        : "bg-blue-500 text-white hover:bg-blue-600"
+                            ? "bg-gray-200 cursor-not-allowed"
+                            : "bg-blue-500 text-white hover:bg-blue-600"
                         }`}
                 >
                     Next

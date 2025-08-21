@@ -67,8 +67,8 @@ export async function getDApproveData({
 
   let whereClausecount = ``;
   if (statusType === "check") whereClausecount = ` StatusCheck IS NULL`;
-  else if (statusType === "approve") whereClausecount = ` StatusApprove IS NULL`;
-  else if (statusType === "all") whereClausecount = ` StatusCheck IS NULL AND StatusApprove IS NULL`;
+  else if (statusType === "approve") whereClausecount = ` StatusMD IS NULL`;
+  else if (statusType === "all") whereClausecount = ` StatusCheck IS NULL AND StatusMD IS NULL`;
 
 
   const countQueries = permissions.filter(t => tableMap[t])
