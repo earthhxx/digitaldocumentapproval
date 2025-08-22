@@ -79,12 +79,22 @@ export async function getDApproveData({
 
   // --- count query ---
   let whereClausecount = ``;
-  if (statusType === "Check") whereClausecount = `StatusCheck IS NULL`;
-  else if (statusType === "Approve") whereClausecount = `StatusApprove IS NULL`;
-  else if (statusType === "All") whereClausecount = `StatusCheck IS NULL OR StatusMD IS NULL`;
+  let where = ``
+  if (statusType === "Check") {
+    where = `WHERE`;
+    whereClausecount = `StatusCheck IS NULL`;
+  }
+  else if (statusType === "Approve") {
+    where = `WHERE`
+    whereClausecount = `StatusApprove IS NULL`;
+  }
+  else if (statusType === "All") {
+    where = ``;
+    whereClausecount = ``;
+  }
 
   const countQueries = permissions.filter(t => tableMap[t])
-    .map(t => `(SELECT COUNT(*) FROM ${tableMap[t]} WHERE ${whereClausecount}) AS ${t}`)
+    .map(t => `(SELECT COUNT(*) FROM ${tableMap[t]} ${where} ${whereClausecount}) AS ${t}`)
     .join(", ");
 
   const countQueryString = `SELECT ${countQueries}`;
@@ -102,7 +112,7 @@ export async function getDApproveData({
     Object.entries(totalsRow).map(([k, v]) => [k, Number(v)])
   );
 
-  console.log("Totals processed:", totals);
+  // console.log("Totals processed:", totals);
 
   const totalAll = Object.values(totals).reduce((sum, val) => sum + val, 0);
   // console.log("TotalAll:", totalAll);
