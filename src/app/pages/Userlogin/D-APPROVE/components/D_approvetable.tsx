@@ -22,15 +22,17 @@ interface DApproveTableProps {
     initialData: ApproveData;
 }
 
+type Tab = "Check" | "Approve" | "All";
+
 export default function DApproveTable({ user, initialData }: DApproveTableProps) {
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
     const [limit] = useState(5);
     const [loading, setLoading] = useState(false);
     const [approveData, setApproveData] = useState<ApproveData>(initialData);
-    const [tab, setTab] = useState<"check" | "approve">("check");
+    const [tab, setTab] = useState<Tab>("Check");
 
-    const fetchData = async (newOffset = 0, query = "", newTab: "check" | "approve" = tab) => {
+    const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
         setLoading(true);
         try {
             const res = await fetch("/api/D-approve", {
@@ -57,17 +59,28 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
         }
     };
 
+
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         fetchData(0, search, tab);
     };
 
-    const handleTabChange = (newTab: "check" | "approve") => {
+    const handleTabChange = (newTab: Tab) => {
         setTab(newTab);
         setOffset(0);
         setApproveData({ totalAll: 0, totals: {}, data: [] });
         fetchData(0, search, newTab);
     };
+
+
+
+    const tabLabels: Record<Tab, string> = {
+        Check: "Check",
+        Approve: "Approve",
+        All : "All-Report",
+    };
+
+
 
     return (
         <div className="p-6 bg-white shadow-lg rounded-lg h-screen">
@@ -75,7 +88,7 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
 
             {/* Tabs */}
             <div className="flex mb-5 border-b border-gray-300">
-                {(["check", "approve"] as const).map((t) => (
+                {(Object.keys(tabLabels) as Tab[]).map((t) => (
                     <button
                         key={t}
                         onClick={() => handleTabChange(t)}
@@ -84,10 +97,11 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
                             : "border-transparent text-gray-500 hover:text-gray-700"
                             }`}
                     >
-                        {t === "check" ? "Check" : "Approve"}
+                        {tabLabels[t]}
                     </button>
                 ))}
             </div>
+
 
             {/* Search */}
             <form onSubmit={handleSearch} className="mb-5 flex gap-3 text-black">

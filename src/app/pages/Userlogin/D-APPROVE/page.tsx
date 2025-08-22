@@ -28,7 +28,7 @@ export default async function UserLoginPage() {
     offset: 0,
     limit: 5,
     search: "",
-    statusType: "check",
+    statusType: "Check",
     permissions: user.permissions || [],
   });
   console.log(initialData)
