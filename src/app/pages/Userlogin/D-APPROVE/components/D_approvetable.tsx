@@ -1,6 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import SupervisorPopup from "./BT_SupervisorPage";
+import Manager from "./BT_ManagerPage";
+
 
 interface ApproveData {
     totalAll: number;
@@ -27,10 +30,15 @@ type Tab = "Check" | "Approve" | "All";
 export default function DApproveTable({ user, initialData }: DApproveTableProps) {
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
-    const [limit] = useState(5);
+    const [limit] = useState(15);
     const [loading, setLoading] = useState(false);
     const [approveData, setApproveData] = useState<ApproveData>(initialData);
     const [tab, setTab] = useState<Tab>("Check");
+
+    const [showPDF, setShowPDF] = useState(false);
+    const [pdfUrl, setPdfUrl] = useState("");
+    const [showSupervisorPopup, setShowSupervisorPopup] = useState(false);
+    const [showManagerPopup, setShowManagerPopup] = useState(false);
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
         setLoading(true);
@@ -60,6 +68,28 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
         }
     };
 
+    const openPDF = (id: string | number, table: string) => {
+        setPdfUrl(`/api/generate-filled-pdf?labelText=${id}&table=${table}`);
+        setShowPDF(true);
+    };
+
+
+    const handleApproval = async (id: string, formid: string, table: string, status: "approve" | "reject", type: "supervisor" | "manager") => {
+        try {
+            const res = await fetch("http://localhost:2222/api/update-approve", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id, status, type }),
+            });
+            if (!res.ok) throw new Error("บันทึกข้อมูลล้มเหลว");
+            alert(`บันทึกข้อมูลสำเร็จ (${type}: ${status})`);
+        } catch (err: any) {
+            alert(err.message);
+        }
+        setShowSupervisorPopup(false);
+        setShowManagerPopup(false);
+        setShowPDF(false);
+    };
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -79,7 +109,7 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
     const tabLabels: Record<Tab, string> = {
         Check: "Check",
         Approve: "Approve",
-        All : "All-Report",
+        All: "All-Report",
     };
 
 
@@ -134,9 +164,9 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
                     <thead className="bg-gray-100 ">
                         <tr>
                             <th className="text-left px-4 py-2 font-medium ">ID</th>
-                            <th className="text-left px-4 py-2 font-medium ">Name</th>
                             <th className="text-left px-4 py-2 font-medium ">Source</th>
                             <th className="text-left px-4 py-2 font-medium ">Date</th>
+                            <th className="text-left px-4 py-2 font-medium w-[5%]">action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -156,10 +186,12 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
                             approveData.data.map((doc) => (
                                 <tr key={`${doc.source}-${doc.id}`} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-4 py-2 border-t border-gray-200">{doc.id}</td>
-                                    <td className="px-4 py-2 border-t border-gray-200">{doc.name}</td>
                                     <td className="px-4 py-2 border-t border-gray-200">{doc.source}</td>
                                     <td className="px-4 py-2 border-t border-gray-200">
                                         {doc.date ? new Date(doc.date).toLocaleDateString() : "-"}
+                                    </td>
+                                    <td className="flex px-4 py-2 border-t border-gray-200 justify-center">
+                                        <button onClick={() => { openPDF(doc.id, doc.source); }} className="flex text-sm text-white px-4 pt-2 border-t border-gray-200 bg-blue-500 rounded-sm text-center items-center justify-center">OPEN</button>
                                     </td>
                                 </tr>
                             ))
@@ -191,6 +223,61 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
                     Next
                 </button>
             </div>
-        </div>
+
+            {
+                showPDF && (
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+                        <div className="relative w-full max-w-[95vw] h-[95vh] bg-white rounded-xl shadow-lg flex flex-col">
+                            <div className="absolute right-0 p-4 ">
+                                {/* <h2 className="text-lg font-semibold text-gray-800">PDF Viewer</h2> */}
+                                <button
+                                    className="text-white bg-red-600 hover:bg-red-700 rounded-full w-10 h-10 flex items-center justify-center text-2xl"
+                                    onClick={() => setShowPDF(false)}
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            <iframe src={pdfUrl} className="w-full h-full border-none flex-1 " title="PDF Viewer" />
+
+                            <div className="absolute bottom-4 right-4 flex gap-4">
+                                {user?.permissions?.includes("Check") && (
+                                    <button
+                                        className="px-5 py-2 bg-blue-600 text-white rounded-lg"
+                                        onClick={() => setShowSupervisorPopup(true)}
+                                    >
+                                        สำหรับหัวหน้างาน
+                                    </button>
+                                )}
+                                {user?.permissions?.includes("Appove") && (
+                                    <button
+                                        className="px-5 py-2 bg-green-600 text-white rounded-lg"
+                                        onClick={() => setShowManagerPopup(true)}
+                                    >
+                                        สำหรับผู้จัดการ
+                                    </button>
+                                )}
+                            </div>
+
+                            {showSupervisorPopup && (
+                                <SupervisorPopup
+                                    onClose={() => setShowSupervisorPopup(false)}
+                                    onApprove={() => handleApproval("", "", "", "approve", "supervisor")}
+                                    onReject={() => handleApproval("", "", "", "reject", "supervisor")}
+                                />
+                            )}
+
+                            {showManagerPopup && (
+                                <Manager
+                                    onClose={() => setShowManagerPopup(false)}
+                                    onApprove={() => handleApproval("", "", "", "approve", "manager")}
+                                    onReject={() => handleApproval("", "", "", "reject", "manager")}
+                                />
+                            )}
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 }
