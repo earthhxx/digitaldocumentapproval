@@ -25,9 +25,9 @@ export async function getDApproveData({
   const pool = await getDashboardConnection();
 
   // --- log input ---
-  console.log("=== getDApproveData called ===");
-  console.log("offset:", offset, "limit:", limit, "statusType:", statusType, "search:", search);
-  console.log("permissions:", permissions);
+  // console.log("=== getDApproveData called ===");
+  // console.log("offset:", offset, "limit:", limit, "statusType:", statusType, "search:", search);
+  // console.log("permissions:", permissions);
 
   // --- ดึง TableMaster mapping ---
   const tablesResult = await pool.request().query(`
@@ -36,11 +36,11 @@ export async function getDApproveData({
     WHERE table_name IN (${permissions.map(t => `'${t}'`).join(",") || "''"})
   `);
 
-  console.log("tablesResult:", tablesResult.recordset);
+  // console.log("tablesResult:", tablesResult.recordset);
 
   const tableMap: Record<string, string> = {};
   tablesResult.recordset.forEach(row => (tableMap[row.table_name] = row.db_table_name));
-  console.log("tableMap:", tableMap);
+  // console.log("tableMap:", tableMap);
 
   // --- dynamic query ---
   const queries = permissions.filter(t => tableMap[t]).map(t => {
@@ -52,7 +52,7 @@ export async function getDApproveData({
     const q = `SELECT id, FormID, [Date] AS date, StatusCheck, StatusApprove, '${t}' AS source 
                FROM ${tableMap[t]} 
                WHERE ${whereClause}`;
-    console.log("Dynamic SELECT query for table", t, ":", q);
+    // console.log("Dynamic SELECT query for table", t, ":", q);
     return q;
   });
 
@@ -66,7 +66,7 @@ export async function getDApproveData({
     queries.join(" UNION ALL ") +
     ` ORDER BY date DESC OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY`;
 
-  console.log("Final paginated query:", finalQuery);
+  // console.log("Final paginated query:", finalQuery);
 
   const dataResult = await pool
     .request()
@@ -75,7 +75,7 @@ export async function getDApproveData({
     .input("limit", sql.Int, limit)
     .query(finalQuery);
 
-  console.log("Data result:", dataResult.recordset);
+  // console.log("Data result:", dataResult.recordset);
 
   // --- count query ---
   let whereClausecount = ``;
@@ -88,14 +88,14 @@ export async function getDApproveData({
     .join(", ");
 
   const countQueryString = `SELECT ${countQueries}`;
-  console.log("Count query:", countQueryString);
+  // console.log("Count query:", countQueryString);
 
   const totalCountsResult = await pool
     .request()
     .input("search", sql.VarChar, `%${search}%`)
     .query(countQueryString);
 
-  console.log("Total counts raw result:", totalCountsResult.recordset);
+  // console.log("Total counts raw result:", totalCountsResult.recordset);
 
   const totalsRow = totalCountsResult.recordset[0] ?? {};
   const totals: Record<string, number> = Object.fromEntries(
@@ -105,7 +105,7 @@ export async function getDApproveData({
   console.log("Totals processed:", totals);
 
   const totalAll = Object.values(totals).reduce((sum, val) => sum + val, 0);
-  console.log("TotalAll:", totalAll);
+  // console.log("TotalAll:", totalAll);
 
   return { totalAll, totals, data: dataResult.recordset };
 }
