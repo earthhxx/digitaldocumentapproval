@@ -6,7 +6,11 @@ import path from "path";
 import fs from "fs/promises";
 import { PDFDocument } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
-import { mapFieldsToPDF, PDFData } from "@/lib/modules/pdfHelpers";
+import { mapFieldsToPDF } from "@/lib/modules/pdfHelpers";
+
+export interface PDFData {
+    [key: string]: any; // รองรับทุก field
+}
 
 export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
@@ -73,30 +77,15 @@ export async function GET(req: NextRequest) {
         pdfDoc.registerFontkit(fontkit);
 
         const fontBytes = await fs.readFile(
-            path.join(process.cwd(), "fonts", "THSarabunNew.ttf")
+            path.join(process.cwd(), "public", "Fonts", "THSarabunNew", "THSarabunNew.ttf")
         );
+
         const font = await pdfDoc.embedFont(fontBytes);
 
         const page = pdfDoc.getPage(0);
 
-        const pdfData: PDFData = {
-            No_Id: data.No_Id,
-            Date: data.Date,
-            NameThi: data.NameThi,
-            NameEn: data.NameEn,
-            Dep: data.Dep,
-            DepM: data.DepM,
-            Email: data.Email,
-            Reapir: data.Reapir,
-            AddEqui: data.AddEqui,
-            AddProg: data.AddProg,
-            OtherIT: data.OtherIT,
-            Other_Detail: data.Other_Detail,
-            NameUser: data.NameUser,
-            NameCheck: data.NameCheck,
-            NameMD: data.NameMD,
-        };
-        
+        const pdfData: PDFData = data;
+
         // ✅ เรียก helper แบบ await (async) เพื่อให้วาดเสร็จก่อน save
         await mapFieldsToPDF(page, font, pdfData, table);
 
@@ -112,7 +101,5 @@ export async function GET(req: NextRequest) {
     } catch (err: any) {
         console.error(err);
         return NextResponse.json({ error: "เกิดข้อผิดพลาด", detail: err.message }, { status: 500 });
-    } finally {
-        if (pool) await pool.close();
     }
 }
