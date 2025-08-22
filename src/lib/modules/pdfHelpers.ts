@@ -12,10 +12,10 @@ interface FieldMapping {
 const tableFieldMap: Record<string, Record<string, FieldMapping>> = {
     FM_IT_03: {
         No_Id: { x: 50, y: 750, size: 14 },
-        Date: { x: 50, y: 730, size: 14, format: "date" },
-        NameThi: { x: 50, y: 710, size: 14 },
-        NameEn: { x: 50, y: 690, size: 14 },
-        Dep: { x: 50, y: 670, size: 14 },
+        Date: { x: 435, y: 665, size: 12, format: "date" },
+        NameThi: { x: 220, y: 656, size: 10 },
+        NameEn: { x: 220, y: 646, size: 10 },
+        Dep: { x: 180, y: 635, size: 14 },
         DepM: { x: 50, y: 650, size: 14 },
         Email: { x: 50, y: 630, size: 14 },
         Other_Detail: { x: 50, y: 610, size: 14 },
@@ -35,7 +35,7 @@ export async function mapFieldsToPDF(
     if (!fieldMap) return;
 
     for (const key in fieldMap) {
-        const { x, y, size = 12, format } = fieldMap[key];
+        const { x, y, size , format } = fieldMap[key];
         let text = data[key] ?? "";
 
         if (format === "date" && data[key]) {
