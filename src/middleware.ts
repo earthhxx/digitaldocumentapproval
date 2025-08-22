@@ -36,6 +36,28 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  if (pathname.startsWith("/api/D-approve")) {
+    const token = req.cookies.get("auth_token")?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    try {
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+      const { payload } = (await jwtVerify(token, secret)) as { payload: JWTPayload & JwtPayload };
+
+      if (!payload.roles?.includes("user")) {
+        return NextResponse.json({ error: "Forbidden: admin only" }, { status: 403 });
+      }
+
+      return NextResponse.next();
+    } catch {
+      return NextResponse.json({ error: "Invalid or expired token" }, { status: 403 });
+    }
+  }
+
+
   return NextResponse.next();
 }
 
