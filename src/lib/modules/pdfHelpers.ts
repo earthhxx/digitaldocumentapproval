@@ -16,10 +16,10 @@ const tableFieldMap: Record<string, Record<string, FieldMapping>> = {
         NameThi: { x: 220, y: 656, size: 10 },
         NameEn: { x: 220, y: 646, size: 10 },
         Dep: { x: 180, y: 635, size: 14 },
-        DepM: { x: 50, y: 650, size: 14 },
+        DepM: { x: 350, y: 635, size: 14 },
         Email: { x: 50, y: 630, size: 14 },
-        Other_Detail: { x: 50, y: 610, size: 14 },
-        NameUser: { x: 50, y: 590, size: 14 },
+        Other_Detail: { x: 400, y: 610, size: 14 },
+        NameUser: { x: 110, y: 430, size: 14 },
         Status: { x: 50, y: 570, size: 14 },
     },
     // เพิ่ม table ใหม่ ๆ ที่นี่ได้เลย
