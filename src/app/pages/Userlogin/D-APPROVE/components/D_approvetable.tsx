@@ -40,6 +40,9 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
     const [showSupervisorPopup, setShowSupervisorPopup] = useState(false);
     const [showManagerPopup, setShowManagerPopup] = useState(false);
 
+    const [selectID, setSelectID] = useState<string | number>("");
+    const [selectTable, setSelectTable] = useState("");
+
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
         setLoading(true);
         try {
@@ -71,18 +74,28 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
     const openPDF = (id: string | number, table: string) => {
         setPdfUrl(`/api/generate-filled-pdf?labelText=${id}&table=${table}`);
         setShowPDF(true);
+        setSelectID(id);
+        setSelectTable(table);
     };
 
 
-    const handleApproval = async (id: string, formid: string, table: string, status: "approve" | "reject", type: "supervisor" | "manager") => {
+    const handleApproval = async (id: string | number, table: string, status: "approve" | "reject", card: "Supervisor" | "Manager") => {
         try {
             const res = await fetch("http://localhost:2222/api/update-approve", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id, status, type }),
+                body: JSON.stringify({
+                    id: id,
+                    table: table,
+                    status: status,
+                    fullname: user.fullName,
+                    card: card,
+                }),
             });
             if (!res.ok) throw new Error("บันทึกข้อมูลล้มเหลว");
-            alert(`บันทึกข้อมูลสำเร็จ (${type}: ${status})`);
+            setSelectID('');
+            setSelectTable('');
+            alert(`บันทึกข้อมูลสำเร็จ (${table}: ${status})`);
         } catch (err: any) {
             alert(err.message);
         }
@@ -266,16 +279,16 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
                                     {showSupervisorPopup && (
                                         <SupervisorPopup
                                             onClose={() => setShowSupervisorPopup(false)}
-                                            onApprove={() => handleApproval("", "", "", "approve", "supervisor")}
-                                            onReject={() => handleApproval("", "", "", "reject", "supervisor")}
+                                            onApprove={() => handleApproval(selectID, selectTable, "approve", "Supervisor")}
+                                            onReject={() => handleApproval(selectID, selectTable, "reject", "Supervisor")}
                                         />
                                     )}
 
                                     {showManagerPopup && (
                                         <Manager
                                             onClose={() => setShowManagerPopup(false)}
-                                            onApprove={() => handleApproval("", "", "", "approve", "manager")}
-                                            onReject={() => handleApproval("", "", "", "reject", "manager")}
+                                            onApprove={() => handleApproval(selectID, selectTable, "approve", "Manager")}
+                                            onReject={() => handleApproval(selectID, selectTable, "reject", "Manager")}
                                         />
                                     )}
                                 </div>
