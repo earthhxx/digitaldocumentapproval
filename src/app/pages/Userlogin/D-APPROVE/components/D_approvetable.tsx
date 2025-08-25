@@ -81,7 +81,7 @@ export default function DApproveTable({ user, initialData }: DApproveTableProps)
 
     const handleApproval = async (id: string | number, table: string, status: "approve" | "reject", card: "Supervisor" | "Manager") => {
         try {
-            const res = await fetch("http://localhost:2222/api/update-approve", {
+            const res = await fetch("/api/save-status-report", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

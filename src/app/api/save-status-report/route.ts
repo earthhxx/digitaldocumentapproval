@@ -7,6 +7,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { id, table, status, fullname, card } = body;
 
+    // ✅ log ค่า request body
+    console.log("👉 Incoming body:", body);
+
     if (!id || !table || !status || !fullname || !card) {
         return NextResponse.json(
             { error: "missing parameter" },
@@ -29,6 +32,9 @@ export async function POST(req: NextRequest) {
                 WHERE table_name = @table
             `);
 
+        // ✅ log mapping table ที่เจอ
+        console.log("👉 Mapping result:", tablesResult.recordset);
+
         if (tablesResult.recordset.length === 0) {
             return NextResponse.json(
                 { error: `ไม่พบ mapping ของ table: ${table}` },
@@ -38,10 +44,12 @@ export async function POST(req: NextRequest) {
 
         const dbTableName = tablesResult.recordset[0].db_table_name;
 
+        // ✅ log dbTableName ที่เลือกใช้จริง
+        console.log("👉 dbTableName:", dbTableName);
+
         if (!/^[\[\]a-zA-Z0-9_.]+$/.test(dbTableName)) {
             return NextResponse.json({ error: "Invalid table name" }, { status: 400 });
         }
-
 
         let updateStatuscolum = "";
         let updateNamecolum = "";
@@ -57,13 +65,21 @@ export async function POST(req: NextRequest) {
             updateDatecolum = "DateApprove";
         }
 
-        let nameValue = status === "ไม่อนุมัติ" ? "ไม่อนุมัติ" : fullname;
+        // ✅ log columns ที่จะ update
+        console.log("👉 Update columns:", {
+            updateStatuscolum,
+            updateNamecolum,
+            updateDatecolum,
+        });
+
+        let statusvalue = status === "reject" ? "ไม่อนุมัติ" : status;
+        let nameValue = status === "reject" ? "ไม่อนุมัติ" : fullname;
 
         // --- update ---
         const result = await pool
             .request()
-            .input("id", sql.NVarChar, id)
-            .input("status", sql.NVarChar, status)
+            .input("id", sql.Int, id)
+            .input("status", sql.NVarChar, statusvalue)
             .input("name", sql.NVarChar, nameValue)
             .query(`
                 UPDATE ${dbTableName}
@@ -73,13 +89,16 @@ export async function POST(req: NextRequest) {
                 WHERE [Id] = @id
             `);
 
+        // ✅ log ผลลัพธ์การ update
+        console.log("👉 Update result:", result);
+
         if (result.rowsAffected[0] === 0) {
             return NextResponse.json({ error: "ไม่พบข้อมูล" }, { status: 404 });
         }
 
         return NextResponse.json({ success: true });
     } catch (err: any) {
-        console.error(err);
+        console.error("❌ Error in save-status-report:", err);
         return NextResponse.json(
             { error: "เกิดข้อผิดพลาด", detail: err.message },
             { status: 500 }
