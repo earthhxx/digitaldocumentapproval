@@ -34,7 +34,7 @@ type Tab = "Check" | "Approve" | "All";
 export default function DApproveTable({ user, initialData, AmountData }: DApproveTableProps) {
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
-    const [limit] = useState(15);
+    const [limit] = useState(16);
     const [loading, setLoading] = useState(false);
     const [approveData, setApproveData] = useState<ApproveData>(initialData);
     const [dataAmount, setDataAmount] = useState<AmountData>(AmountData);
@@ -206,19 +206,20 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                 </form>
 
                 {/* Totals */}
-                <div className="mb-3 text-gray-600 font-medium">
+                {/* <div className="mb-3 text-gray-600 font-medium">
                     Total documents: <span className="text-blue-600">{approveData.totalAll}</span>
-                </div>
+                </div> */}
 
                 {/* Table */}
-                <div className="overflow-x-auto h-[60vh] custom-scrollbar rounded-lg shadow-sm border border-gray-200 ">
+                <div className="overflow-x-auto h-[70vh] custom-scrollbar rounded-lg shadow-sm border border-gray-200 ">
                     <table className="min-w-full bg-white border-collapse text-black">
                         <thead className="bg-gray-100 ">
                             <tr>
                                 <th className="text-left px-4 py-2 font-medium ">ID</th>
                                 <th className="text-left px-4 py-2 font-medium ">Source</th>
                                 <th className="text-left px-4 py-2 font-medium ">Date</th>
-                                <th className="text-left px-4 py-2 font-medium w-[5%]">action</th>
+                                <th className="text-left px-4 py-2 font-medium w-[5%]">
+                                    <div className="w-full h-full text-center">action</div></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -242,8 +243,8 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                         <td className="px-4 py-2 border-t border-gray-200">
                                             {doc.date ? new Date(doc.date).toLocaleDateString() : "-"}
                                         </td>
-                                        <td className="flex px-4 py-2 border-t border-gray-200 justify-center">
-                                            <button onClick={() => { openPDF(doc.id, doc.source); }} className="flex text-sm text-white px-4 pt-2 border-t border-gray-200 bg-blue-500 rounded-sm text-center items-center justify-center">OPEN</button>
+                                        <td className="px-4 py-2 border-t border-gray-200">
+                                            <button onClick={() => { openPDF(doc.id, doc.source); }} className="w-full h-full text-[16px] text-white px-2 border-t border-gray-200 bg-blue-500 rounded-sm text-center">OPEN</button>
                                         </td>
                                     </tr>
                                 ))
