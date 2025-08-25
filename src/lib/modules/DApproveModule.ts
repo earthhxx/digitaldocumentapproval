@@ -105,7 +105,7 @@ export async function getDApproveData({
     .input("search", sql.VarChar, `%${search}%`)
     .query(countQueryString);
 
-  console.log("Total counts raw result:", totalCountsResult.recordset);
+  // console.log("Total counts raw result:", totalCountsResult.recordset);
 
   const totalsRow = totalCountsResult.recordset[0] ?? {};
   const totals: Record<string, number> = Object.fromEntries(

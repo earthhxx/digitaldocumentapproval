@@ -69,7 +69,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
             });
             if (res.ok) {
                 const data = await res.json();
-                console.log(data)
+                // console.log(data)
                 setApproveData(data);
                 setOffset(newOffset);
             }
@@ -144,7 +144,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     };
 
     const handleTabChange = (newTab: Tab) => {
-        console.log(newTab);
+        // console.log(newTab);
         setTab(newTab);
         setOffset(0);
         setApproveData({ totalAll: 0, totals: {}, data: [] });
