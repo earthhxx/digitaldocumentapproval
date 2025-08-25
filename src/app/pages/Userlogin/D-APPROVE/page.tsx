@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import DApproveTable from "./components/D_approvetable";
 import type { UserPayload, ApproveData } from "@/app/types/types"; // แนะนำแยก type ไว้ไฟล์เฉพาะ
 import { getDApproveData } from "@/lib/modules/DApproveModule";
+import { GetupdateStatus } from "@/lib/modules/GetupdateStatus"
 
 export default async function UserLoginPage() {
   const cookieStore = await cookies();
@@ -31,7 +32,9 @@ export default async function UserLoginPage() {
     statusType: "Check",
     permissions: user.permissions || [],
   });
-  console.log(initialData)
+  // console.log(initialData)
+  const data = await GetupdateStatus(user.permissions || []);
+  console.log(data)
 
-  return <DApproveTable initialData={initialData} user={user} />;
+  return <DApproveTable initialData={initialData} user={user} AmountData={data} />;
 }
