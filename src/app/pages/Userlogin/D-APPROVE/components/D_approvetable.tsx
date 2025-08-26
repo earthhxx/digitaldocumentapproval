@@ -22,7 +22,7 @@ interface UserPayload {
 }
 
 interface AmountData {
-    ApproveNull: number, CheckNull: number, BothNull: number
+    ApproveNull: number, CheckNull: number, somethingNull: number
 }
 interface DApproveTableProps {
     user: UserPayload;
@@ -108,7 +108,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                 setTabLabels({
                     Check: `Check (${data.CheckNull})`,
                     Approve: `Approve (${data.ApproveNull})`,
-                    All: `All-Report (${data.BothNull})`,
+                    All: `All-Report (${data.somethingNull})`,
                 });
             }
         } catch (err) {
@@ -167,9 +167,9 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
 
     const [tabLabels, setTabLabels] = useState<Record<Tab, string>>({
-        Check: `Check (${dataAmount?.CheckNull ?? 0})`,
-        Approve: `Approve (${dataAmount?.ApproveNull ?? 0})`,
-        All: `All-Report (${dataAmount?.BothNull ?? 0})`,
+        Check: `Check`,
+        Approve: `Approve`,
+        All: `All-Report`,
     });
 
 
@@ -181,20 +181,41 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
             <h2 className="flex justify-center items-center  text-4xl font-bold mb-5 text-gray-800 mt-4">Document Approval</h2>
 
             {/* Tabs */}
-            <div className={`flex mb-5 border-b border-gray-300`}>
+            <div className="flex mb-5 border-b border-gray-300">
                 {(Object.keys(tabLabels) as Tab[]).map((t) => (
                     <button
                         key={t}
-                        onClick={() => { handleTabChange(t); refreshAmount(); }}
-                        className={`px-5 py-2 font-medium border-b-2 transition-colors duration-200 
-        ${user.permissions?.includes(t) ? "" : "hidden"} 
+                        onClick={() => {
+                            handleTabChange(t);
+                            refreshAmount();
+                        }}
+                        className={`relative flex items-center px-5 py-2 font-medium border-b-2 transition-colors duration-200
+        ${user.permissions?.includes(t) ? "" : "hidden"}
         ${tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"}
       `}
                     >
                         {tabLabels[t]}
+                        {/* Badge */}
+                        {tabLabels[t] === "Check" && dataAmount.CheckNull > 0 && (
+                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
+                                {dataAmount.ApproveNull}
+                            </div>
+                        )}
+                        {tabLabels[t] === "Approve" && dataAmount.ApproveNull > 0 && (
+                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
+                                {dataAmount.ApproveNull}
+                            </div>
+                        )}
+                        {tabLabels[t] === "All-Report" && dataAmount.somethingNull > 0 && (
+                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
+                                {dataAmount.ApproveNull}
+                            </div>
+                        )}
                     </button>
                 ))}
             </div>
+
+
 
 
 

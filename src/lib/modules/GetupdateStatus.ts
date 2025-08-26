@@ -28,7 +28,7 @@ export async function GetupdateStatus(formaccess: string[]) {
                 SELECT 
                     COUNT(CASE WHEN StatusApprove IS NULL THEN 1 END) AS ApproveNull,
                     COUNT(CASE WHEN StatusCheck IS NULL THEN 1 END)   AS CheckNull,
-                    COUNT(CASE WHEN StatusApprove IS NULL OR StatusCheck IS NULL THEN 1 END) AS BothNull
+                    COUNT(CASE WHEN StatusApprove IS NULL OR StatusCheck IS NULL THEN 1 END) AS somethingNull
                 FROM ${tableMap[t]}
             `
         );
@@ -42,7 +42,7 @@ export async function GetupdateStatus(formaccess: string[]) {
         SELECT 
             SUM(ApproveNull) AS ApproveNull,
             SUM(CheckNull)   AS CheckNull,
-            SUM(BothNull)    AS BothNull
+            SUM(somethingNull)    AS somethingNull
         FROM (
             ${queries.join(" UNION ALL ")}
         ) AS AllTables
