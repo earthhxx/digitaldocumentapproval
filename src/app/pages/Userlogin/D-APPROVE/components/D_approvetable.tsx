@@ -57,6 +57,15 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     const [selectID, setSelectID] = useState<string | number>("");
     const [selectTable, setSelectTable] = useState("");
 
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        // CSR เริ่มทำงานหลัง hydrate
+        setMounted(true);
+        // fetch dataAmount ใหม่จาก API ถ้าต้องการ update
+        refreshAmount();
+    }, []);
+
 
 
 
@@ -84,6 +93,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                 const data = await res.json();
                 setApproveData(data);
                 setOffset(newOffset);
+                refreshAmount();
             }
         } catch (err) {
             console.error(err);
@@ -105,11 +115,6 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
             if (res.ok) {
                 const data: AmountData = await res.json();
                 setDataAmount(data);
-                setTabLabels({
-                    Check: `Check (${data.CheckNull})`,
-                    Approve: `Approve (${data.ApproveNull})`,
-                    All: `All-Report (${data.somethingNull})`,
-                });
             }
         } catch (err) {
             console.error(err);
@@ -160,13 +165,12 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
         // console.log(newTab);
         setTab(newTab);
         setOffset(0);
-        setApproveData({ totalAll: 0, totals: {}, data: [] });
         fetchData(0, search, newTab);
     };
 
 
 
-    const [tabLabels, setTabLabels] = useState<Record<Tab, string>>({
+    const [tabLabels] = useState<Record<Tab, string>>({
         Check: `Check`,
         Approve: `Approve`,
         All: `All-Report`,
@@ -175,10 +179,12 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     const canGoNext = offset + limit < approveData.totalAll;
     const canGoPrev = offset > 0;
-
+    { console.log("Current tab:", tab) }
+    { console.log("User permissions:", user.permissions) }
     return (
         <div className="flex flex-1 flex-col min-h-full w-full bg-white shadow-lg rounded-lg p-6 overflow-auto">
             <h2 className="flex justify-center items-center  text-4xl font-bold mb-5 text-gray-800 mt-4">Document Approval</h2>
+
 
             {/* Tabs */}
             <div className="flex mb-5 border-b border-gray-300">
@@ -187,26 +193,25 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                         key={t}
                         onClick={() => {
                             handleTabChange(t);
-                            refreshAmount();
                         }}
                         className={`relative flex items-center px-5 py-2 font-medium border-b-2 transition-colors duration-200
-        ${user.permissions?.includes(t) ? "" : "hidden"}
+        ${user.permissions?.includes(t) ? " " : " hidden "}
         ${tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"}
       `}
                     >
                         {tabLabels[t]}
                         {/* Badge */}
-                        {tabLabels[t] === "Check" && dataAmount.CheckNull > 0 && (
+                        {t === "Check" && dataAmount.CheckNull && (
                             <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
                                 {dataAmount.CheckNull}
                             </div>
                         )}
-                        {tabLabels[t] === "Approve" && dataAmount.ApproveNull > 0 && (
+                        {t === "Approve" && dataAmount.ApproveNull && (
                             <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
                                 {dataAmount.ApproveNull}
                             </div>
                         )}
-                        {tabLabels[t] === "All-Report" && dataAmount.somethingNull > 0 && (
+                        {t === "All" && dataAmount.somethingNull && (
                             <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
                                 {dataAmount.somethingNull}
                             </div>
@@ -222,10 +227,6 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
             <div
                 className={user.permissions?.includes(tab) ? "" : "hidden"}
             >
-
-
-
-
                 <div className="flex flex-row justify-evenly items-center mb-4">
                     {/* Search */}
                     <form onSubmit={handleSearch} className=" flex items-center justify-center gap-2 text-black w-[40%]">
