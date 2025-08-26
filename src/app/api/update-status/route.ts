@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
         const payload = jwt.verify(token, process.env.JWT_SECRET || "your_secret_key") as any;
 
         const body = await req.json();
-        const data = await GetupdateStatus(payload.permissions || []);
+        const data = await GetupdateStatus(payload.formaccess || []);
 
         return NextResponse.json(data);
     } catch (err) {

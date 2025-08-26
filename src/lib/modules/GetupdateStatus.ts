@@ -1,8 +1,8 @@
 // src/lib/modules/GetupdateStatus.ts
 import { getDashboardConnection } from "@/lib/db";
 
-export async function GetupdateStatus(permissions: string[]) {
-    if (!permissions || permissions.length === 0) {
+export async function GetupdateStatus(formaccess: string[]) {
+    if (!formaccess || formaccess.length === 0) {
         throw new Error("missing parameter");
     }
 
@@ -12,7 +12,7 @@ export async function GetupdateStatus(permissions: string[]) {
     const tablesResult = await pool.request().query(`
         SELECT table_name, db_table_name
         FROM D_Approve
-        WHERE table_name IN (${permissions.map(t => `'${t}'`).join(",")})
+        WHERE table_name IN (${formaccess.map(t => `'${t}'`).join(",")})
     `);
 
     const tableMap: Record<string, string> = {};
@@ -21,7 +21,7 @@ export async function GetupdateStatus(permissions: string[]) {
     });
 
     // --- สร้าง query สำหรับแต่ละ table ---
-    const queries = permissions
+    const queries = formaccess
         .filter(t => tableMap[t])
         .map(
             t => `

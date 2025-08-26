@@ -7,7 +7,7 @@ import Manager from "./BT_ManagerPage";
 
 interface ApproveData {
     totalAll: number;
-    totals: Record<string, number>;
+    totals: Record<string, number>; // เพิ่มตรงนี้
     data: { id: number; name: string; source: string; date?: string }[];
     error?: string;
 }
@@ -40,6 +40,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
     const [limit] = useState(16);
+
     const [loading, setLoading] = useState(false);
     const [approveData, setApproveData] = useState<ApproveData>(initialData);
     const [dataAmount, setDataAmount] = useState<AmountData>(AmountData);
@@ -55,6 +56,9 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     const [selectID, setSelectID] = useState<string | number>("");
     const [selectTable, setSelectTable] = useState("");
+
+
+
 
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
@@ -96,7 +100,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify(user.permissions),
+                body: JSON.stringify(user.formaccess),
             });
             if (res.ok) {
                 const data: AmountData = await res.json();
@@ -169,7 +173,8 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     });
 
 
-
+    const canGoNext = offset + limit < approveData.totalAll;
+    const canGoPrev = offset > 0;
 
     return (
         <div className="flex flex-1 flex-col min-h-full w-full bg-white shadow-lg rounded-lg p-6 overflow-auto">
@@ -197,7 +202,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                 className={user.permissions?.includes(tab) ? "" : "hidden"}
             >
                 {/* Search */}
-                <form onSubmit={handleSearch} className="mb-5 flex gap-3 text-black">
+                <form onSubmit={handleSearch} className="mb-5 flex gap-3 text-black w-[40%]">
                     <input
                         type="text"
                         value={search}
@@ -228,16 +233,12 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
                 </form>
 
-                {/* Totals */}
-                {/* <div className="mb-3 text-gray-600 font-medium">
-                    Total documents: <span className="text-blue-600">{approveData.totalAll}</span>
-                </div> */}
-
                 {/* Table */}
                 <div className="overflow-x-auto h-[70vh] custom-scrollbar rounded-lg shadow-sm border border-gray-200 ">
                     <table className="min-w-full bg-white border-collapse text-black">
                         <thead className="bg-gray-100 ">
                             <tr>
+                                <th className="text-left px-4 py-2 font-medium">#</th>
                                 <th className="text-left px-4 py-2 font-medium ">ID</th>
                                 <th className="text-left px-4 py-2 font-medium ">Source</th>
                                 <th className="text-left px-4 py-2 font-medium ">Date</th>
@@ -259,8 +260,12 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                     </td>
                                 </tr>
                             ) : (
-                                approveData.data.map((doc) => (
-                                    <tr key={`${doc.source}-${doc.id}`} className="hover:bg-gray-50 transition-colors">
+                                approveData.data.map((doc, index) => (
+                                    <tr key={`${doc.source}-${doc.id}-${index}`} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-4 py-2 border-t border-gray-200">
+                                            {offset + index + 1}
+                                            {/* คำนวณลำดับจริง เช่น offset=15, index=0 → 16 */}
+                                        </td>
                                         <td className="px-4 py-2 border-t border-gray-200">{doc.id}</td>
                                         <td className="px-4 py-2 border-t border-gray-200">{doc.source}</td>
                                         <td className="px-4 py-2 border-t border-gray-200">
@@ -280,7 +285,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                 <div className="mt-5 flex justify-between items-center">
                     <button
                         onClick={() => fetchData(Math.max(offset - limit, 0), search, tab)}
-                        disabled={offset === 0 || loading}
+                        disabled={!canGoPrev || loading}
                         className={`px-4 py-2 rounded-md ${offset === 0 || loading
                             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                             : "bg-blue-600 text-white hover:bg-blue-700 transition-colors"
@@ -290,7 +295,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                     </button>
                     <button
                         onClick={() => fetchData(offset + limit, search, tab)}
-                        disabled={offset + limit >= approveData.totalAll || loading}
+                        disabled={!canGoNext || loading}
                         className={`px-4 py-2 rounded-md ${offset + limit >= approveData.totalAll || loading
                             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                             : "bg-blue-600 text-white hover:bg-blue-700 transition-colors"
