@@ -27,7 +27,7 @@ export default async function UserLoginPage() {
   // 🔥 เรียก Module ตรง ๆ ไม่ fetch API
   const initialData = await getDApproveData({
     offset: 0,
-    limit: 16,
+    limit: 15,
     search: "",
     statusType: "Check",
     formaccess: user.formaccess || [],

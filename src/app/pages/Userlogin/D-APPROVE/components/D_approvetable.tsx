@@ -39,7 +39,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
-    const [limit] = useState(16);
+    const [limit] = useState(15);
 
     const [loading, setLoading] = useState(false);
     const [approveData, setApproveData] = useState<ApproveData>(initialData);
@@ -275,7 +275,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                 </div>
 
                 {/* Table */}
-                <div className="overflow-x-auto h-[70vh] custom-scrollbar rounded-lg shadow-sm border border-gray-200 ">
+                <div className="overflow-x-auto h-[65vh] custom-scrollbar rounded-lg shadow-sm border border-gray-200 ">
                     <table className="min-w-full bg-white border-collapse text-black">
                         <thead className="bg-gray-100 ">
                             <tr>
