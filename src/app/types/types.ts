@@ -1,4 +1,4 @@
-export interface UserPayload { userId?: number | string; username?: string; fullName?: string; roles?: string[]; permissions?: string[]; }
+export interface UserPayload { userId?: number | string; username?: string; fullName?: string; roles?: string[]; permissions?: string[]; formaccess?:string[];}
 export interface ApproveData {
     totalAll: number;
     totals: Record<string, number>;

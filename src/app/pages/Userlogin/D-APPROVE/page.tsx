@@ -2,7 +2,7 @@
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import DApproveTable from "./components/D_approvetable";
-import type { UserPayload, ApproveData } from "@/app/types/types"; // แนะนำแยก type ไว้ไฟล์เฉพาะ
+import type { UserPayload } from "@/app/types/types"; // แนะนำแยก type ไว้ไฟล์เฉพาะ
 import { getDApproveData } from "@/lib/modules/DApproveModule";
 import { GetupdateStatus } from "@/lib/modules/GetupdateStatus"
 
@@ -30,10 +30,10 @@ export default async function UserLoginPage() {
     limit: 16,
     search: "",
     statusType: "Check",
-    permissions: user.permissions || [],
+    permissions: user.formaccess || [],
   });
   // console.log(initialData)
-  const data = await GetupdateStatus(user.permissions || []);
+  const data = await GetupdateStatus(user.formaccess || []);
   console.log(data)
 
   return <DApproveTable initialData={initialData} user={user} AmountData={data} />;

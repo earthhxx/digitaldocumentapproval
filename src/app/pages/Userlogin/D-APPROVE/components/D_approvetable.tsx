@@ -32,6 +32,7 @@ interface DApproveTableProps {
 type Tab = "Check" | "Approve" | "All";
 
 export default function DApproveTable({ user, initialData, AmountData }: DApproveTableProps) {
+    console.log(user);
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
     const [limit] = useState(16);
