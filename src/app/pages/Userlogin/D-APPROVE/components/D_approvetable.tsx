@@ -163,7 +163,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
 
     return (
-        <div className="p-6 bg-white shadow-lg rounded-lg h-screen">
+        <div className="flex flex-col h-full w-full bg-white shadow-lg rounded-lg p-6 overflow-auto">
             <h2 className="flex justify-center items-center  text-4xl font-bold mb-5 text-gray-800 mt-4">Document Approval</h2>
 
             {/* Tabs */}
@@ -211,7 +211,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                 </div> */}
 
                 {/* Table */}
-                <div className="overflow-x-auto h-[70vh] custom-scrollbar rounded-lg shadow-sm border border-gray-200 ">
+                <div className="overflow-x-auto max-h-[60vh] md:h-[70vh] custom-scrollbar rounded-lg shadow-sm border border-gray-200 ">
                     <table className="min-w-full bg-white border-collapse text-black">
                         <thead className="bg-gray-100 ">
                             <tr>

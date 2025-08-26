@@ -6,7 +6,7 @@ import { jwtVerify } from "jose";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 
-export interface User { userId: string; fullName: string; roles: string[]; permissions:string[]; }
+export interface User { userId: string; fullName: string; roles: string[]; permissions: string[]; }
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,22 +48,25 @@ export default async function RootLayout({
           ? payload.permissions
           : [payload.permissions as string],
       };
-      } catch {
-        initialUser = null;
-      }
+    } catch {
+      initialUser = null;
     }
-
-return (
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-screen flex`}
-        >
-          <AuthProvider initialUser={initialUser}>
-            <Sidebar />
-            <main className="flex-1">{children}</main>
-          </AuthProvider>
-
-        </body>
-      </html>
-    );
   }
+
+  return (
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable}`}
+      >
+        <AuthProvider initialUser={initialUser}>
+          <div className="flex flex-col min-h-screen w-screen">
+            <Sidebar />
+            <main className="flex-1">
+              {children}
+            </main>
+          </div>
+        </AuthProvider>
+      </body>
+    </html>
+  );
+}
