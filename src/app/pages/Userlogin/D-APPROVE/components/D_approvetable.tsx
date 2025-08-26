@@ -18,6 +18,7 @@ interface UserPayload {
     fullName?: string;
     roles?: string[];
     permissions?: string[];
+    formaccess?: string[];
 }
 
 interface AmountData {
@@ -32,7 +33,10 @@ interface DApproveTableProps {
 type Tab = "Check" | "Approve" | "All";
 
 export default function DApproveTable({ user, initialData, AmountData }: DApproveTableProps) {
-    console.log(user);
+    const [filterOption] = useState<string[]>(["", ...(user.formaccess || [])]);
+    console.log(filterOption);
+    const [filterForm, setFilterForm] = useState<string | null>(null);
+
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
     const [limit] = useState(16);
@@ -55,6 +59,10 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
         setLoading(true);
+        console.log("filterForm:", filterForm);
+        console.log("user.formaccess:", user.formaccess);
+        console.log("permissions sent:", filterForm ? [filterForm] : user.formaccess);
+
         try {
             const res = await fetch("/api/D-approve", {
                 method: "POST",
@@ -64,13 +72,12 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                     limit,
                     search: query,
                     statusType: newTab,
-                    permissions: user.permissions || [],
+                    formaccess: filterForm ? [filterForm] : user.formaccess,
                 }),
                 credentials: "include",
             });
             if (res.ok) {
                 const data = await res.json();
-                // console.log(data)
                 setApproveData(data);
                 setOffset(newOffset);
             }
@@ -80,6 +87,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
             setLoading(false);
         }
     };
+
 
     // ✅ ถ้าอยาก refresh หลัง mount หรือหลัง approve/reject
     const refreshAmount = async () => {
@@ -198,12 +206,26 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                         className="border border-gray-300 rounded-md px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
                     />
 
+                    <select
+                        value={filterForm || ""}
+                        onChange={(e) => setFilterForm(e.target.value === "" ? null : e.target.value)}
+                        className="border border-gray-300 rounded-md px-3 py-2"
+                    >
+                        {filterOption.map((source) => (
+                            <option key={source} value={source}>
+                                {source || "All"}
+                            </option>
+                        ))}
+                    </select>
+
                     <button
                         type="submit"
                         className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-colors"
                     >
                         Search
                     </button>
+
+
                 </form>
 
                 {/* Totals */}

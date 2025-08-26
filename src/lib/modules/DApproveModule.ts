@@ -6,7 +6,7 @@ export interface ApproveQuery {
   limit?: number;
   search?: string;
   statusType?: string;
-  permissions: string[];
+  formaccess: string[];
 }
 
 export interface ApproveData {
@@ -20,20 +20,19 @@ export async function getDApproveData({
   limit = 0,
   search = "",
   statusType = "",
-  permissions = [],
+  formaccess = [],
 }: ApproveQuery): Promise<ApproveData> {
   const pool = await getDashboardConnection();
-
   // --- log input ---
   // console.log("=== getDApproveData called ===");
   // console.log("offset:", offset, "limit:", limit, "statusType:", statusType, "search:", search);
-  // console.log("permissions:", permissions);
+  console.log("permissions:", formaccess);
 
   // --- ดึง TableMaster mapping ---
   const tablesResult = await pool.request().query(`
     SELECT table_name, db_table_name
     FROM D_Approve
-    WHERE table_name IN (${permissions.map(t => `'${t}'`).join(",") || "''"})
+    WHERE table_name IN (${formaccess.map(t => `'${t}'`).join(",") || "''"})
   `);
 
   // console.log("tablesResult:", tablesResult.recordset);
@@ -43,7 +42,7 @@ export async function getDApproveData({
   // console.log("tableMap:", tableMap);
 
   // --- dynamic query ---
-  const queries = permissions.filter(t => tableMap[t]).map(t => {
+  const queries = formaccess.filter(t => tableMap[t]).map(t => {
     let whereClause = `[Date] LIKE @search`;
     if (statusType === "Check") whereClause += ` AND StatusCheck IS NULL`;
     else if (statusType === "Approve") whereClause += ` AND StatusApprove IS NULL`;
@@ -93,7 +92,7 @@ export async function getDApproveData({
     whereClausecount = ``;
   }
 
-  const countQueries = permissions.filter(t => tableMap[t])
+  const countQueries = formaccess.filter(t => tableMap[t])
     .map(t => `(SELECT COUNT(*) FROM ${tableMap[t]} ${where} ${whereClausecount}) AS ${t}`)
     .join(", ");
 

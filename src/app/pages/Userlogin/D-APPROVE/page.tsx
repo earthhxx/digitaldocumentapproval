@@ -30,7 +30,7 @@ export default async function UserLoginPage() {
     limit: 16,
     search: "",
     statusType: "Check",
-    permissions: user.formaccess || [],
+    formaccess: user.formaccess || [],
   });
   // console.log(initialData)
   const data = await GetupdateStatus(user.formaccess || []);
