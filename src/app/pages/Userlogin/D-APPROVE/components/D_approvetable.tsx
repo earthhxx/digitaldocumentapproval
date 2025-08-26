@@ -198,7 +198,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                         {/* Badge */}
                         {tabLabels[t] === "Check" && dataAmount.CheckNull > 0 && (
                             <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
-                                {dataAmount.ApproveNull}
+                                {dataAmount.CheckNull}
                             </div>
                         )}
                         {tabLabels[t] === "Approve" && dataAmount.ApproveNull > 0 && (
@@ -208,7 +208,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                         )}
                         {tabLabels[t] === "All-Report" && dataAmount.somethingNull > 0 && (
                             <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
-                                {dataAmount.ApproveNull}
+                                {dataAmount.somethingNull}
                             </div>
                         )}
                     </button>
@@ -222,37 +222,57 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
             <div
                 className={user.permissions?.includes(tab) ? "" : "hidden"}
             >
-                {/* Search */}
-                <form onSubmit={handleSearch} className="mb-5 flex gap-3 text-black w-[40%]">
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search document..."
-                        className="border border-gray-300 rounded-md px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
-                    />
 
-                    <select
-                        value={filterForm || ""}
-                        onChange={(e) => setFilterForm(e.target.value === "" ? null : e.target.value)}
-                        className="border border-gray-300 rounded-md px-3 py-2"
-                    >
-                        {filterOption.map((source) => (
-                            <option key={source} value={source}>
-                                {source || "All"}
-                            </option>
+
+
+
+                <div className="flex flex-row justify-evenly items-center mb-4">
+                    {/* Search */}
+                    <form onSubmit={handleSearch} className=" flex items-center justify-center gap-2 text-black w-[40%]">
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search document..."
+                            className="border border-gray-300 rounded-md px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
+                        />
+
+                        <select
+                            value={filterForm || ""}
+                            onChange={(e) => setFilterForm(e.target.value === "" ? null : e.target.value)}
+                            className="border border-gray-300 rounded-md px-3 py-2"
+                        >
+                            {filterOption.map((source) => (
+                                <option key={source} value={source}>
+                                    {source || "All"}
+                                </option>
+                            ))}
+                        </select>
+
+                        <button
+                            type="submit"
+                            className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                        >
+                            Search
+                        </button>
+                    </form>
+
+                    {/* Total per table horizontal inline */}
+                    <div className="flex gap-2 overflow-x-auto py-2 justify-end pe-4 w-full">
+                        {Object.entries(approveData.totals).map(([table, count]) => (
+                            <div
+                                key={table}
+                                className="flex flex-row items-center justify-between min-w-[90px] px-3 py-2 border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
+                            >
+                                <span className="text-gray-500 text-xs font-semibold uppercase tracking-wide">{table}</span>
+                                <span className="text-blue-600 font-bold text-sm ml-2">{count}</span>
+                            </div>
                         ))}
-                    </select>
-
-                    <button
-                        type="submit"
-                        className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                        Search
-                    </button>
+                    </div>
 
 
-                </form>
+
+                </div>
 
                 {/* Table */}
                 <div className="overflow-x-auto h-[70vh] custom-scrollbar rounded-lg shadow-sm border border-gray-200 ">
