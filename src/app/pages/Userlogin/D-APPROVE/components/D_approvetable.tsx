@@ -98,7 +98,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify(user.formaccess && user.Dep),
+                body: JSON.stringify(user.formaccess ?? [], user.Dep ?? []),
             });
             if (res.ok) {
                 const data: AmountData = await res.json();

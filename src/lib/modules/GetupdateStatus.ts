@@ -1,8 +1,8 @@
 // src/lib/modules/GetupdateStatus.ts
 import { getDashboardConnection } from "@/lib/db";
 
-export async function GetupdateStatus(formaccess: string[]) {
-    if (!formaccess || formaccess.length === 0) {
+export async function GetupdateStatus(formaccess: string[],Dep:string[]) {
+    if (!formaccess || !Dep || formaccess.length === 0) {
         throw new Error("missing parameter");
     }
 
