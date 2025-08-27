@@ -179,8 +179,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     const canGoNext = offset + limit < approveData.totalAll;
     const canGoPrev = offset > 0;
-    { console.log("Current tab:", tab) }
-    { console.log("User permissions:", user.permissions) }
+    
     return (
         <div className="flex flex-1 flex-col min-h-full w-full bg-white shadow-lg rounded-lg p-6 overflow-auto">
             <h2 className="flex justify-center items-center  text-4xl font-bold mb-5 text-gray-800 mt-4">Document Approval</h2>
