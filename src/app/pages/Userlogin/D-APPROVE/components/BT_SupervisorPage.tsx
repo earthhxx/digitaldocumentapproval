@@ -6,6 +6,7 @@ interface SupervisorPopupProps {
   onClose: () => void;
   onApprove: () => void;
   onReject: () => void;
+
 }
 
 export default function SupervisorPopup({ onClose, onApprove, onReject }: SupervisorPopupProps) {

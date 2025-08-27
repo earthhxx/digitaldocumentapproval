@@ -55,6 +55,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     const [selectID, setSelectID] = useState<string | number>("");
     const [selectTable, setSelectTable] = useState("");
+    const [selectDep, setSelectDep] = useState("");
 
     const [mounted, setMounted] = useState(false);
 
@@ -117,11 +118,12 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
         }
     };
 
-    const openPDF = (id: string | number, table: string) => {
+    const openPDF = (id: string | number, table: string, Dep: string) => {
         setPdfUrl(`/api/generate-filled-pdf?labelText=${id}&table=${table}`);
         setShowPDF(true);
         setSelectID(id);
         setSelectTable(table);
+        setSelectDep(Dep);
     };
 
 
@@ -253,7 +255,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                     </form>
 
                     {/* Total per table horizontal inline */}
-                    <div className="flex gap-2 overflow-x-auto py-2 justify-end pe-4 w-full">
+                    <div className="flex gap-2 overflow-y-auto py-2 justify-end pe-4 w-full">
                         {Object.entries(approveData.totals).map(([table, count]) => (
                             <div
                                 key={table}
@@ -291,7 +293,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                 <th className="px-4 py-2 text-center w-[5%]">Action</th>
                             </tr>
                         </thead>
-                        <tbody className="block h-[36vh] overflow-y-auto custom-scrollbar ">
+                        <tbody className="block h-[60vh] overflow-y-auto custom-scrollbar ">
                             {loading ? (
                                 <tr>
                                     <td colSpan={4} className="text-center py-6 ">
@@ -314,7 +316,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.Dep}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.date ? new Date(doc.date).toLocaleDateString() : "-"}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[5%]">
-                                            <button className="w-full h-full text-white bg-blue-500 rounded-sm">OPEN</button>
+                                            <button onClick={() => { openPDF(doc.id, doc.source, doc.Dep); }} className="w-full h-full text-white bg-blue-500 rounded-sm">OPEN</button>
                                         </td>
                                     </tr>
                                 ))
@@ -367,7 +369,8 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                 <iframe src={pdfUrl} className="w-full h-full border-none flex-1 " title="PDF Viewer" />
 
                                 <div className="absolute bottom-4 right-4 flex gap-4">
-                                    {user?.permissions?.includes("Check") && (
+                                    {/* // user?.Dep?.include(selectDep) */}
+                                    {user?.permissions?.includes("Check") && user?.permissions?.includes(`Check_${selectTable}`) && (
                                         <button
                                             className="px-5 py-2 bg-blue-600 text-white rounded-lg"
                                             onClick={() => setShowSupervisorPopup(true)}
@@ -375,7 +378,8 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                             สำหรับหัวหน้างาน
                                         </button>
                                     )}
-                                    {user?.permissions?.includes("Approve") && (
+                                    {/* // user?.Dep?.include(selectDep) */}
+                                    {user?.permissions?.includes("Approve") && user?.permissions?.includes(`Approve_${selectTable}`) && (
                                         <button
                                             className="px-5 py-2 bg-green-600 text-white rounded-lg"
                                             onClick={() => setShowManagerPopup(true)}

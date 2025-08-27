@@ -6,6 +6,7 @@ interface ManagerPopupProps {
   onClose: () => void;
   onApprove: () => void;
   onReject: () => void;
+
 }
 
 export default function BT_ManagerPage({ onClose, onApprove, onReject }: ManagerPopupProps) {
