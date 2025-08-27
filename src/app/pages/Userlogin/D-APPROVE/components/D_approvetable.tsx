@@ -215,7 +215,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                             <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
                                 {dataAmount.somethingNull}
                             </div>
-                        )}
+                        )} 
                     </button>
                 ))}
             </div>
