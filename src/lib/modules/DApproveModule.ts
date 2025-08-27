@@ -7,6 +7,7 @@ export interface ApproveQuery {
   search?: string;
   statusType?: string;
   formaccess: string[];
+  Dep: string[];
 }
 
 export interface ApproveData {
@@ -21,6 +22,7 @@ export async function getDApproveData({
   search = "",
   statusType = "",
   formaccess = [],
+  Dep = [],
 }: ApproveQuery): Promise<ApproveData> {
   const pool = await getDashboardConnection();
 

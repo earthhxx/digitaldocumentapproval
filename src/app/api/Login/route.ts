@@ -94,9 +94,6 @@ export async function POST(req: NextRequest) {
         WHERE ur.UserID = @userId
     `);
 
-
-
-
     const permissions = permResult.recordset.map(p => p.PermissionName);
     const formaccess = formResult.recordset.map(f => f.Formaccess)
     const Dep = depResult.recordset.map(row => row.DepartmentName);

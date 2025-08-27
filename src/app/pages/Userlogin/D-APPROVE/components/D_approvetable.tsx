@@ -37,6 +37,9 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     const [filterOption] = useState<string[]>(["", ...(user.formaccess || [])]);
     const [filterForm, setFilterForm] = useState<string | null>(null);
 
+    const [DepOption] = useState<string[]>(["", ...(user.Dep || [])]);
+    const [filterDep, setFilterDep] = useState<string | null>(null);
+
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
     const [limit] = useState(15);
@@ -56,20 +59,6 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     const [selectID, setSelectID] = useState<string | number>("");
     const [selectTable, setSelectTable] = useState("");
-    const [selectDep, setSelectDep] = useState("");
-
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        // CSR เริ่มทำงานหลัง hydrate
-        setMounted(true);
-        // fetch dataAmount ใหม่จาก API ถ้าต้องการ update
-        refreshAmount();
-    }, []);
-
-
-
-
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
         setLoading(true);
@@ -83,6 +72,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                     search: query,
                     statusType: newTab,
                     formaccess: filterForm ? [filterForm] : user.formaccess,
+                    Dep: filterDep ? [filterDep] : user.Dep,
                 }),
                 credentials: "include",
             });
@@ -108,7 +98,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify(user.formaccess),
+                body: JSON.stringify(user.formaccess && user.Dep),
             });
             if (res.ok) {
                 const data: AmountData = await res.json();
@@ -119,12 +109,11 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
         }
     };
 
-    const openPDF = (id: string | number, table: string, Dep: string) => {
+    const openPDF = (id: string | number, table: string) => {
         setPdfUrl(`/api/generate-filled-pdf?labelText=${id}&table=${table}`);
         setShowPDF(true);
         setSelectID(id);
         setSelectTable(table);
-        setSelectDep(Dep);
     };
 
 
@@ -247,6 +236,18 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                             ))}
                         </select>
 
+                        <select
+                            value={filterDep || ""}
+                            onChange={(e) => setFilterDep(e.target.value === "" ? null : e.target.value)}
+                            className="border border-gray-300 rounded-md px-3 py-2"
+                        >
+                            {DepOption.map((source) => (
+                                <option key={source} value={source}>
+                                    {source || "All"}
+                                </option>
+                            ))}
+                        </select>
+
                         <button
                             type="submit"
                             className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-colors"
@@ -317,7 +318,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.Dep}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.date ? new Date(doc.date).toLocaleDateString() : "-"}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[5%]">
-                                            <button onClick={() => { openPDF(doc.id, doc.source, doc.Dep); }} className="w-full h-full text-white bg-blue-500 rounded-sm">OPEN</button>
+                                            <button onClick={() => { openPDF(doc.id, doc.source); }} className="w-full h-full text-white bg-blue-500 rounded-sm">OPEN</button>
                                         </td>
                                     </tr>
                                 ))
@@ -370,7 +371,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                 <iframe src={pdfUrl} className="w-full h-full border-none rounded-full flex-1 " title="PDF Viewer" />
 
                                 <div className="absolute bottom-4 right-4 flex gap-4">
-                                    {/* // user?.Dep?.include(selectDep) */}
+                                    {/* // user?.Dep?.includes(selectDep) && */}
                                     {user?.permissions?.includes("Check") && user?.permissions?.includes(`Check_${selectTable}`) && (
                                         <button
                                             className="px-5 py-2 bg-blue-600 text-white rounded-lg"
@@ -379,7 +380,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                             สำหรับหัวหน้างาน
                                         </button>
                                     )}
-                                    {/* // user?.Dep?.include(selectDep) */}
+                                    {/* // user?.Dep?.includes(selectDep)  &&*/}
                                     {user?.permissions?.includes("Approve") && user?.permissions?.includes(`Approve_${selectTable}`) && (
                                         <button
                                             className="px-5 py-2 bg-green-600 text-white rounded-lg"
