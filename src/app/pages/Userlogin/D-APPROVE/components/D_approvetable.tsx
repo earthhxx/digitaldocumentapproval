@@ -8,7 +8,7 @@ import Manager from "./BT_ManagerPage";
 interface ApproveData {
     totalAll: number;
     totals: Record<string, number>; // เพิ่มตรงนี้
-    data: { id: number; name: string; source: string; date?: string }[];
+    data: { id: number; Dep: string; name: string; source: string; date?: string }[];
     error?: string;
 }
 
@@ -86,6 +86,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
             });
             if (res.ok) {
                 const data = await res.json();
+                console.log('data',data);
                 setApproveData(data);
                 setOffset(newOffset);
                 refreshAmount();
@@ -208,7 +209,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                             <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
                                 {dataAmount.somethingNull}
                             </div>
-                        )} 
+                        )}
                     </button>
                 ))}
             </div>
@@ -275,7 +276,9 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                             <tr>
                                 <th className="text-left px-4 py-2 font-medium">#</th>
                                 <th className="text-left px-4 py-2 font-medium ">ID</th>
+                                <th className="text-left px-4 py-2 font-medium w-[25%]">DOC NAME</th>
                                 <th className="text-left px-4 py-2 font-medium ">Source</th>
+                                <th className="text-left px-4 py-2 font-medium ">Dep</th>
                                 <th className="text-left px-4 py-2 font-medium ">Date</th>
                                 <th className="text-left px-4 py-2 font-medium w-[5%]">
                                     <div className="w-full h-full text-center">action</div></th>
@@ -302,7 +305,9 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                             {/* คำนวณลำดับจริง เช่น offset=15, index=0 → 16 */}
                                         </td>
                                         <td className="px-4 py-2 border-t border-gray-200">{doc.id}</td>
+                                        <td className="px-4 py-2 border-t border-gray-200">{doc.source === "FM_IT_03" ? "ฟอร์มเอกสารแจ้งซ่อม IT" : doc.source === "FM_GA_03" ? "ฟอร์มขออณุญาตินำของออกนอกโรงงาน" : doc.source === "FM_GA_04" ? "ฟอร์มขออณุญาตออกนอกโรงงาน" : doc.source}</td>
                                         <td className="px-4 py-2 border-t border-gray-200">{doc.source}</td>
+                                        <td className="px-4 py-2 border-t border-gray-200">{doc.Dep}</td>
                                         <td className="px-4 py-2 border-t border-gray-200">
                                             {doc.date ? new Date(doc.date).toLocaleDateString() : "-"}
                                         </td>

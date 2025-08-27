@@ -2,6 +2,6 @@ export interface UserPayload { userId?: number | string; username?: string; full
 export interface ApproveData {
     totalAll: number;
     totals: Record<string, number>; // เพิ่มตรงนี้
-    data: { id: number; name: string; source: string }[];
+    data: { id: number; name: string; source: string; Dep: string; }[];
     error?: string;   // เพิ่ม option นี้
 }

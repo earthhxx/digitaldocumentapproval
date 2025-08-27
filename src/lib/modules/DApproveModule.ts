@@ -41,7 +41,7 @@ export async function getDApproveData({
 
     return `
       SELECT 
-        id, FormID, [Date] AS date, StatusCheck, StatusApprove, '${t}' AS source
+        id, FormID, Dep , [Date] AS date, StatusCheck, StatusApprove, '${t}' AS source
       FROM ${tableMap[t]}
       WHERE ${whereClause}`;
   });
