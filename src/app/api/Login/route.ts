@@ -11,6 +11,7 @@ export type JwtPayload = {
   roles: string[];
   permissions: string[];
   formaccess: string[];
+  Dep: string[];
 };
 
 export async function POST(req: NextRequest) {
@@ -83,8 +84,22 @@ export async function POST(req: NextRequest) {
         WHERE ur.UserID = @userId
       `);
 
+    const depResult = await pool.request()
+      .input('userId', sql.Int, userrow.User_Id)
+      .query(`
+        SELECT DISTINCT d.DepartmentName
+        FROM UserRoles ur
+        INNER JOIN RolesDepartment rd ON ur.RoleID = rd.RoleID
+        INNER JOIN Department d ON rd.DepartmentID = d.DepartmentID
+        WHERE ur.UserID = @userId
+    `);
+
+
+
+
     const permissions = permResult.recordset.map(p => p.PermissionName);
     const formaccess = formResult.recordset.map(f => f.Formaccess)
+    const Dep = depResult.recordset.map(row => row.DepartmentName);
 
     // JWT
     const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
@@ -95,6 +110,7 @@ export async function POST(req: NextRequest) {
       roles,
       permissions,
       formaccess,
+      Dep,
     })
       .setProtectedHeader({ alg: "HS256" })
       .setExpirationTime("8h")

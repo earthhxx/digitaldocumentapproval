@@ -19,6 +19,7 @@ interface UserPayload {
     roles?: string[];
     permissions?: string[];
     formaccess?: string[];
+    Dep?: string[];
 }
 
 interface AmountData {
@@ -366,7 +367,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                     </button>
                                 </div>
 
-                                <iframe src={pdfUrl} className="w-full h-full border-none flex-1 " title="PDF Viewer" />
+                                <iframe src={pdfUrl} className="w-full h-full border-none rounded-full flex-1 " title="PDF Viewer" />
 
                                 <div className="absolute bottom-4 right-4 flex gap-4">
                                     {/* // user?.Dep?.include(selectDep) */}
