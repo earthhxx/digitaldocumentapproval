@@ -52,17 +52,21 @@ body {
 /* สไตล์ scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
+  /* ความกว้าง scrollbar */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: none;
+  /* ไม่มีพื้นหลัง ✅ */
+  margin-top: 0;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.3);
+  /* สีโปร่งใส */
+  border-radius: 49px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.5);
 }

@@ -86,7 +86,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
             });
             if (res.ok) {
                 const data = await res.json();
-                console.log('data',data);
+                console.log('data', data);
                 setApproveData(data);
                 setOffset(newOffset);
                 refreshAmount();
@@ -269,22 +269,29 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
                 </div>
 
-                {/* Table */}
-                <div className="overflow-x-auto h-[65vh] custom-scrollbar rounded-lg shadow-sm border border-gray-200 ">
-                    <table className="min-w-full bg-white border-collapse text-black">
-                        <thead className="bg-gray-100 ">
-                            <tr>
-                                <th className="text-left px-4 py-2 font-medium">#</th>
-                                <th className="text-left px-4 py-2 font-medium ">ID</th>
-                                <th className="text-left px-4 py-2 font-medium w-[25%]">DOC NAME</th>
-                                <th className="text-left px-4 py-2 font-medium ">Source</th>
-                                <th className="text-left px-4 py-2 font-medium ">Dep</th>
-                                <th className="text-left px-4 py-2 font-medium ">Date</th>
-                                <th className="text-left px-4 py-2 font-medium w-[5%]">
-                                    <div className="w-full h-full text-center">action</div></th>
+                {/* <td className="px-4 py-2 text-center border-t border-gray-200 w-[25%]">
+                    {doc.source === "FM_IT_03"
+                        ? "ฟอร์มเอกสารแจ้งซ่อม IT"
+                        : doc.source === "FM_GA_03"
+                            ? "ฟอร์มขออณุญาตินำของออกนอกโรงงาน"
+                            : doc.source === "FM_GA_04"
+                                ? "ฟอร์มขออณุญาตออกนอกโรงงาน"
+                                : doc.source}
+                </td> */}
+                <div className="rounded-lg shadow-sm border border-gray-200">
+                    <table className="min-w-full table-fixed table-layout-fixed bg-white text-black">
+                        <thead className="bg-gray-100 table w-full">
+                            <tr >
+                                <th className="px-4 py-2 text-center w-[5%]">#</th>
+                                <th className="px-4 py-2 text-center w-[10%]">ID</th>
+                                <th className="px-4 py-2 text-center w-[25%]">DOC NAME</th>
+                                <th className="px-4 py-2 text-center w-[15%]">Source</th>
+                                <th className="px-4 py-2 text-center w-[15%]">Dep</th>
+                                <th className="px-4 py-2 text-center w-[15%]">Date</th>
+                                <th className="px-4 py-2 text-center w-[5%]">Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="block h-[36vh] overflow-y-auto custom-scrollbar ">
                             {loading ? (
                                 <tr>
                                     <td colSpan={4} className="text-center py-6 ">
@@ -299,20 +306,15 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                 </tr>
                             ) : (
                                 approveData.data.map((doc, index) => (
-                                    <tr key={`${doc.source}-${doc.id}-${index}`} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-4 py-2 border-t border-gray-200">
-                                            {offset + index + 1}
-                                            {/* คำนวณลำดับจริง เช่น offset=15, index=0 → 16 */}
-                                        </td>
-                                        <td className="px-4 py-2 border-t border-gray-200">{doc.id}</td>
-                                        <td className="px-4 py-2 border-t border-gray-200">{doc.source === "FM_IT_03" ? "ฟอร์มเอกสารแจ้งซ่อม IT" : doc.source === "FM_GA_03" ? "ฟอร์มขออณุญาตินำของออกนอกโรงงาน" : doc.source === "FM_GA_04" ? "ฟอร์มขออณุญาตออกนอกโรงงาน" : doc.source}</td>
-                                        <td className="px-4 py-2 border-t border-gray-200">{doc.source}</td>
-                                        <td className="px-4 py-2 border-t border-gray-200">{doc.Dep}</td>
-                                        <td className="px-4 py-2 border-t border-gray-200">
-                                            {doc.date ? new Date(doc.date).toLocaleDateString() : "-"}
-                                        </td>
-                                        <td className="px-4 py-2 border-t border-gray-200">
-                                            <button onClick={() => { openPDF(doc.id, doc.source); }} className="w-full h-full text-[16px] text-white px-2 border-t border-gray-200 bg-blue-500 rounded-sm text-center">OPEN</button>
+                                    <tr key={index} className="table w-full table-fixed">
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[5%]">{offset + index + 1}</td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">{doc.id}</td>
+                                        <td className="px-4 py-2 border-t border-gray-200 w-[25%]">{doc.source === "FM_IT_03" ? "ฟอร์มเอกสารแจ้งซ่อม IT" : doc.source === "FM_GA_03" ? "ฟอร์มขออณุญาตินำของออกนอกโรงงาน" : doc.source === "FM_GA_04" ? "ฟอร์มขออณุญาตออกนอกโรงงาน" : doc.source}</td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.source}</td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.Dep}</td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.date ? new Date(doc.date).toLocaleDateString() : "-"}</td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[5%]">
+                                            <button className="w-full h-full text-white bg-blue-500 rounded-sm">OPEN</button>
                                         </td>
                                     </tr>
                                 ))
@@ -320,6 +322,9 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                         </tbody>
                     </table>
                 </div>
+
+
+
 
                 {/* Pagination */}
                 <div className="mt-5 flex justify-between items-center">
