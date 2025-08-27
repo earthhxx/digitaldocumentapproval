@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import SupervisorPopup from "./BT_SupervisorPage";
 import Manager from "./BT_ManagerPage";
 
@@ -78,7 +78,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
             });
             if (res.ok) {
                 const data = await res.json();
-                console.log('data', data);
+                // console.log('data', data);
                 setApproveData(data);
                 setOffset(newOffset);
                 refreshAmount();

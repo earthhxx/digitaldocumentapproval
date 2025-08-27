@@ -25,7 +25,7 @@ export async function getDApproveData({
   Dep = [],
 }: ApproveQuery): Promise<ApproveData> {
   const pool = await getDashboardConnection();
-  console.log(Dep);
+  // console.log(Dep);
   // ดึง mapping table
   const tablesResult = await pool.request().query(`
     SELECT table_name, db_table_name
