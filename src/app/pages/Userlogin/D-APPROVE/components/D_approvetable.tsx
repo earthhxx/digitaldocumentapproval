@@ -34,7 +34,6 @@ type Tab = "Check" | "Approve" | "All";
 
 export default function DApproveTable({ user, initialData, AmountData }: DApproveTableProps) {
     const [filterOption] = useState<string[]>(["", ...(user.formaccess || [])]);
-    console.log(filterOption);
     const [filterForm, setFilterForm] = useState<string | null>(null);
 
     const [search, setSearch] = useState("");
@@ -72,10 +71,6 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
         setLoading(true);
-        console.log("filterForm:", filterForm);
-        console.log("user.formaccess:", user.formaccess);
-        console.log("permissions sent:", filterForm ? [filterForm] : user.formaccess);
-
         try {
             const res = await fetch("/api/D-approve", {
                 method: "POST",
@@ -162,7 +157,6 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     };
 
     const handleTabChange = (newTab: Tab) => {
-        // console.log(newTab);
         setTab(newTab);
         setOffset(0);
         fetchData(0, search, newTab);
@@ -179,7 +173,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     const canGoNext = offset + limit < approveData.totalAll;
     const canGoPrev = offset > 0;
-    
+
     return (
         <div className="flex flex-1 flex-col min-h-full w-full bg-white shadow-lg rounded-lg p-6 overflow-auto">
             <h2 className="flex justify-center items-center  text-4xl font-bold mb-5 text-gray-800 mt-4">Document Approval</h2>
