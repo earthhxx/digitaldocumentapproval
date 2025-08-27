@@ -21,7 +21,7 @@ export default function HomePage({ initialUser }: HomePageProps) {
   const displayUser = user || initialUser;
 
   return (
-    <div className="flex flex-col justify-center items-center w-full h-full bg-gradient-to-br from-blue-900 to-blue-700">
+    <div className="flex flex-col justify-center items-center w-full min-h-full bg-gradient-to-br from-blue-900 to-blue-700">
       <h1 className="text-3xl font-bold">
         Welcome {displayUser ? displayUser.fullName : "Guest"}!
       </h1>
