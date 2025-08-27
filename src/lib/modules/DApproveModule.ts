@@ -25,7 +25,7 @@ export async function getDApproveData({
   Dep = [],
 }: ApproveQuery): Promise<ApproveData> {
   const pool = await getDashboardConnection();
-
+  console.log(Dep);
   // ดึง mapping table
   const tablesResult = await pool.request().query(`
     SELECT table_name, db_table_name
@@ -45,7 +45,7 @@ export async function getDApproveData({
       SELECT 
         id, FormID, Dep , [Date] AS date, StatusCheck, StatusApprove, '${t}' AS source
       FROM ${tableMap[t]}
-      WHERE ${whereClause}`;
+      WHERE Dep IN (${Dep.map(t => `'${t}'`).join(",") || "''"}) AND ${whereClause}`;
   });
 
   const finalQuery =
@@ -74,6 +74,9 @@ export async function getDApproveData({
 
   const totalAll = Object.values(totals).reduce((sum, val) => sum + val, 0);
 
+  if (!Dep || Dep.length === 0) {
+    return { totalAll: 0, totals: {}, data: [] };
+  }
 
   return { totalAll, totals, data: dataResult.recordset };
 }

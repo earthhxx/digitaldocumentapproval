@@ -1,7 +1,7 @@
 // src/lib/modules/GetupdateStatus.ts
 import { getDashboardConnection } from "@/lib/db";
 
-export async function GetupdateStatus(formaccess: string[],Dep:string[]) {
+export async function GetupdateStatus(formaccess: string[], Dep: string[]) {
     if (!formaccess || !Dep || formaccess.length === 0) {
         throw new Error("missing parameter");
     }
@@ -30,6 +30,7 @@ export async function GetupdateStatus(formaccess: string[],Dep:string[]) {
                     COUNT(CASE WHEN StatusCheck IS NULL THEN 1 END)   AS CheckNull,
                     COUNT(CASE WHEN StatusApprove IS NULL OR StatusCheck IS NULL THEN 1 END) AS somethingNull
                 FROM ${tableMap[t]}
+                WHERE Dep IN (${Dep.map(t => `'${t}'`).join(",") || "''"})
             `
         );
 
