@@ -34,6 +34,7 @@ export async function GetupdateStatus(formaccess: string[], Dep: string[]) {
             `
         );
 
+        // console.log(queries)
     if (queries.length === 0) {
         throw new Error("No valid tables found");
     }
@@ -48,6 +49,7 @@ export async function GetupdateStatus(formaccess: string[], Dep: string[]) {
             ${queries.join(" UNION ALL ")}
         ) AS AllTables
     `;
+    console.log(finalQuery)
 
     const result = await pool.request().query(finalQuery);
 
