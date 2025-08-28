@@ -59,6 +59,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     const [selectID, setSelectID] = useState<string | number>("");
     const [selectTable, setSelectTable] = useState("");
+    const [selectDep, setselectDep] = useState("");
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
         setLoading(true);
@@ -372,8 +373,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                 <iframe src={pdfUrl} className="w-full h-full border-none flex-1 " title="PDF Viewer" />
 
                                 <div className="absolute bottom-4 right-4 flex gap-4">
-                                    {/* // user?.Dep?.includes(selectDep) && */}
-                                    {user?.permissions?.includes("Check") && user?.permissions?.includes(`Check_${selectTable}`) && (
+                                    {user?.permissions?.includes(`Check_${selectTable}_${setselectDep}`) && (
                                         <button
                                             className="px-5 py-2 bg-blue-600 text-white rounded-lg"
                                             onClick={() => setShowSupervisorPopup(true)}
@@ -381,8 +381,8 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                             สำหรับหัวหน้างาน
                                         </button>
                                     )}
-                                    {/* // user?.Dep?.includes(selectDep)  &&*/}
-                                    {user?.permissions?.includes("Approve") && user?.permissions?.includes(`Approve_${selectTable}`) && (
+                                    {/* permission ต้อง = (`Approve_${selectTable}_${selectDep}`) เช่น Approve_FM_IT_03_IT*/}
+                                    {user?.permissions?.includes(`Approve_${selectTable}_${selectDep}`) && (
                                         <button
                                             className="px-5 py-2 bg-green-600 text-white rounded-lg"
                                             onClick={() => setShowManagerPopup(true)}

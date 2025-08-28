@@ -20,7 +20,7 @@ export default async function UserLoginPage() {
     } catch { }
   }
 
-  if (!user || !user.roles?.includes("user")) {
+  if (!user || !user.permissions?.includes("D_Approve")) {
     return <div>Access Denied</div>;
   }
 

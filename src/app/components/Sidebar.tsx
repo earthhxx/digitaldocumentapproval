@@ -84,12 +84,12 @@ export default function Sidebar() {
 
               <nav className="flex flex-col gap-3 p-6 flex-1 w-full">
                 <a href="/" className="hover:bg-gray-700 bg-gray-700/30 p-3 rounded font-medium">Home</a>
-                {roles.includes("admin") && (
+                {roles?.includes("admin") && (
                   <a href="/pages/admin" className="hover:bg-green-700 bg-green-700/30 p-3 rounded font-medium text-green-400">
                     Admin Panel
                   </a>
                 )}
-                {roles.includes("user") && (
+                {user?.permissions.includes("D_Approve") && (
                   <a href="/pages/Userlogin/D-APPROVE" className="hover:bg-red-700 bg-red-700/30 p-3 rounded font-medium text-red-400">
                     D-APPROVE
                   </a>
