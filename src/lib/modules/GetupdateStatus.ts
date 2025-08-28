@@ -49,7 +49,7 @@ export async function GetupdateStatus(formaccess: string[], Dep: string[]) {
             ${queries.join(" UNION ALL ")}
         ) AS AllTables
     `;
-    console.log(finalQuery)
+    // console.log(finalQuery)
 
     const result = await pool.request().query(finalQuery);
 
