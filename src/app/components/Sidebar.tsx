@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useAuth } from "../context/AuthContext";
 
-export interface User { userId: string; fullName: string; roles: string[]; permissions:string[]; }
+export interface User { userId: string; fullName: string; roles: string[]; permissions: string[]; }
 
 export default function Sidebar() {
   const { user, login, logout } = useAuth();
@@ -13,8 +13,9 @@ export default function Sidebar() {
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setMounted(true), []);
-
+console.log('user',user);
   const roles = user?.roles || [];
+  const permission = user?.permissions || [];
   const userId = user?.userId || "";
   const fullName = user?.fullName || "";
 
@@ -89,7 +90,7 @@ export default function Sidebar() {
                     Admin Panel
                   </a>
                 )}
-                {user?.permissions.includes("D_Approve") && (
+                {permission?.includes("D_Approve") && (
                   <a href="/pages/Userlogin/D-APPROVE" className="hover:bg-red-700 bg-red-700/30 p-3 rounded font-medium text-red-400">
                     D-APPROVE
                   </a>
