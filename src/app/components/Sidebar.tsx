@@ -13,7 +13,7 @@ export default function Sidebar() {
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setMounted(true), []);
-  
+
   const roles = user?.roles || [];
   const permission = user?.permissions || [];
   const userId = user?.userId || "";
@@ -45,9 +45,9 @@ export default function Sidebar() {
       )}
 
       <div
-        className={`fixed inset-0 bg-black transition-opacity duration-300 ${open ? "opacity-40 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-50 bg-white/10 backdrop-blur-[4px] transition-opacity duration-300 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
       ></div>
+
 
       <aside
         ref={sidebarRef}
