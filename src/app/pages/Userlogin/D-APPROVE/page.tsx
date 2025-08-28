@@ -33,7 +33,6 @@ export default async function UserLoginPage() {
     formaccess: user.formaccess || [],
     Dep: user.Dep || [],
   });
-  console.log('ssr',initialData)
   const data = await GetupdateStatus(user.formaccess ?? [], user.Dep ?? []);
 
   return <DApproveTable initialData={initialData} user={user} AmountData={data} />;

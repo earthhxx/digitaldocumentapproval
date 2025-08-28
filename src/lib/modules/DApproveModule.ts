@@ -14,8 +14,9 @@ export interface ApproveData {
   totalAll: number;
   totals: Record<string, number>; // เพิ่มตรงนี้
   data: any[];
+  offset: number;
+  limit: number;
 }
-
 export async function getDApproveData({
   offset = 0,
   limit = 0,
@@ -25,8 +26,7 @@ export async function getDApproveData({
   Dep = [],
 }: ApproveQuery): Promise<ApproveData> {
   const pool = await getDashboardConnection();
-  // console.log(Dep);
-  // ดึง mapping table
+
   const tablesResult = await pool.request().query(`
     SELECT table_name, db_table_name
     FROM D_Approve
@@ -37,31 +37,31 @@ export async function getDApproveData({
   tablesResult.recordset.forEach(row => (tableMap[row.table_name] = row.db_table_name));
 
   const validTabs = ["Check_TAB", "Approve_TAB", "All_TAB"];
+  if (!validTabs.includes(statusType)) return { totalAll: 0, totals: {}, data: [], offset, limit };
 
   const queries = formaccess
     .filter(t => tableMap[t])
     .map(t => {
-      if (!validTabs.includes(statusType)) return ""; // ดัก Tab ที่ไม่ถูกต้อง
-
       let whereClause = `[Date] LIKE @search`;
-
       if (statusType === "Check_TAB") whereClause += ` AND StatusCheck IS NULL`;
       else if (statusType === "Approve_TAB") whereClause += ` AND StatusApprove IS NULL`;
-      // All_TAB ไม่ต้องเพิ่มเงื่อนไข
-
       const depList = Dep.length ? Dep.map(d => `'${d}'`).join(",") : "''";
-
       return `
-      SELECT 
-        id, FormID, Dep , [Date] AS date, StatusCheck, StatusApprove, '${t}' AS source
-      FROM ${tableMap[t]}
-      WHERE Dep IN (${depList}) AND ${whereClause}`;
+        SELECT id, FormID, Dep, [Date] AS date, StatusCheck, StatusApprove, '${t}' AS source
+        FROM ${tableMap[t]}
+        WHERE Dep IN (${depList}) AND ${whereClause}
+      `;
     })
-    .filter(q => q); // ลบ empty string ทิ้ง
+    .filter(q => q);
 
-  const finalQuery =
-    queries.join(" UNION ALL ") +
-    ` ORDER BY date DESC OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY`;
+  const finalQuery = `
+  SELECT *, COUNT(*) OVER() AS totalCount
+  FROM (
+    ${queries.join(" UNION ALL ")}
+  ) AS unioned
+  ORDER BY date DESC
+  OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
+`;
 
   const dataResult = await pool
     .request()
@@ -70,24 +70,19 @@ export async function getDApproveData({
     .input("limit", sql.Int, limit)
     .query(finalQuery);
 
-  // --- count per table ---
-  const countQueries = formaccess
-    .filter(t => tableMap[t])
-    .map(t => `(SELECT COUNT(*) FROM ${tableMap[t]}) AS [${t}]`)
-    .join(", ");
+  const data = dataResult.recordset;
 
-  const countResult = await pool.request().query(`SELECT ${countQueries}`);
+  // totalAll จาก finalQuery เลย
+  const totalAll = data.length > 0 ? Number(data[0].totalCount) : 0;
 
-  const totalsRaw = countResult.recordset[0] ?? {};
-  const totals: Record<string, number> = Object.fromEntries(
-    Object.entries(totalsRaw).map(([k, v]) => [k, Number(v)])
-  );
+  // totals per table จาก dataResult ก็ทำได้ง่าย ๆ
+  const totals: Record<string, number> = {};
+  data.forEach(d => {
+    totals[d.source] = (totals[d.source] || 0) + 1;
+  });
 
-  const totalAll = Object.values(totals).reduce((sum, val) => sum + val, 0);
+  // ลบ totalCount ออกก่อน return
+  data.forEach(d => delete d.totalCount);
 
-  if (!Dep || Dep.length === 0) {
-    return { totalAll: 0, totals: {}, data: [] };
-  }
-
-  return { totalAll, totals, data: dataResult.recordset };
+  return { totalAll, totals, data, offset, limit };
 }

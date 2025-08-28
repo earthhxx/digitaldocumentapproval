@@ -35,6 +35,7 @@ type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
 
 export default function DApproveTable({ user, initialData, AmountData }: DApproveTableProps) {
     console.log(initialData);
+    
     const [filterOption] = useState<string[]>(["", ...(user.formaccess || [])]);
     const [filterForm, setFilterForm] = useState<string | null>(null);
 
