@@ -288,7 +288,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                 ? "ฟอร์มขออณุญาตออกนอกโรงงาน"
                                 : doc.source}
                 </td> */}
-                <div className="rounded-lg shadow-sm border border-gray-200 overflow-auto h-[60vh]">
+                <div className="rounded-lg shadow-sm border border-gray-200 overflow-auto h-[64vh]">
                     <table className="min-w-full table-fixed bg-white text-black">
                         <thead className="bg-gray-100 sticky top-0 z-10">
                             <tr>

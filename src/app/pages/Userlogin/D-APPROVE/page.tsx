@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import DApproveTable from "./components/D_approvetable";
 import type { UserPayload } from "@/app/types/types"; // แนะนำแยก type ไว้ไฟล์เฉพาะ
 import { getDApproveData } from "@/lib/modules/DApproveModule";
-import { GetupdateStatus } from "@/lib/modules/GetupdateStatus"
+import { GetupdateStatus } from "@/lib/modules/GetupdateStatus";
 
 export default async function UserLoginPage() {
   const cookieStore = await cookies();
