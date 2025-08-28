@@ -31,7 +31,7 @@ interface DApproveTableProps {
     AmountData: AmountData;
 }
 
-type Tab = "Check" | "Approve" | "All";
+type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
 
 export default function DApproveTable({ user, initialData, AmountData }: DApproveTableProps) {
     const [filterOption] = useState<string[]>(["", ...(user.formaccess || [])]);
@@ -47,7 +47,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     const [loading, setLoading] = useState(false);
     const [approveData, setApproveData] = useState<ApproveData>(initialData);
     const [dataAmount, setDataAmount] = useState<AmountData>(AmountData);
-    const availableTabs = (["Check", "Approve", "All"] as Tab[]).filter(t =>
+    const availableTabs = (["Check_TAB", "Approve_TAB", "All_TAB"] as Tab[]).filter(t =>
         user.permissions?.includes(t)
     );
     const [tab, setTab] = useState<Tab>(availableTabs[0] || "Check"); // เลือก tab แรกที่ user มีสิทธิ์
@@ -110,11 +110,12 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
         }
     };
 
-    const openPDF = (id: string | number, table: string) => {
+    const openPDF = (id: string | number, table: string, Dep: string) => {
         setPdfUrl(`/api/generate-filled-pdf?labelText=${id}&table=${table}`);
         setShowPDF(true);
         setSelectID(id);
         setSelectTable(table);
+        setselectDep(Dep);
     };
 
 
@@ -142,6 +143,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
         setShowPDF(false);
         setSelectID('');
         setSelectTable('');
+        setselectDep('');
         refreshAmount();
     };
 
@@ -159,9 +161,9 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
 
     const [tabLabels] = useState<Record<Tab, string>>({
-        Check: `Check`,
-        Approve: `Approve`,
-        All: `All-Report`,
+        Check_TAB: `Check`,
+        Approve_TAB: `Approve`,
+        All_TAB: `All-Report`,
     });
 
 
@@ -189,17 +191,17 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                         {tabLabels[t]}
 
                         {/* Badge */}
-                        {t === "Check" && dataAmount.CheckNull > 0 && (
+                        {t === "Check_TAB" && dataAmount.CheckNull > 0 && (
                             <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
                                 {dataAmount.CheckNull}
                             </div>
                         )}
-                        {t === "Approve" && dataAmount.ApproveNull > 0 && (
+                        {t === "Approve_TAB" && dataAmount.ApproveNull > 0 && (
                             <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
                                 {dataAmount.ApproveNull}
                             </div>
                         )}
-                        {t === "All" && dataAmount.somethingNull > 0 && (
+                        {t === "All_TAB" && dataAmount.somethingNull > 0 && (
                             <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
                                 {dataAmount.somethingNull}
                             </div>
@@ -320,7 +322,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.Dep}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.date ? new Date(doc.date).toLocaleDateString() : "-"}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[5%]">
-                                            <button onClick={() => { openPDF(doc.id, doc.source); }} className="w-full h-full text-white bg-blue-500 rounded-sm">OPEN</button>
+                                            <button onClick={() => { openPDF(doc.id, doc.source, doc.Dep); }} className="w-full h-full text-white bg-blue-500 rounded-sm">OPEN</button>
                                         </td>
                                     </tr>
                                 ))
