@@ -31,7 +31,7 @@ export default function LoginForm({ onLoginSuccess }: Props) {
                 clearForm();
                 // ส่ง User object ไป Sidebar เพื่อ set state
                 onLoginSuccess({
-                    userId: data.userId,
+                    userId: data.User_Id,
                     fullName: data.fullName,
                     roles: data.roles,
                     permissions: data.permissions,

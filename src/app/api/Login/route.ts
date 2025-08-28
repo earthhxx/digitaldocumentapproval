@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
       .sign(secret);
 
     // สร้าง NextResponse แล้ว set cookie HttpOnly
-    const res = NextResponse.json({ success: true, fullName: userrow.Name, roles, permissions });
+    const res = NextResponse.json({ success: true, fullName: userrow.Name, User_Id: userrow.User_Id, roles, permissions });
     res.cookies.set("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
