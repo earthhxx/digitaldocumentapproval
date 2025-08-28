@@ -36,17 +36,28 @@ export async function getDApproveData({
   const tableMap: Record<string, string> = {};
   tablesResult.recordset.forEach(row => (tableMap[row.table_name] = row.db_table_name));
 
-  const queries = formaccess.filter(t => tableMap[t]).map(t => {
-    let whereClause = `[Date] LIKE @search`;
-    if (statusType === "Check") whereClause += ` AND StatusCheck IS NULL`;
-    else if (statusType === "Approve") whereClause += ` AND StatusApprove IS NULL`;
+  const validTabs = ["Check_TAB", "Approve_TAB", "All_TAB"];
 
-    return `
+  const queries = formaccess
+    .filter(t => tableMap[t])
+    .map(t => {
+      if (!validTabs.includes(statusType)) return ""; // ดัก Tab ที่ไม่ถูกต้อง
+
+      let whereClause = `[Date] LIKE @search`;
+
+      if (statusType === "Check_TAB") whereClause += ` AND StatusCheck IS NULL`;
+      else if (statusType === "Approve_TAB") whereClause += ` AND StatusApprove IS NULL`;
+      // All_TAB ไม่ต้องเพิ่มเงื่อนไข
+
+      const depList = Dep.length ? Dep.map(d => `'${d}'`).join(",") : "''";
+
+      return `
       SELECT 
         id, FormID, Dep , [Date] AS date, StatusCheck, StatusApprove, '${t}' AS source
       FROM ${tableMap[t]}
-      WHERE Dep IN (${Dep.map(t => `'${t}'`).join(",") || "''"}) AND ${whereClause}`;
-  });
+      WHERE Dep IN (${depList}) AND ${whereClause}`;
+    })
+    .filter(q => q); // ลบ empty string ทิ้ง
 
   const finalQuery =
     queries.join(" UNION ALL ") +

@@ -24,6 +24,28 @@ export default function RolesPermissionList() {
 
   const [choice, setChoice] = useState<"Yes" | "No">("No");
 
+  const fetchRolesPer = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/rolepermission/role-permissions", {
+        method: "GET",
+        credentials: "include", // ✅ สำคัญ
+      });
+      if (!res.ok) throw new Error("Failed to fetch role permissions");
+      const data = await res.json();
+      setItems(data.data ?? []);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(String(err)); // fallback สำหรับค่าอื่น ๆ
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // --- Fetch on mount ---
   useEffect(() => {
     const fetchUserRoles = async () => {
@@ -262,7 +284,7 @@ export default function RolesPermissionList() {
           />
         </div>
         {/* Roles Table */}
-        {!loading && !error && (
+        {!loading && (
           <div className="flex flex-col flex-1 min-h-0">
             <h3 className="text-sm font-bold mb-2">Roles</h3>
             <div className="flex-1 overflow-auto border custom-scrollbar border-gray-700 rounded-lg">
@@ -289,7 +311,7 @@ export default function RolesPermissionList() {
         )}
 
         {/* Permissions Table */}
-        {!loading && !error && (
+        {!loading && (
           <div className="flex flex-col flex-1 min-h-0">
             <h3 className="text-sm font-bold mb-2">Permissions</h3>
             <div className="flex-1 overflow-auto custom-scrollbar border border-gray-700 rounded-lg">

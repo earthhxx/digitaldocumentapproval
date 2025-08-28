@@ -34,6 +34,7 @@ interface DApproveTableProps {
 type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
 
 export default function DApproveTable({ user, initialData, AmountData }: DApproveTableProps) {
+    console.log(initialData);
     const [filterOption] = useState<string[]>(["", ...(user.formaccess || [])]);
     const [filterForm, setFilterForm] = useState<string | null>(null);
 
@@ -286,10 +287,10 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                 ? "ฟอร์มขออณุญาตออกนอกโรงงาน"
                                 : doc.source}
                 </td> */}
-                <div className="rounded-lg shadow-sm border border-gray-200">
-                    <table className="min-w-full table-fixed table-layout-fixed bg-white text-black">
-                        <thead className="bg-gray-100 table w-full">
-                            <tr >
+                <div className="rounded-lg shadow-sm border border-gray-200 overflow-auto h-[60vh]">
+                    <table className="min-w-full table-fixed bg-white text-black">
+                        <thead className="bg-gray-100 sticky top-0 z-10">
+                            <tr>
                                 <th className="px-4 py-2 text-center w-[5%]">#</th>
                                 <th className="px-4 py-2 text-center w-[10%]">ID</th>
                                 <th className="px-4 py-2 text-center w-[25%]">DOC NAME</th>
@@ -299,30 +300,43 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                 <th className="px-4 py-2 text-center w-[5%]">Action</th>
                             </tr>
                         </thead>
-                        <tbody className="block h-[60vh] overflow-y-auto custom-scrollbar ">
+                        <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan={4} className="text-center py-6 ">
+                                    <td colSpan={7} className="text-center py-6">
                                         Loading...
                                     </td>
                                 </tr>
                             ) : approveData.data.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="text-center py-6 ">
+                                    <td colSpan={7} className="text-center py-6">
                                         No data found
                                     </td>
                                 </tr>
                             ) : (
                                 approveData.data.map((doc, index) => (
-                                    <tr key={index} className="table w-full table-fixed">
+                                    <tr key={`${doc.source}_${doc.id}_${index}`}>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[5%]">{offset + index + 1}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">{doc.id}</td>
-                                        <td className="px-4 py-2 border-t border-gray-200 w-[25%]">{doc.source === "FM_IT_03" ? "ฟอร์มเอกสารแจ้งซ่อม IT" : doc.source === "FM_GA_03" ? "ฟอร์มขออณุญาตินำของออกนอกโรงงาน" : doc.source === "FM_GA_04" ? "ฟอร์มขออณุญาตออกนอกโรงงาน" : doc.source}</td>
+                                        <td className="px-4 py-2 border-t border-gray-200 w-[25%]">
+                                            {doc.source === "FM_IT_03"
+                                                ? "ฟอร์มเอกสารแจ้งซ่อม IT"
+                                                : doc.source === "FM_GA_03"
+                                                    ? "ฟอร์มขออนุญาตนำของออกนอกโรงงาน"
+                                                    : doc.source === "FM_GA_04"
+                                                        ? "ฟอร์มขออนุญาตออกนอกโรงงาน"
+                                                        : doc.source}
+                                        </td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.source}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.Dep}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.date ? new Date(doc.date).toLocaleDateString() : "-"}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[5%]">
-                                            <button onClick={() => { openPDF(doc.id, doc.source, doc.Dep); }} className="w-full h-full text-white bg-blue-500 rounded-sm">OPEN</button>
+                                            <button
+                                                onClick={() => openPDF(doc.id, doc.source, doc.Dep)}
+                                                className="w-full h-full text-white bg-blue-500 rounded-sm"
+                                            >
+                                                OPEN
+                                            </button>
                                         </td>
                                     </tr>
                                 ))
@@ -330,6 +344,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                         </tbody>
                     </table>
                 </div>
+
 
 
 
@@ -375,7 +390,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                 <iframe src={pdfUrl} className="w-full h-full border-none flex-1 " title="PDF Viewer" />
 
                                 <div className="absolute bottom-4 right-4 flex gap-4">
-                                    {user?.permissions?.includes(`Check_${selectTable}_${setselectDep}`) && (
+                                    {user?.permissions?.includes(`Check_${selectTable}_${selectDep}`) && (
                                         <button
                                             className="px-5 py-2 bg-blue-600 text-white rounded-lg"
                                             onClick={() => setShowSupervisorPopup(true)}

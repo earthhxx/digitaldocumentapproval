@@ -13,7 +13,7 @@ export default function Sidebar() {
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setMounted(true), []);
-console.log('user',user);
+  
   const roles = user?.roles || [];
   const permission = user?.permissions || [];
   const userId = user?.userId || "";
