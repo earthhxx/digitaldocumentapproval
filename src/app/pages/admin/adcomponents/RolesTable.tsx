@@ -172,7 +172,7 @@ export default function RolesList() {
       {!loading && !error && (
         <>
           {/* List */}
-          <div className="mb-6 w-[60%] max-h-[75vh] overflow-auto custom-scrollbar border border-white ">
+          <div className="mb-6 max-h-[75vh] overflow-auto custom-scrollbar border border-white ">
             <table className="w-full border-collapse font-mono text-sm">
               <thead>
                 <tr className="bg-black text-white">

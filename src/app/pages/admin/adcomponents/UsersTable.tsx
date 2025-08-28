@@ -189,7 +189,7 @@ export default function UsersList() {
             <h2 className="text-2xl font-bold mb-4">Users</h2>
 
             {!loading && !error && items.length > 0 ? (
-                <div className="mb-6 w-[60%] max-h-[75vh] overflow-auto custom-scrollbar border border-white ">
+                <div className="mb-6 max-h-[75vh] overflow-auto custom-scrollbar border border-white ">
                     <table className="w-full border-collapse text-sm">
                         <thead className="sticky top-0 bg-black text-white z-10">
                             <tr>
