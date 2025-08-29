@@ -332,8 +332,8 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                         disabled={selected.length === 0}
                         onClick={() => handleGroupApprove("approve", "Supervisor")}
                         className={`px-3 py-1 rounded text-white ${selected.length === 0
-                                ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-green-600 hover:bg-green-700"
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-green-600 hover:bg-green-700"
                             }`}
                     >
                         Approve Selected ({selected.length})
@@ -343,8 +343,8 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                         disabled={selected.length === 0}
                         onClick={() => handleGroupApprove("reject", "Supervisor")}
                         className={`px-3 py-1 rounded text-white ${selected.length === 0
-                                ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-red-600 hover:bg-red-700"
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-red-600 hover:bg-red-700"
                             }`}
                     >
                         Reject Selected ({selected.length})
@@ -506,7 +506,12 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
                                 {showSupervisorPopup && (
                                     <SupervisorPopup
-                                        onClose={() => setShowSupervisorPopup(false)}
+                                        onClose={() => {
+                                            setShowSupervisorPopup(false);
+                                            setSelectID('');
+                                            setSelectTable('');
+                                            setselectDep('');
+                                        }}
                                         onApprove={() => handleApproval(selectID, selectTable, "approve", "Supervisor")}
                                         onReject={() => handleApproval(selectID, selectTable, "reject", "Supervisor")}
                                     />
@@ -514,7 +519,12 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
                                 {showManagerPopup && (
                                     <Manager
-                                        onClose={() => setShowManagerPopup(false)}
+                                        onClose={() => {
+                                            setShowManagerPopup(false);
+                                            setSelectID('');
+                                            setSelectTable('');
+                                            setselectDep('');
+                                        }}
                                         onApprove={() => handleApproval(selectID, selectTable, "approve", "Manager")}
                                         onReject={() => handleApproval(selectID, selectTable, "reject", "Manager")}
                                     />
