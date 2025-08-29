@@ -95,7 +95,8 @@ export async function POST(req: NextRequest) {
       const request = pool.request()
         .input("status", sql.NVarChar, statusValue)
         .input("name", sql.NVarChar, nameValue);
-
+      //loop ตาม idx ของ ids 
+      //rutrun .input(`id${idx[0]}`, sql.Int, id[0]); จบรอบแรก
       ids.forEach((id, idx) => {
         request.input(`id${idx}`, sql.Int, id);
       });
