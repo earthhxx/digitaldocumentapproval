@@ -30,11 +30,14 @@ interface DApproveTableProps {
     initialData: ApproveData;
     AmountData: AmountData;
 }
+interface SelectedDoc {
+    id: number;
+    source: string;
+}
 
 type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
 
 export default function DApproveTable({ user, initialData, AmountData }: DApproveTableProps) {
-    console.log(initialData);
 
     const [filterOption] = useState<string[]>(["", ...(user.formaccess || [])]);
     const [filterForm, setFilterForm] = useState<string | null>(null);
@@ -52,7 +55,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     const availableTabs = (["Check_TAB", "Approve_TAB", "All_TAB"] as Tab[]).filter(t =>
         user.permissions?.includes(t)
     );
-    const [tab, setTab] = useState<Tab>(availableTabs[0] || "Check"); // เลือก tab แรกที่ user มีสิทธิ์
+    const [tab, setTab] = useState<Tab>(availableTabs[0] || "Check_TAB"); // เลือก tab แรกที่ user มีสิทธิ์
 
     const [showPDF, setShowPDF] = useState(false);
     const [pdfUrl, setPdfUrl] = useState("");
@@ -63,44 +66,33 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     const [selectTable, setSelectTable] = useState("");
     const [selectDep, setselectDep] = useState("");
 
-    const [selected, setSelected] = useState<number[]>([]); // เก็บรายการที่เลือกทั้งหมด
-    const allIds = approveData.data.map((doc) => doc.id);
+
+    const [selected, setSelected] = useState<SelectedDoc[]>([]);
+    const allDocs = approveData.data.map((doc) => ({ id: doc.id, source: doc.source }));
 
     const toggleSelectAll = () => {
-        if (selected.length === allIds.length) {
+        if (selected.length === allDocs.length) {
             setSelected([]);
         } else {
-            setSelected(allIds);
+            setSelected(allDocs);
         }
-    };
-
-    const toggleSelect = (id: number) => {
-        setSelected((prev) =>
-            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-        );
     };
 
     const handleGroupApprove = async (status: "approve" | "reject", card: "Supervisor" | "Manager") => {
         try {
-            await Promise.all(
-                approveData.data
-                    .filter((doc) => selected.includes(doc.id))
-                    .map((doc) =>
-                        fetch("/api/save-status-report", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                id: doc.id,
-                                table: doc.source,
-                                status,
-                                fullname: user.fullName,
-                                card,
-                            }),
-                        })
-                    )
-            );
+            await fetch("/api/save-status-report", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    records: selected,
+                    status,
+                    fullname: user.fullName,
+                    card,
+                }),
+            });
+
             alert(`บันทึก ${status} สำเร็จ`);
-            setSelected([]); // เคลียร์ checkbox
+            setSelected([]);
             refreshAmount();
             fetchData(offset, search, tab);
         } catch (err) {
@@ -108,7 +100,6 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
             alert("เกิดข้อผิดพลาด");
         }
     };
-
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
         setLoading(true);
@@ -326,6 +317,8 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
                 </div>
 
+                
+
                 {/* ปุ่ม group action */}
                 <div className="p-2 flex gap-2">
                     <button
@@ -336,7 +329,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                             : "bg-green-600 hover:bg-green-700"
                             }`}
                     >
-                        Approve Selected ({selected.length})
+                        Approve Supervisor ({selected.length})
                     </button>
 
                     <button
@@ -347,9 +340,32 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                             : "bg-red-600 hover:bg-red-700"
                             }`}
                     >
-                        Reject Selected ({selected.length})
+                        Reject Supervisor ({selected.length})
+                    </button>
+                    <button
+                        disabled={selected.length === 0}
+                        onClick={() => handleGroupApprove("approve", "Manager")}
+                        className={`px-3 py-1 rounded text-white ${selected.length === 0
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-green-600 hover:bg-green-700"
+                            }`}
+                    >
+                        Approve Manager ({selected.length})
+                    </button>
+
+                    <button
+                        disabled={selected.length === 0}
+                        onClick={() => handleGroupApprove("reject", "Manager")}
+                        className={`px-3 py-1 rounded text-white ${selected.length === 0
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-red-600 hover:bg-red-700"
+                            }`}
+                    >
+                        Reject Manager ({selected.length})
                     </button>
                 </div>
+
+
 
 
                 <div className="custom-scrollbar rounded-lg shadow-sm border border-gray-200 overflow-y-auto h-[64vh] overflow-hidden">
@@ -360,7 +376,12 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                     <input
                                         type="checkbox"
                                         onChange={toggleSelectAll}
-                                        checked={selected.length === allIds.length && allIds.length > 0}
+                                        checked={
+                                            selected.length > 0 &&
+                                            approveData.data.every((doc) =>
+                                                selected.some((s) => s.id === doc.id && s.source === doc.source)
+                                            )
+                                        }
                                     />
                                 </th>
                                 <th className="px-4 py-2 text-center w-[10%]">#</th>
@@ -375,13 +396,13 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan={7} className="text-center py-6">
+                                    <td colSpan={8} className="text-center py-6">
                                         Loading...
                                     </td>
                                 </tr>
                             ) : approveData.data.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="text-center py-6">
+                                    <td colSpan={8} className="text-center py-6">
                                         No data found
                                     </td>
                                 </tr>
@@ -389,14 +410,24 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                 approveData.data.map((doc, index) => (
                                     <tr
                                         key={`${doc.source}_${doc.id}_${index}`}
-                                        className={`transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:bg-amber-100 ${selected.includes(doc.id) ? "bg-amber-200" : ""
+                                        className={`transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:bg-amber-100 ${selected.some((s) => s.id === doc.id && s.source === doc.source)
+                                            ? "bg-amber-200"
+                                            : ""
                                             }`}
                                     >
                                         <td className="px-2 py-2 text-center border-t border-gray-200">
                                             <input
                                                 type="checkbox"
-                                                checked={selected.includes(doc.id)}
-                                                onChange={() => toggleSelect(doc.id)}
+                                                checked={selected.some((s) => s.id === doc.id && s.source === doc.source)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelected((prev) => [...prev, { id: doc.id, source: doc.source }]);
+                                                    } else {
+                                                        setSelected((prev) =>
+                                                            prev.filter((s) => !(s.id === doc.id && s.source === doc.source))
+                                                        );
+                                                    }
+                                                }}
                                             />
                                         </td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
