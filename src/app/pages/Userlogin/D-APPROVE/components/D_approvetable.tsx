@@ -35,7 +35,7 @@ type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
 
 export default function DApproveTable({ user, initialData, AmountData }: DApproveTableProps) {
     console.log(initialData);
-    
+
     const [filterOption] = useState<string[]>(["", ...(user.formaccess || [])]);
     const [filterForm, setFilterForm] = useState<string | null>(null);
 
@@ -44,7 +44,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
-    const [limit] = useState(15);
+    const [limit] = useState(12);
 
     const [loading, setLoading] = useState(false);
     const [approveData, setApproveData] = useState<ApproveData>(initialData);
@@ -62,6 +62,53 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     const [selectID, setSelectID] = useState<string | number>("");
     const [selectTable, setSelectTable] = useState("");
     const [selectDep, setselectDep] = useState("");
+
+    const [selected, setSelected] = useState<number[]>([]); // เก็บรายการที่เลือกทั้งหมด
+    const allIds = approveData.data.map((doc) => doc.id);
+
+    const toggleSelectAll = () => {
+        if (selected.length === allIds.length) {
+            setSelected([]);
+        } else {
+            setSelected(allIds);
+        }
+    };
+
+    const toggleSelect = (id: number) => {
+        setSelected((prev) =>
+            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+        );
+    };
+
+    const handleGroupApprove = async (status: "approve" | "reject", card: "Supervisor" | "Manager") => {
+        try {
+            await Promise.all(
+                approveData.data
+                    .filter((doc) => selected.includes(doc.id))
+                    .map((doc) =>
+                        fetch("/api/save-status-report", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: doc.id,
+                                table: doc.source,
+                                status,
+                                fullname: user.fullName,
+                                card,
+                            }),
+                        })
+                    )
+            );
+            alert(`บันทึก ${status} สำเร็จ`);
+            setSelected([]); // เคลียร์ checkbox
+            refreshAmount();
+            fetchData(offset, search, tab);
+        } catch (err) {
+            console.error(err);
+            alert("เกิดข้อผิดพลาด");
+        }
+    };
+
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
         setLoading(true);
@@ -279,26 +326,50 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
                 </div>
 
-                {/* <td className="px-4 py-2 text-center border-t border-gray-200 w-[25%]">
-                    {doc.source === "FM_IT_03"
-                        ? "ฟอร์มเอกสารแจ้งซ่อม IT"
-                        : doc.source === "FM_GA_03"
-                            ? "ฟอร์มขออณุญาตินำของออกนอกโรงงาน"
-                            : doc.source === "FM_GA_04"
-                                ? "ฟอร์มขออณุญาตออกนอกโรงงาน"
-                                : doc.source}
-                </td> */}
-                <div className="rounded-lg shadow-sm border border-gray-200 overflow-auto h-[64vh]">
-                    <table className="min-w-full table-fixed bg-white text-black">
+                {/* ปุ่ม group action */}
+                <div className="p-2 flex gap-2">
+                    <button
+                        disabled={selected.length === 0}
+                        onClick={() => handleGroupApprove("approve", "Supervisor")}
+                        className={`px-3 py-1 rounded text-white ${selected.length === 0
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-green-600 hover:bg-green-700"
+                            }`}
+                    >
+                        Approve Selected ({selected.length})
+                    </button>
+
+                    <button
+                        disabled={selected.length === 0}
+                        onClick={() => handleGroupApprove("reject", "Supervisor")}
+                        className={`px-3 py-1 rounded text-white ${selected.length === 0
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-red-600 hover:bg-red-700"
+                            }`}
+                    >
+                        Reject Selected ({selected.length})
+                    </button>
+                </div>
+
+
+                <div className="custom-scrollbar rounded-lg shadow-sm border border-gray-200 overflow-y-auto h-[64vh] overflow-hidden">
+                    <table className="min-w-full table-fixed bg-white text-black ">
                         <thead className="bg-gray-100 sticky top-0 z-10">
                             <tr>
-                                <th className="px-4 py-2 text-center w-[5%]">#</th>
+                                <th className="px-2 py-2 text-center w-[5%]">
+                                    <input
+                                        type="checkbox"
+                                        onChange={toggleSelectAll}
+                                        checked={selected.length === allIds.length && allIds.length > 0}
+                                    />
+                                </th>
+                                <th className="px-4 py-2 text-center w-[10%]">#</th>
                                 <th className="px-4 py-2 text-center w-[10%]">ID</th>
                                 <th className="px-4 py-2 text-center w-[25%]">DOC NAME</th>
                                 <th className="px-4 py-2 text-center w-[15%]">Source</th>
                                 <th className="px-4 py-2 text-center w-[15%]">Dep</th>
                                 <th className="px-4 py-2 text-center w-[15%]">Date</th>
-                                <th className="px-4 py-2 text-center w-[5%]">Action</th>
+                                <th className="px-4 py-2 text-center w-[10%]">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -316,9 +387,24 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                 </tr>
                             ) : (
                                 approveData.data.map((doc, index) => (
-                                    <tr key={`${doc.source}_${doc.id}_${index}`}>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[5%]">{offset + index + 1}</td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">{doc.id}</td>
+                                    <tr
+                                        key={`${doc.source}_${doc.id}_${index}`}
+                                        className={`transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:bg-amber-100 ${selected.includes(doc.id) ? "bg-amber-200" : ""
+                                            }`}
+                                    >
+                                        <td className="px-2 py-2 text-center border-t border-gray-200">
+                                            <input
+                                                type="checkbox"
+                                                checked={selected.includes(doc.id)}
+                                                onChange={() => toggleSelect(doc.id)}
+                                            />
+                                        </td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
+                                            {index + 1}
+                                        </td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
+                                            {doc.id}
+                                        </td>
                                         <td className="px-4 py-2 border-t border-gray-200 w-[25%]">
                                             {doc.source === "FM_IT_03"
                                                 ? "ฟอร์มเอกสารแจ้งซ่อม IT"
@@ -328,13 +414,21 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                                         ? "ฟอร์มขออนุญาตออกนอกโรงงาน"
                                                         : doc.source}
                                         </td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.source}</td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.Dep}</td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.date ? new Date(doc.date).toLocaleDateString() : "-"}</td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[5%]">
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">
+                                            {doc.source}
+                                        </td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">
+                                            {doc.Dep}
+                                        </td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">
+                                            {doc.date
+                                                ? new Date(doc.date).toLocaleDateString()
+                                                : "-"}
+                                        </td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
                                             <button
                                                 onClick={() => openPDF(doc.id, doc.source, doc.Dep)}
-                                                className="w-full h-full text-white bg-blue-500 rounded-sm"
+                                                className="px-2 py-1 text-white bg-blue-500 rounded-sm hover:bg-blue-600"
                                             >
                                                 OPEN
                                             </button>
