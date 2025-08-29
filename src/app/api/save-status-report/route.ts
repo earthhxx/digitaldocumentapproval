@@ -5,7 +5,7 @@ import sql from "mssql";
 
 interface RecordPayload {
   id: number;
-  table: string;
+  source: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -47,14 +47,19 @@ export async function POST(req: NextRequest) {
     // Group records by table
     const tableGroups: Record<string, number[]> = {};
     for (const rec of records) {
-      if (!rec.id || !rec.table) continue;
-      if (!tableGroups[rec.table]) tableGroups[rec.table] = [];
-      tableGroups[rec.table].push(rec.id);
+      if (!rec.id || !rec.source) continue;
+      if (!tableGroups[rec.source]) tableGroups[rec.source] = [];
+      tableGroups[rec.source].push(rec.id);
     }
-
+    //👉 Grouped records by table: { FM_IT_03: [ 12, 13 ] }
     console.log("👉 Grouped records by table:", tableGroups);
 
     // Update batch per table
+    // Obj.entries return arr [key,value] 
+    //     [
+    //   ["FM_IT_01", [1, 2]],
+    //   ["FM_GA_03", [3, 4]]
+    // ] 
     for (const [table, ids] of Object.entries(tableGroups)) {
       // ดึง mapping table
       const tablesResult = await pool
