@@ -33,6 +33,7 @@ interface DApproveTableProps {
 interface SelectedDoc {
     id: number;
     source: string;
+    Dep: string;
 }
 
 type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
@@ -70,11 +71,20 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     const [selected, setSelected] = useState<SelectedDoc[]>([]);
     const allDocs = approveData.data.map((doc) => ({ id: doc.id, source: doc.source }));
 
+    const canApproveSupervisor = selected.length > 0 && selected.every(s =>
+        user?.permissions?.includes(`Check_${s.source}_${s.Dep}`)
+    );
+
+    const canApproveManager = selected.length > 0 && selected.every(s =>
+        user?.permissions?.includes(`Approve_${s.source}_${s.Dep}`)
+    );
+
+
     const toggleSelectAll = () => {
         if (selected.length === allDocs.length) {
             setSelected([]);
         } else {
-            setSelected(allDocs);
+            setSelected(approveData.data.map(doc => ({ id: doc.id, source: doc.source, Dep: doc.Dep })));
         }
     };
 
@@ -317,55 +327,45 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
                 </div>
 
-                
 
-                {/* ปุ่ม group action */}
+
                 <div className="p-2 flex gap-2">
-                    <button
-                        disabled={selected.length === 0}
-                        onClick={() => handleGroupApprove("approve", "Supervisor")}
-                        className={`px-3 py-1 rounded text-white ${selected.length === 0
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-green-600 hover:bg-green-700"
-                            }`}
-                    >
-                        Approve Supervisor ({selected.length})
-                    </button>
+                    {canApproveSupervisor && (
+                        <>
+                            <button
+                                onClick={() => handleGroupApprove("approve", "Supervisor")}
+                                className="px-3 py-1 rounded text-white bg-green-600 hover:bg-green-700"
+                            >
+                                Approve Supervisor ({selected.length})
+                            </button>
 
-                    <button
-                        disabled={selected.length === 0}
-                        onClick={() => handleGroupApprove("reject", "Supervisor")}
-                        className={`px-3 py-1 rounded text-white ${selected.length === 0
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-red-600 hover:bg-red-700"
-                            }`}
-                    >
-                        Reject Supervisor ({selected.length})
-                    </button>
-                    <button
-                        disabled={selected.length === 0}
-                        onClick={() => handleGroupApprove("approve", "Manager")}
-                        className={`px-3 py-1 rounded text-white ${selected.length === 0
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-green-600 hover:bg-green-700"
-                            }`}
-                    >
-                        Approve Manager ({selected.length})
-                    </button>
+                            <button
+                                onClick={() => handleGroupApprove("reject", "Supervisor")}
+                                className="px-3 py-1 rounded text-white bg-red-600 hover:bg-red-700"
+                            >
+                                Reject Supervisor ({selected.length})
+                            </button>
+                        </>
+                    )}
 
-                    <button
-                        disabled={selected.length === 0}
-                        onClick={() => handleGroupApprove("reject", "Manager")}
-                        className={`px-3 py-1 rounded text-white ${selected.length === 0
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-red-600 hover:bg-red-700"
-                            }`}
-                    >
-                        Reject Manager ({selected.length})
-                    </button>
+                    {canApproveManager && (
+                        <>
+                            <button
+                                onClick={() => handleGroupApprove("approve", "Manager")}
+                                className="px-3 py-1 rounded text-white bg-green-600 hover:bg-green-700"
+                            >
+                                Approve Manager ({selected.length})
+                            </button>
+
+                            <button
+                                onClick={() => handleGroupApprove("reject", "Manager")}
+                                className="px-3 py-1 rounded text-white bg-red-600 hover:bg-red-700"
+                            >
+                                Reject Manager ({selected.length})
+                            </button>
+                        </>
+                    )}
                 </div>
-
-
 
 
                 <div className="custom-scrollbar rounded-lg shadow-sm border border-gray-200 overflow-y-auto h-[64vh] overflow-hidden">
@@ -418,13 +418,15 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                         <td className="px-2 py-2 text-center border-t border-gray-200">
                                             <input
                                                 type="checkbox"
-                                                checked={selected.some((s) => s.id === doc.id && s.source === doc.source)}
+                                                checked={selected.some(s => s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep)}
                                                 onChange={(e) => {
                                                     if (e.target.checked) {
-                                                        setSelected((prev) => [...prev, { id: doc.id, source: doc.source }]);
+                                                        // เพิ่มเข้า selected
+                                                        setSelected((prev) => [...prev, { id: doc.id, source: doc.source, Dep: doc.Dep }]);
                                                     } else {
+                                                        // ลบออกจาก selected
                                                         setSelected((prev) =>
-                                                            prev.filter((s) => !(s.id === doc.id && s.source === doc.source))
+                                                            prev.filter((s) => !(s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep))
                                                         );
                                                     }
                                                 }}
