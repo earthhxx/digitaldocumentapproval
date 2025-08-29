@@ -56,6 +56,9 @@ export async function POST(req: NextRequest) {
 
     // Update batch per table
     // Obj.entries return arr [key,value] 
+    //same as
+    //  const table = entry[0]; // key
+    // const ids = entry[1];   // value
     //     [
     //   ["FM_IT_01", [1, 2]],
     //   ["FM_GA_03", [3, 4]]
