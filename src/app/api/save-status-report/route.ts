@@ -59,6 +59,8 @@ export async function POST(req: NextRequest) {
     //same as
     //  const table = entry[0]; // key
     // const ids = entry[1];   // value
+    //     รอบแรก: table = "FM_IT_01", ids = [1, 2]
+    // รอบสอง: table = "FM_GA_03", ids = [3]
     //     [
     //   ["FM_IT_01", [1, 2]],
     //   ["FM_GA_03", [3, 4]]
