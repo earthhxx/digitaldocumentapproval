@@ -89,6 +89,8 @@ export async function POST(req: NextRequest) {
       }
 
       // Batch update
+      //สร้าง placeholder ชื่อ @id0, @id1, @id2, … ตามจำนวน ids
+      //return idx ไม่ element , element = _ for not use
       const idParams = ids.map((_, idx) => `@id${idx}`).join(", ");
       const request = pool.request()
         .input("status", sql.NVarChar, statusValue)
