@@ -222,7 +222,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     return (
         <div className="flex flex-1 flex-col min-h-full w-full bg-white shadow-lg rounded-lg p-6 overflow-auto">
-            <h2 className="flex justify-center items-center  text-4xl font-bold mb-5 text-gray-800 mt-4">Document Approval</h2>
+            <h2 className="flex justify-center items-center  text-4xl font-bold mb-5 text-gray-800 mt-4">ระบบ ยืนยันเอกสาร</h2>
 
 
             {/* Tabs */}

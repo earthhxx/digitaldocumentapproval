@@ -92,7 +92,7 @@ export default function Sidebar() {
                 )}
                 {permission?.includes("D_Approve") && (
                   <a href="/pages/Userlogin/D-APPROVE" className="hover:bg-red-700 bg-red-700/30 p-3 rounded font-medium text-red-400">
-                    D-APPROVE
+                    ระบบ ยืนยันเอกสาร
                   </a>
                 )}
               </nav>
