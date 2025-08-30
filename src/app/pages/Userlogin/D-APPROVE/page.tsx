@@ -23,13 +23,19 @@ export default async function UserLoginPage() {
   if (!user || !user.permissions?.includes("D_Approve")) {
     return <div>Access Denied</div>;
   }
+  console.log("", user.Dep)
+  type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
+
+  const availableTabs = (["Check_TAB", "Approve_TAB", "All_TAB"] as Tab[]).filter(t =>
+    user.permissions?.includes(t)
+  );
 
   // 🔥 เรียก Module ตรง ๆ ไม่ fetch API
   const initialData = await getDApproveData({
     offset: 0,
     limit: 12,
     search: "",
-    statusType: "Check_TAB",
+    statusType: availableTabs[0],
     formaccess: user.formaccess || [],
     Dep: user.Dep || [],
   });

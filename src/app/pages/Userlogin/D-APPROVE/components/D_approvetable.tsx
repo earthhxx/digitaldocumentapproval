@@ -56,6 +56,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     const availableTabs = (["Check_TAB", "Approve_TAB", "All_TAB"] as Tab[]).filter(t =>
         user.permissions?.includes(t)
     );
+    console.log('ava',availableTabs);
     const [tab, setTab] = useState<Tab>(availableTabs[0] || "Check_TAB"); // เลือก tab แรกที่ user มีสิทธิ์
 
     const [showPDF, setShowPDF] = useState(false);
@@ -88,7 +89,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
         }
     };
 
-    const handleGroupApprove = async (status: "approve" | "reject", card: "Supervisor" | "Manager") => {
+    const handleGroupApprove = async (status: "check" | "approve" | "reject", card: "Supervisor" | "Manager") => {
         try {
             await fetch("/api/save-status-report", {
                 method: "POST",
@@ -112,6 +113,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     };
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
+        console.log('newtab',newTab)
         setLoading(true);
         try {
             const res = await fetch("/api/D-approve", {
@@ -169,7 +171,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     };
 
 
-    const handleApproval = async (id: string | number, table: string, status: "approve" | "reject", card: "Supervisor" | "Manager") => {
+    const handleApproval = async (id: string | number, table: string, status: "check" | "approve" | "reject", card: "Supervisor" | "Manager") => {
         try {
             const res = await fetch("/api/save-status-report", {
                 method: "POST",
@@ -333,7 +335,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                     {canApproveSupervisor && (
                         <>
                             <button
-                                onClick={() => handleGroupApprove("approve", "Supervisor")}
+                                onClick={() => handleGroupApprove("check", "Supervisor")}
                                 className="px-3 py-1 rounded text-white bg-green-600 hover:bg-green-700"
                             >
                                 Approve Supervisor ({selected.length})
@@ -433,7 +435,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                             />
                                         </td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
-                                            {(offset+1) + index}
+                                            {(offset + 1) + index}
                                         </td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
                                             {doc.id}
@@ -545,7 +547,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                             setSelectTable('');
                                             setselectDep('');
                                         }}
-                                        onApprove={() => handleApproval(selectID, selectTable, "approve", "Supervisor")}
+                                        onApprove={() => handleApproval(selectID, selectTable, "check", "Supervisor")}
                                         onReject={() => handleApproval(selectID, selectTable, "reject", "Supervisor")}
                                     />
                                 )}
