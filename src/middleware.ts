@@ -47,7 +47,7 @@ export async function middleware(req: NextRequest) {
       const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
       const { payload } = (await jwtVerify(token, secret)) as { payload: JWTPayload & JwtPayload };
 
-      if (!payload.roles?.includes("user")) {
+      if (!payload.permissions?.includes("D_Approve")) {
         return NextResponse.json({ error: "Forbidden: admin only" }, { status: 403 });
       }
 
