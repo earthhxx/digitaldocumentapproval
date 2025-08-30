@@ -433,7 +433,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                             />
                                         </td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
-                                            {index + 1}
+                                            {(offset+1) + index}
                                         </td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
                                             {doc.id}
