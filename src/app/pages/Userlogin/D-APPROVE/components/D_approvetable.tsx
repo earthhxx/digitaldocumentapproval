@@ -197,6 +197,8 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
         setSelectTable('');
         setselectDep('');
         refreshAmount();
+        setSelected([]);
+        fetchData(offset, search, tab);
     };
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {

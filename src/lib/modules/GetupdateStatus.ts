@@ -25,16 +25,17 @@ export async function GetupdateStatus(formaccess: string[], Dep: string[]) {
         .filter(t => tableMap[t])
         .map(
             t => `
-                SELECT 
-                    COUNT(CASE WHEN StatusApprove IS NULL AND StatusCheck IS NOT NULL THEN 1 END) AS ApproveNull,
-                    COUNT(CASE WHEN StatusCheck IS NULL THEN 1 END)   AS CheckNull,
-                    COUNT(CASE WHEN StatusApprove IS NULL OR StatusCheck IS NULL THEN 1 END) AS somethingNull
+              SELECT 
+                    COUNT(CASE WHEN StatusCheck IS NOT NULL AND StatusCheck != N'ไม่อนุมัติ' AND StatusApprove IS NULL THEN 1 END) AS ApproveNull,
+                    COUNT(CASE WHEN StatusCheck IS NULL THEN 1 END) AS CheckNull,
+                    COUNT(CASE WHEN StatusCheck IS NOT NULL AND StatusCheck != N'ไม่อนุมัติ' AND StatusApprove IS NULL THEN 1 END)
+                    + COUNT(CASE WHEN StatusCheck IS NULL THEN 1 END) AS SomethingNull
                 FROM ${tableMap[t]}
                 WHERE Dep IN (${Dep.map(t => `'${t}'`).join(",") || "''"})
             `
         );
 
-        // console.log(queries)
+    // console.log(queries)
     if (queries.length === 0) {
         throw new Error("No valid tables found");
     }
