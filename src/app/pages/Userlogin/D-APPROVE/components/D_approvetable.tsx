@@ -56,7 +56,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     const availableTabs = (["Check_TAB", "Approve_TAB", "All_TAB"] as Tab[]).filter(t =>
         user.permissions?.includes(t)
     );
-    console.log('ava',availableTabs);
+    console.log('ava', availableTabs);
     const [tab, setTab] = useState<Tab>(availableTabs[0] || "Check_TAB"); // เลือก tab แรกที่ user มีสิทธิ์
 
     const [showPDF, setShowPDF] = useState(false);
@@ -113,7 +113,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     };
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
-        console.log('newtab',newTab)
+        console.log('newtab', newTab)
         setLoading(true);
         try {
             const res = await fetch("/api/D-approve", {
@@ -162,23 +162,23 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
         }
     };
 
-    const openPDF = (id: string | number, table: string, Dep: string) => {
-        setPdfUrl(`/api/generate-filled-pdf?id=${id}&table=${table}`);
+    const openPDF = (id: string | number, source: string, Dep: string) => {
+        setPdfUrl(`/api/generate-filled-pdf?id=${id}&table=${source}`);
         setShowPDF(true);
         setSelectID(id);
-        setSelectTable(table);
+        setSelectTable(source);
         setselectDep(Dep);
     };
 
 
-    const handleApproval = async (id: string | number, table: string, status: "check" | "approve" | "reject", card: "Supervisor" | "Manager") => {
+    const handleApproval = async (id: string | number, source: string, status: "check" | "approve" | "reject", card: "Supervisor" | "Manager") => {
         try {
             const res = await fetch("/api/save-status-report", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     id: id,
-                    table: table,
+                    source: source,
                     status: status,
                     fullname: user.fullName,
                     card: card,
@@ -186,7 +186,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
             });
             if (!res.ok) throw new Error("บันทึกข้อมูลล้มเหลว");
 
-            alert(`บันทึกข้อมูลสำเร็จ (${table}: ${status})`);
+            alert(`บันทึกข้อมูลสำเร็จ (${source}: ${status})`);
         } catch (err: any) {
             alert(err.message);
         }
@@ -314,12 +314,12 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
                     {/* Total per table horizontal inline */}
                     <div className="flex gap-2 overflow-y-auto py-2 justify-end pe-4 w-full">
-                        {Object.entries(approveData.totals).map(([table, count]) => (
+                        {Object.entries(approveData.totals).map(([source, count]) => (
                             <div
-                                key={table}
+                                key={source}
                                 className="flex flex-row items-center justify-between min-w-[90px] px-3 py-2 border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
                             >
-                                <span className="text-gray-500 text-xs font-semibold uppercase tracking-wide">{table}</span>
+                                <span className="text-gray-500 text-xs font-semibold uppercase tracking-wide">{source}</span>
                                 <span className="text-blue-600 font-bold text-sm ml-2">{count}</span>
                             </div>
                         ))}
@@ -332,7 +332,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
 
                 <div className="p-2 flex gap-2">
-                    {canApproveSupervisor && (
+                    {canApproveSupervisor && tab === "Check_TAB" && (
                         <>
                             <button
                                 onClick={() => handleGroupApprove("check", "Supervisor")}
@@ -350,7 +350,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                         </>
                     )}
 
-                    {canApproveManager && (
+                    {canApproveManager && tab === "Approve_TAB" && (
                         <>
                             <button
                                 onClick={() => handleGroupApprove("approve", "Manager")}
@@ -520,7 +520,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                 <iframe src={pdfUrl} className="w-full h-full border-none flex-1 " title="PDF Viewer" />
 
                                 <div className="absolute bottom-4 right-4 flex gap-4">
-                                    {user?.permissions?.includes(`Check_${selectTable}_${selectDep}`) && (
+                                    {user?.permissions?.includes(`Check_${selectTable}_${selectDep}`) && (tab === "Check_TAB") && (
                                         <button
                                             className="px-5 py-2 bg-blue-600 text-white rounded-lg"
                                             onClick={() => setShowSupervisorPopup(true)}
@@ -529,7 +529,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                         </button>
                                     )}
                                     {/* permission ต้อง = (`Approve_${selectTable}_${selectDep}`) เช่น Approve_FM_IT_03_IT*/}
-                                    {user?.permissions?.includes(`Approve_${selectTable}_${selectDep}`) && (
+                                    {user?.permissions?.includes(`Approve_${selectTable}_${selectDep}`) && (tab === "Approve_TAB") && (
                                         <button
                                             className="px-5 py-2 bg-green-600 text-white rounded-lg"
                                             onClick={() => setShowManagerPopup(true)}

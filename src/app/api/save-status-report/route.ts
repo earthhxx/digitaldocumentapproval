@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
 
   // ตรวจสอบว่ามี batch หรือ single record
-  const records: RecordPayload[] = body.records || (body.id && body.table ? [{ id: body.id, table: body.table }] : []);
+  const records: RecordPayload[] = body.records || (body.id && body.source ? [{ id: body.id, source: body.source }] : []);
   const { status, fullname, card } = body;
 
   console.log("👉 Incoming body:", body);
@@ -65,19 +65,19 @@ export async function POST(req: NextRequest) {
     //   ["FM_IT_01", [1, 2]],
     //   ["FM_GA_03", [3, 4]]
     // ] 
-    for (const [table, ids] of Object.entries(tableGroups)) {
+    for (const [source, ids] of Object.entries(tableGroups)) {
       // ดึง mapping table
       const tablesResult = await pool
         .request()
-        .input("table", sql.VarChar, table)
+        .input("source", sql.VarChar, source)
         .query(`
           SELECT table_name, db_table_name
           FROM D_Approve
-          WHERE table_name = @table
+          WHERE table_name = @source
         `);
 
       if (tablesResult.recordset.length === 0) {
-        console.log("⚠️ No mapping for table:", table);
+        console.log("⚠️ No mapping for table:", source);
         continue;
       }
 

@@ -142,7 +142,7 @@ export async function mapFieldsToPDF(
     for (const key in fieldMap) {
         const { x, y, size = 12, format, font } = fieldMap[key];
         let text = data[key] ?? "";
-        console.log("data[key]", data)
+        // console.log("data[key]", data)
 
         if (format === "date" && data[key]) {
             const date = new Date(data[key]);
