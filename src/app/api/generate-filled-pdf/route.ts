@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
         // --- ดึงข้อมูลจริงจาก table ---
         const result = await pool
             .request()
-            .input("labelText", sql.NVarChar, id)
+            .input("id", sql.NVarChar, id)
             .query(`
         SELECT TOP 1 *
         FROM ${dbTableName}
@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
         }
 
         const data = result.recordset[0];
-
+console.log(data)
         // --- โหลด template PDF ---
         const templatePath = path.join(
             process.cwd(),
@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
         );
 
         const checkFont = await fs.readFile(
-            path.join(process.cwd(), "public", "Fonts", "THSarabunNew", "THSarabunNew.ttf")
+            path.join(process.cwd(), "public", "Fonts", "DejaVuSans", "DejaVuSans.ttf")
         );
 
         const fontthai = await pdfDoc.embedFont(thaiFont);

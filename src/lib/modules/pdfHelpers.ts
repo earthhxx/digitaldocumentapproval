@@ -6,7 +6,7 @@ interface FieldMapping {
     y: number;
     size?: number;
     font?: "thai" | "check"; // บอกว่า field นี้ใช้ font ไหน
-    format?: "date" | "text";
+    format?: "date" | "text" | "time";
 }
 
 // ตัวอย่าง mapping ของแต่ละ table
@@ -19,7 +19,7 @@ const tableFieldMap: Record<string, Record<string, FieldMapping>> = {
         NameEn: { x: 220, y: 646, size: 10, font: "thai" },
         Dep: { x: 180, y: 635, size: 14, font: "thai" },
         DepM: { x: 350, y: 635, size: 14, font: "thai" },
-        Email: { x: 95, y: 607, size: 14, font: "thai" },
+        Email: { x: 95, y: 607, size: 14, font: "check" },
         Repair: { x: 163, y: 607, size: 14, font: "check" },
         AddEqui: { x: 207, y: 607, size: 14, font: "check" },
         AddProg: { x: 270, y: 607, size: 14, font: "check" },
@@ -37,15 +37,15 @@ const tableFieldMap: Record<string, Record<string, FieldMapping>> = {
     FM_GA_04: {
         id: { x: 653, y: 503, size: 15, font: "thai" },
         Date: { x: 570, y: 440, size: 15, format: "date", font: "thai" },
-        Trital: { x: 262, y: 420, size: 15, font: "check" },
-        Trital1: { x: 282, y: 420, size: 15, font: "check" },
-        Trital2: { x: 302, y: 420, size: 15, font: "check" },
+        TitleName: { x: 262, y: 420, size: 15, font: "thai" },
+        TitleName1: { x: 282, y: 420, size: 15, font: "check" },
+        TitleName2: { x: 302, y: 420, size: 15, font: "check" },
         Name: { x: 400, y: 412, size: 15, font: "thai" },
         Iduser: { x: 300, y: 390, size: 15, font: "thai" },
         Dep: { x: 500, y: 390, size: 15, font: "thai" },
         Date1: { x: 450, y: 370, size: 15, format: "date", font: "thai" },
-        Starttime: { x: 220, y: 350, size: 15, font: "thai" },
-        EndTime: { x: 460, y: 350, size: 15, font: "thai" },
+        Starttime: { x: 220, y: 350, size: 15, format: "time", font: "thai" },
+        EndTime: { x: 460, y: 350, size: 15, format: "time", font: "thai" },
         Back: { x: 233, y: 325, size: 15, font: "check" },
         NoBack: { x: 475, y: 325, size: 15, font: "check" },
         Detail: { x: 265, y: 298, size: 15, font: "thai" },
@@ -60,11 +60,11 @@ const tableFieldMap: Record<string, Record<string, FieldMapping>> = {
         Date: { x: 590, y: 460, size: 15, format: "date", font: "thai" },
 
         // Trital Name
-        TritalName1: { x: 202, y: 446, size: 15, font: "check" },
-        TritalName2: { x: 222, y: 446, size: 15, font: "check" },
-        TritalName3: { x: 242, y: 446, size: 15, font: "check" },
+        TitleName1: { x: 202, y: 446, size: 15, font: "check" },
+        TitleName2: { x: 222, y: 446, size: 15, font: "check" },
+        TitleName3: { x: 242, y: 446, size: 15, font: "check" },
 
-        TitleName: { x: 320, y: 438, size: 15, font: "thai" },
+        TitleName: { x: 320, y: 438, size: 15, font: "check" },
         Iduser: { x: 220, y: 415, size: 15, font: "thai" },
         DepT: { x: 410, y: 415, size: 15, font: "thai" },
         Dep: { x: 620, y: 415, size: 15, font: "thai" },
@@ -120,10 +120,15 @@ export async function mapFieldsToPDF(
     if (!fieldMap) return;
 
     const markFields: Record<string, string> = {
+        Email: "✓",
         Repair: "✓",
+        AddEqui: "✓",
+        AddProg: "✓",
+        OtherIT: "✓",
         Change: "✓",
         Returndata: "✓",
         Other: "✓",
+        TitleName: "__",
         TitleName1: "__",
         TitleName2: "__",
         TitleName3: "____",
@@ -137,15 +142,29 @@ export async function mapFieldsToPDF(
     for (const key in fieldMap) {
         const { x, y, size = 12, format, font } = fieldMap[key];
         let text = data[key] ?? "";
+        console.log("data[key]", data)
 
         if (format === "date" && data[key]) {
             const date = new Date(data[key]);
             text = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
         }
 
+        if (format === "time" && data[key]) {
+            const date = new Date(data[key]);
+            const hours = date.getHours().toString().padStart(2, "0");
+            const minutes = date.getMinutes().toString().padStart(2, "0");
+            text = `${hours}:${minutes}`;
+        }
+
+
         // ถ้าเป็น field ที่ต้องตี๊กถูก/ขีด
-        if (markFields[key]) {
-            text = data[key] == 1 ? markFields[key] : "";
+        // Checkbox logic
+        if ((data[key] === 1 || data[key] === "1")) {
+            text = markFields[key] || "error";
+        }
+
+        if ((data[key] === 0 || data[key] === "0")) {
+            text = "";
         }
 
         page.drawText(text.toString(), {
