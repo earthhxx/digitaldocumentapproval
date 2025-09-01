@@ -23,7 +23,7 @@ export default async function UserLoginPage() {
   if (!user || !user.permissions?.includes("D_Approve")) {
     return <div>Access Denied</div>;
   }
-  console.log("", user.Dep)
+  // console.log("", user.Dep)
   type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
 
   const availableTabs = (["Check_TAB", "Approve_TAB", "All_TAB"] as Tab[]).filter(t =>

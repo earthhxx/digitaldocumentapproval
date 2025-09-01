@@ -376,18 +376,22 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                     <table className="min-w-full table-fixed bg-white text-black ">
                         <thead className="bg-gray-100 sticky top-0 z-10">
                             <tr>
-                                <th className="px-2 py-2 text-center w-[5%]">
-                                    <input
-                                        type="checkbox"
-                                        onChange={toggleSelectAll}
-                                        checked={
-                                            selected.length > 0 &&
-                                            approveData.data.every((doc) =>
-                                                selected.some((s) => s.id === doc.id && s.source === doc.source)
-                                            )
-                                        }
-                                    />
-                                </th>
+                                {(tab === "Check_TAB" || tab === "Approve_TAB") && (
+
+                                    <th className="px-2 py-2 text-center w-[5%]">
+                                        <input
+                                            type="checkbox"
+                                            onChange={toggleSelectAll}
+                                            checked={
+                                                selected.length > 0 &&
+                                                approveData.data.every((doc) =>
+                                                    selected.some((s) => s.id === doc.id && s.source === doc.source)
+                                                )
+                                            }
+                                        />
+                                    </th>
+                                )
+                                }
                                 <th className="px-4 py-2 text-center w-[10%]">Number</th>
                                 {/* <th className="px-4 py-2 text-center w-[10%]">ID</th> */}
                                 <th className="px-4 py-2 text-center w-[25%]">DOC NAME</th>
@@ -419,23 +423,25 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                             : ""
                                             }`}
                                     >
-                                        <td className="px-2 py-2 text-center border-t border-gray-200">
-                                            <input
-                                                type="checkbox"
-                                                checked={selected.some(s => s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep)}
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        // เพิ่มเข้า selected
-                                                        setSelected((prev) => [...prev, { id: doc.id, source: doc.source, Dep: doc.Dep }]);
-                                                    } else {
-                                                        // ลบออกจาก selected
-                                                        setSelected((prev) =>
-                                                            prev.filter((s) => !(s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep))
-                                                        );
-                                                    }
-                                                }}
-                                            />
-                                        </td>
+                                        {(tab === "Check_TAB" || tab === "Approve_TAB") && (
+                                            <td className="px-2 py-2 text-center border-t border-gray-200">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selected.some(s => s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            // เพิ่มเข้า selected
+                                                            setSelected((prev) => [...prev, { id: doc.id, source: doc.source, Dep: doc.Dep }]);
+                                                        } else {
+                                                            // ลบออกจาก selected
+                                                            setSelected((prev) =>
+                                                                prev.filter((s) => !(s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep))
+                                                            );
+                                                        }
+                                                    }}
+                                                />
+                                            </td>
+                                        )}
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
                                             {offset + 1 + index}
                                         </td>
