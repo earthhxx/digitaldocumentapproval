@@ -48,7 +48,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
 
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
-    const [limit] = useState(12);
+    const [limit] = useState(13);
 
     const [loading, setLoading] = useState(false);
     const [approveData, setApproveData] = useState<ApproveData>(initialData);
@@ -435,7 +435,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                             />
                                         </td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
-                                            {(offset + 1) + index}
+                                            {offset + 1 + index}
                                         </td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
                                             {doc.id}
