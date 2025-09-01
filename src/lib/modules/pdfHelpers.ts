@@ -132,9 +132,6 @@ export async function mapFieldsToPDF(
         TitleCompany3: "__",
         Back: "✓",
         NoBack: "✓",
-        Trital: "__",
-        Trital1: "__",
-        Trital2: "____",
     };
 
     for (const key in fieldMap) {
