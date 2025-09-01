@@ -256,8 +256,8 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                             </div>
                         )}
                         {t === "All_TAB" && dataAmount.somethingNull > 0 && (
-                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
-                                {dataAmount.somethingNull}
+                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full  text-xs text-white flex items-center justify-center">
+                                {/* {dataAmount.somethingNull} */}
                             </div>
                         )}
                     </button>

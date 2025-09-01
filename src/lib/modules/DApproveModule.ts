@@ -52,6 +52,7 @@ export async function getDApproveData({
     .map(t => {
       let whereClause = `[Date] LIKE @search`;
       if (statusType === "Check_TAB") whereClause += ` AND StatusCheck IS NULL`;
+      else if (statusType === "ALL_TAB") whereClause += ` AND StatusApprove IS NOT NULL`;
       else if (statusType === "Approve_TAB") whereClause += ` AND StatusCheck IS NOT NULL AND StatusCheck != N'ไม่อนุมัติ' AND StatusApprove IS NULL`;
       const depList = Dep.length ? Dep.map(d => `'${d}'`).join(",") : "''";
 
