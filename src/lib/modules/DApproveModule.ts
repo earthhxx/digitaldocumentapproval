@@ -38,14 +38,14 @@ export async function getDApproveData({
   const tableMap: Record<string, string> = {};
   tablesResult.recordset.forEach(row => (tableMap[row.table_name] = row.db_table_name));
 
-  console.log("Table Map:", tableMap); // ✅ log table mapping
+  // console.log("Table Map:", tableMap); // ✅ log table mapping
 
   const validTabs = ["Check_TAB", "Approve_TAB", "All_TAB"];
   if (!validTabs.includes(statusType)) {
-    console.log("Invalid statusType:", statusType); // ✅ log statusType ไม่ถูกต้อง
+    // console.log("Invalid statusType:", statusType); // ✅ log statusType ไม่ถูกต้อง
     return { totalAll: 0, totals: {}, data: [], offset, limit };
   }
-  console.log(statusType)
+  // console.log(statusType)
 
   const queries = formaccess
     .filter(t => tableMap[t])
@@ -61,7 +61,7 @@ export async function getDApproveData({
         FROM ${tableMap[t]}
         WHERE Dep IN (${depList}) AND ${whereClause}
       `;
-      console.log(`Query for ${t}:`, q); // ✅ log query แต่ละ table
+      // console.log(`Query for ${t}:`, q); // ✅ log query แต่ละ table
       return q;
     })
     .filter(q => q);
@@ -74,7 +74,7 @@ export async function getDApproveData({
     ORDER BY date DESC
     OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
   `;
-  console.log("Final Query:", finalQuery); // ✅ log final query
+  // console.log("Final Query:", finalQuery); // ✅ log final query
 
   const dataResult = await pool
     .request()
@@ -83,7 +83,7 @@ export async function getDApproveData({
     .input("limit", sql.Int, limit)
     .query(finalQuery);
 
-  console.log("Data Result:", dataResult.recordset); // ✅ log raw data result
+  // console.log("Data Result:", dataResult.recordset); // ✅ log raw data result
 
   const data = dataResult.recordset;
 
@@ -96,8 +96,8 @@ export async function getDApproveData({
 
   data.forEach(d => delete d.totalCount);
 
-  console.log("Totals per table:", totals); // ✅ log totals per table
-  console.log("Total All:", totalAll); // ✅ log totalAll
+  // console.log("Totals per table:", totals); // ✅ log totals per table
+  // console.log("Total All:", totalAll); // ✅ log totalAll
 
   return { totalAll, totals, data, offset, limit };
 }

@@ -56,7 +56,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     const availableTabs = (["Check_TAB", "Approve_TAB", "All_TAB"] as Tab[]).filter(t =>
         user.permissions?.includes(t)
     );
-    console.log('ava', availableTabs);
+    // console.log('ava', availableTabs);
     const [tab, setTab] = useState<Tab>(availableTabs[0] || "Check_TAB"); // เลือก tab แรกที่ user มีสิทธิ์
 
     const [showPDF, setShowPDF] = useState(false);
@@ -113,7 +113,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     };
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
-        console.log('newtab', newTab)
+        // console.log('newtab', newTab)
         setLoading(true);
         try {
             const res = await fetch("/api/D-approve", {

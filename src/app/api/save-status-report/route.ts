@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
   const records: RecordPayload[] = body.records || (body.id && body.source ? [{ id: body.id, source: body.source }] : []);
   const { status, fullname, card } = body;
 
-  console.log("👉 Incoming body:", body);
-  console.log("👉 Parsed records:", records);
+  // console.log("👉 Incoming body:", body);
+  // console.log("👉 Parsed records:", records);
 
   if (!records.length || !status || !fullname || !card) {
     return NextResponse.json({ error: "missing parameter" }, { status: 400 });
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
         WHERE [Id] IN (${idParams})
       `);
 
-      console.log(`✅ Updated ${result.rowsAffected[0]} record(s) in table ${dbTableName}`);
+      // console.log(`✅ Updated ${result.rowsAffected[0]} record(s) in table ${dbTableName}`);
     }
 
     return NextResponse.json({ success: true });
