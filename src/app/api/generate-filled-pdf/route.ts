@@ -14,12 +14,12 @@ export interface PDFData {
 
 export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
-    const labelText = searchParams.get("labelText");
+    const id = searchParams.get("id");
     const table = searchParams.get("table");
 
-    if (!labelText || !table) {
+    if (!id || !table) {
         return NextResponse.json(
-            { error: "ต้องมี labelText และ table" },
+            { error: "ต้องมี id และ table" },
             { status: 400 }
         );
     }
@@ -51,11 +51,11 @@ export async function GET(req: NextRequest) {
         // --- ดึงข้อมูลจริงจาก table ---
         const result = await pool
             .request()
-            .input("labelText", sql.NVarChar, labelText)
+            .input("labelText", sql.NVarChar, id)
             .query(`
         SELECT TOP 1 *
         FROM ${dbTableName}
-        WHERE [Id] = @labelText
+        WHERE [Id] = @id
       `);
 
         if (result.recordset.length === 0) {
@@ -76,11 +76,16 @@ export async function GET(req: NextRequest) {
         const pdfDoc = await PDFDocument.load(existingPdfBytes);
         pdfDoc.registerFontkit(fontkit);
 
-        const fontBytes = await fs.readFile(
+        const thaiFont = await fs.readFile(
             path.join(process.cwd(), "public", "Fonts", "THSarabunNew", "THSarabunNew.ttf")
         );
 
-        const font = await pdfDoc.embedFont(fontBytes);
+        const checkFont = await fs.readFile(
+            path.join(process.cwd(), "public", "Fonts", "THSarabunNew", "THSarabunNew.ttf")
+        );
+
+        const fontthai = await pdfDoc.embedFont(thaiFont);
+        const fontcheck = await pdfDoc.embedFont(checkFont);
 
         const page = pdfDoc.getPage(0);
 
@@ -88,7 +93,7 @@ export async function GET(req: NextRequest) {
         // console.log('pdf',pdfData)
 
         // ✅ เรียก helper แบบ await (async) เพื่อให้วาดเสร็จก่อน save
-        await mapFieldsToPDF(page, font, pdfData, table);
+        await mapFieldsToPDF(page, fontthai, fontcheck, pdfData, table);
 
         const pdfBytes = await pdfDoc.save();
 

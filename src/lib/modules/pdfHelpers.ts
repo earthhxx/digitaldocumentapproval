@@ -5,48 +5,140 @@ interface FieldMapping {
     x: number;
     y: number;
     size?: number;
+    font?: "thai" | "check"; // บอกว่า field นี้ใช้ font ไหน
     format?: "date" | "text";
 }
 
 // ตัวอย่าง mapping ของแต่ละ table
 const tableFieldMap: Record<string, Record<string, FieldMapping>> = {
     FM_IT_03: {
-        id: { x: 500, y: 682, size: 14 },
-        // FormID: { x: 500, y: 750, size: 14 },
-        Date: { x: 435, y: 665, size: 12, format: "date" },
-        NameThi: { x: 220, y: 656, size: 10 },
-        NameEn: { x: 220, y: 646, size: 10 },
-        Dep: { x: 180, y: 635, size: 14 },
-        DepM: { x: 350, y: 635, size: 14 },
-        Email: { x: 95, y: 607, size: 14 },
-        Repair: { x: 163, y: 607, size: 14 },
-        AddEqui: { x: 207, y: 607, size: 14 },
-        AddProg: { x: 270, y: 607, size: 14 },
-        OtherIT: { x: 338, y: 607, size: 14 },
-        Other_Detail: { x: 400, y: 610, size: 14 },
-        NameUser: { x: 110, y: 430, size: 14 },
-        // DateUser: { x: 150, y: 570, size: 14, format: "date" },
-        // StatusCheck: { x: 150, y: 570, size: 14 },
-        NameCheck: { x: 270, y: 430, size: 14 },
-        // DateCheck: { x: 150, y: 570, size: 14, format: "date" },
-        // StatusApprove: { x: 150, y: 570, size: 14 },
-        NameApprove: { x: 425, y: 430, size: 14 },
-        // DateAppove: { x: 150, y: 570, size: 14 },
+        id: { x: 500, y: 682, size: 14, font: "thai" },
+        // FormID: { x: 500, y: 750, size: 14, font: "thai" },
+        Date: { x: 435, y: 665, size: 12, format: "date", font: "thai" },
+        NameThi: { x: 220, y: 656, size: 10, font: "thai" },
+        NameEn: { x: 220, y: 646, size: 10, font: "thai" },
+        Dep: { x: 180, y: 635, size: 14, font: "thai" },
+        DepM: { x: 350, y: 635, size: 14, font: "thai" },
+        Email: { x: 95, y: 607, size: 14, font: "thai" },
+        Repair: { x: 163, y: 607, size: 14, font: "check" },
+        AddEqui: { x: 207, y: 607, size: 14, font: "check" },
+        AddProg: { x: 270, y: 607, size: 14, font: "check" },
+        OtherIT: { x: 338, y: 607, size: 14, font: "check" },
+        Other_Detail: { x: 400, y: 610, size: 14, font: "thai" },
+        NameUser: { x: 110, y: 430, size: 14, font: "thai" },
+        // DateUser: { x: 150, y: 570, size: 14, format: "date", font: "thai" },
+        // StatusCheck: { x: 150, y: 570, size: 14, font: "check" },
+        NameCheck: { x: 270, y: 430, size: 14, font: "thai" },
+        // DateCheck: { x: 150, y: 570, size: 14, format: "date", font: "thai" },
+        // StatusApprove: { x: 150, y: 570, size: 14, font: "check" },
+        NameApprove: { x: 425, y: 430, size: 14, font: "thai" },
+        // DateAppove: { x: 150, y: 570, size: 14, font: "date", font: "thai" },
+    },
+    FM_GA_04: {
+        id: { x: 653, y: 503, size: 15, font: "thai" },
+        Date: { x: 570, y: 440, size: 15, format: "date", font: "thai" },
+        Trital: { x: 262, y: 420, size: 15, font: "check" },
+        Trital1: { x: 282, y: 420, size: 15, font: "check" },
+        Trital2: { x: 302, y: 420, size: 15, font: "check" },
+        Name: { x: 400, y: 412, size: 15, font: "thai" },
+        Iduser: { x: 300, y: 390, size: 15, font: "thai" },
+        Dep: { x: 500, y: 390, size: 15, font: "thai" },
+        Date1: { x: 450, y: 370, size: 15, format: "date", font: "thai" },
+        Starttime: { x: 220, y: 350, size: 15, font: "thai" },
+        EndTime: { x: 460, y: 350, size: 15, font: "thai" },
+        Back: { x: 233, y: 325, size: 15, font: "check" },
+        NoBack: { x: 475, y: 325, size: 15, font: "check" },
+        Detail: { x: 265, y: 298, size: 15, font: "thai" },
+        NameRequest: { x: 350, y: 237, size: 15, font: "thai" },
+        NameCheck: { x: 160, y: 190, size: 15, font: "thai" },
+        NameApprove: { x: 350, y: 190, size: 15, font: "thai" },
+        Date2: { x: 190, y: 150, size: 15, format: "date", font: "thai" },
+        Date3: { x: 380, y: 150, size: 15, format: "date", font: "thai" },
+    },
+    FM_GA_03: {
+        id: { x: 705, y: 523, size: 15, font: "thai" },
+        Date: { x: 590, y: 460, size: 15, format: "date", font: "thai" },
+
+        // Trital Name
+        TritalName1: { x: 202, y: 446, size: 15, font: "check" },
+        TritalName2: { x: 222, y: 446, size: 15, font: "check" },
+        TritalName3: { x: 242, y: 446, size: 15, font: "check" },
+
+        TitleName: { x: 320, y: 438, size: 15, font: "thai" },
+        Iduser: { x: 220, y: 415, size: 15, font: "thai" },
+        DepT: { x: 410, y: 415, size: 15, font: "thai" },
+        Dep: { x: 620, y: 415, size: 15, font: "thai" },
+
+        // Title Company
+        TitleCompany1: { x: 205, y: 403, size: 15, font: "check" },
+        TitleCompany2: { x: 236, y: 403, size: 15, font: "check" },
+        TitleCompany3: { x: 258, y: 403, size: 15, font: "check" },
+        NameCompany: { x: 300, y: 392, size: 15, font: "thai" },
+
+        // Dates
+        Date1: { x: 450, y: 372, size: 15, format: "date", font: "thai" },
+
+        // Checkboxes
+        Repair: { x: 212, y: 345, size: 20, font: "check" },
+        Change: { x: 310, y: 345, size: 20, font: "check" },
+        Returndata: { x: 408, y: 345, size: 20, font: "check" },
+        Other: { x: 507, y: 345, size: 20, font: "check" },
+
+        OthrDetail: { x: 565, y: 344, size: 15, font: "thai" },
+
+        // Detail & Qty
+        Detail1: { x: 180, y: 295, size: 15, font: "thai" },
+        Qty1: { x: 603, y: 295, size: 15, font: "thai" },
+        Detail2: { x: 180, y: 273, size: 15, font: "thai" },
+        Qty2: { x: 603, y: 273, size: 15, font: "thai" },
+        Detail3: { x: 180, y: 251, size: 15, font: "thai" },
+        Qty3: { x: 603, y: 251, size: 15, font: "thai" },
+        Detail4: { x: 180, y: 230, size: 15, font: "thai" },
+        Qty4: { x: 603, y: 230, size: 15, font: "thai" },
+
+        // Names & Approve
+        NameRequest: { x: 340, y: 187, size: 15, font: "thai" },
+        NameCheck: { x: 140, y: 152, size: 15, font: "thai" },
+        NameApprove: { x: 360, y: 152, size: 15, font: "thai" },
+
+        // More Dates
+        Date2: { x: 130, y: 130, size: 15, format: "date", font: "thai" },
+        Date3: { x: 370, y: 130, size: 15, format: "date", font: "thai" },
     },
     // เพิ่ม table ใหม่ ๆ ที่นี่ได้เลย
 };
 
+
 export async function mapFieldsToPDF(
     page: PDFPage,
-    font: PDFFont,
+    fontthai: PDFFont,
+    fontcheck: PDFFont,
     data: PDFData,
     table: string
 ) {
     const fieldMap = tableFieldMap[table];
     if (!fieldMap) return;
 
+    const markFields: Record<string, string> = {
+        Repair: "✓",
+        Change: "✓",
+        Returndata: "✓",
+        Other: "✓",
+        TitleName1: "__",
+        TitleName2: "__",
+        TitleName3: "____",
+        TitleCompany1: "___",
+        TitleCompany2: "__",
+        TitleCompany3: "__",
+        Back: "✓",
+        NoBack: "✓",
+        Trital: "__",
+        Trital1: "__",
+        Trital2: "____",
+    };
+
     for (const key in fieldMap) {
-        const { x, y, size, format } = fieldMap[key];
+        const { x, y, size = 12, format, font } = fieldMap[key];
         let text = data[key] ?? "";
 
         if (format === "date" && data[key]) {
@@ -54,6 +146,17 @@ export async function mapFieldsToPDF(
             text = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
         }
 
-        page.drawText(text.toString(), { x, y, size, font, color: rgb(0, 0, 0.7) });
+        // ถ้าเป็น field ที่ต้องตี๊กถูก/ขีด
+        if (markFields[key]) {
+            text = data[key] == 1 ? markFields[key] : "";
+        }
+
+        page.drawText(text.toString(), {
+            x,
+            y,
+            size,
+            font: font === "check" ? fontcheck : fontthai,
+            color: rgb(0, 0, 0.7),
+        });
     }
 }

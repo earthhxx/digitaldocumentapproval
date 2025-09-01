@@ -163,7 +163,7 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
     };
 
     const openPDF = (id: string | number, table: string, Dep: string) => {
-        setPdfUrl(`/api/generate-filled-pdf?labelText=${id}&table=${table}`);
+        setPdfUrl(`/api/generate-filled-pdf?id=${id}&table=${table}`);
         setShowPDF(true);
         setSelectID(id);
         setSelectTable(table);
