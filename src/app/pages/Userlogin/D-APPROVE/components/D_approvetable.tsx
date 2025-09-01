@@ -388,8 +388,8 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                         }
                                     />
                                 </th>
-                                <th className="px-4 py-2 text-center w-[10%]">#</th>
-                                <th className="px-4 py-2 text-center w-[10%]">ID</th>
+                                <th className="px-4 py-2 text-center w-[10%]">Number</th>
+                                {/* <th className="px-4 py-2 text-center w-[10%]">ID</th> */}
                                 <th className="px-4 py-2 text-center w-[25%]">DOC NAME</th>
                                 <th className="px-4 py-2 text-center w-[15%]">Source</th>
                                 <th className="px-4 py-2 text-center w-[15%]">Dep</th>
@@ -439,9 +439,9 @@ export default function DApproveTable({ user, initialData, AmountData }: DApprov
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
                                             {offset + 1 + index}
                                         </td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
+                                        {/* <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
                                             {doc.id}
-                                        </td>
+                                        </td> */}
                                         <td className="px-4 py-2 border-t border-gray-200 w-[25%]">
                                             {doc.source === "FM_IT_03"
                                                 ? "ฟอร์มเอกสารแจ้งซ่อม IT"
