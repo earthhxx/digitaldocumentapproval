@@ -64,7 +64,7 @@ const tableFieldMap: Record<string, Record<string, FieldMapping>> = {
         TitleName2: { x: 222, y: 446, size: 15, font: "check" },
         TitleName3: { x: 242, y: 446, size: 15, font: "check" },
 
-        TitleName: { x: 320, y: 438, size: 15, font: "check" },
+        TitleName: { x: 320, y: 438, size: 15, font: "thai" },
         Iduser: { x: 220, y: 415, size: 15, font: "thai" },
         DepT: { x: 410, y: 415, size: 15, font: "thai" },
         Dep: { x: 620, y: 415, size: 15, font: "thai" },
@@ -160,7 +160,7 @@ export async function mapFieldsToPDF(
         // ถ้าเป็น field ที่ต้องตี๊กถูก/ขีด
         // Checkbox logic
         if ((data[key] === 1 || data[key] === "1")) {
-            text = markFields[key] || "error";
+            text = markFields[key] || "";
         }
 
         if ((data[key] === 0 || data[key] === "0")) {
