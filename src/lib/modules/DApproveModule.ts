@@ -27,7 +27,7 @@ export async function getDApproveData({
   FormDep = { "": [] },
 }: ApproveQuery): Promise<ApproveData> {
   const pool = await getDashboardConnection();
-
+  console.log("api in", offset, limit, search, statusType, formaccess, FormDep);
   // ดึง mapping ของ table
   const tablesResult = await pool.request().query(`
     SELECT table_name, db_table_name
@@ -59,7 +59,7 @@ export async function getDApproveData({
 
       let whereClause = `[Date] LIKE @search`;
       if (statusType === "Check_TAB") whereClause += ` AND StatusCheck IS NULL`;
-      else if (statusType === "All_TAB") whereClause += ` AND StatusApprove IS NOT NULL`;
+      else if (statusType === "All_TAB") whereClause += ` AND StatusApprove IS NOT NULL AND StatusApprove != N'ไม่อนุมัติ'`;
       else if (statusType === "Approve_TAB")
         whereClause += ` AND StatusCheck IS NOT NULL AND StatusCheck != N'ไม่อนุมัติ' AND StatusApprove IS NULL`;
 

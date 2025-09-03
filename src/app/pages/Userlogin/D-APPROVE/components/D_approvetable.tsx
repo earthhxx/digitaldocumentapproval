@@ -47,6 +47,12 @@ interface SelectedDoc {
     Dep: string;
 }
 
+const tabToKeyMap: Record<Tab, FormOptionKey> = {
+    Check_TAB: "check",
+    Approve_TAB: "approve",
+    All_TAB: "all",
+};
+
 type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
 
 export default function DApproveTable({ user, initialData, AmountData, formOption, formkey }: DApproveTableProps) {
@@ -127,21 +133,27 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
         setLoading(true);
+
         try {
-            const FormDep: Record<string, string[]> = {};
+            const key = tabToKeyMap[newTab]; // map newTab เป็น key ของ formOption
 
+            // กำหนด forms ที่จะส่งไป API
             const forms = selectedForm
-                ? [selectedForm] // เลือก Form เดียว
-                : formOption?.[formkey]
-                    ? Object.keys(formOption[formkey]) // ทุก Form ของ formOption[key]
+                ? [selectedForm]
+                : formOption?.[key]
+                    ? Object.keys(formOption[key])
                     : [];
+                    console.log("forms", forms);
 
+            // สร้าง FormDep สำหรับแต่ละ form
+            const FormDep: Record<string, string[]> = {};
             forms.forEach(f => {
                 const deps = selectedDep
-                    ? [selectedDep] // เลือก Dep เดียว
-                    : formOption?.[formkey]?.[f] || []; // ส่ง Dep ทั้งหมดของ Form
+                    ? [selectedDep]
+                    : formOption?.[key]?.[f] || [];
                 FormDep[f] = deps;
             });
+            console.log("FormDep", FormDep);
 
             const res = await fetch("/api/D-approve", {
                 method: "POST",
@@ -152,13 +164,14 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                     search: query,
                     statusType: newTab,
                     formaccess: forms,
-                    FormDep,
+                    FormDep: FormDep,
                 }),
                 credentials: "include",
             });
 
             if (res.ok) {
                 const data = await res.json();
+                console.log("Fetched Data:", data); // ✅ log ข้อมูลที่ได้จาก API
                 setApproveData(data);
                 setOffset(newOffset);
                 refreshAmount();
@@ -169,8 +182,6 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
             setLoading(false);
         }
     };
-
-
 
     // ✅ ถ้าอยาก refresh หลัง mount หรือหลัง approve/reject
     const refreshAmount = async () => {
@@ -234,13 +245,14 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
         fetchData(0, search, tab);
     };
 
+    // ใช้ handleTabChange แค่เรียก fetchData ตาม tab ใหม่
     const handleTabChange = (newTab: Tab) => {
         setTab(newTab);
         setOffset(0);
+        setSelectedForm(""); // รีเซ็ต selected form ทุกครั้งที่เปลี่ยน tab
+        setSelectedDep("");  // รีเซ็ต selected dep ด้วย
         fetchData(0, search, newTab);
     };
-
-
 
     const [tabLabels] = useState<Record<Tab, string>>({
         Check_TAB: `Check`,
