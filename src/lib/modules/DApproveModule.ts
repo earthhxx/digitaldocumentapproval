@@ -27,7 +27,7 @@ export async function getDApproveData({
   FormDep = { "": [] },
 }: ApproveQuery): Promise<ApproveData> {
   const pool = await getDashboardConnection();
-  console.log("api in", offset, limit, search, statusType, formaccess, FormDep);
+  // console.log("api in", offset, limit, search, statusType, formaccess, FormDep);
   // ดึง mapping ของ table
   const tablesResult = await pool.request().query(`
     SELECT table_name, db_table_name
@@ -38,14 +38,14 @@ export async function getDApproveData({
   const tableMap: Record<string, string> = {};
   tablesResult.recordset.forEach(row => (tableMap[row.table_name] = row.db_table_name));
 
-  console.log("Table Map:", tableMap); // ✅ log table mapping
+  // console.log("Table Map:", tableMap); // ✅ log table mapping
 
   const validTabs = ["Check_TAB", "Approve_TAB", "All_TAB"];
   if (!validTabs.includes(statusType)) {
     console.log("Invalid statusType:", statusType); // ✅ log statusType ไม่ถูกต้อง
     return { totalAll: 0, totals: {}, data: [], offset, limit };
   }
-  console.log(statusType)
+  // console.log(statusType)
 
   const queries = formaccess
     .filter(t => tableMap[t])
@@ -69,7 +69,7 @@ export async function getDApproveData({
       WHERE Dep IN (${depList}) AND ${whereClause}
     `;
     });
-  console.log("Generated Queries:", queries); // ✅ log generated queries
+  // console.log("Generated Queries:", queries); // ✅ log generated queries
 
   const finalQuery = `
     SELECT *, COUNT(*) OVER() AS totalCount
@@ -79,7 +79,7 @@ export async function getDApproveData({
     ORDER BY date DESC
     OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
   `;
-  console.log("Final Query:", finalQuery); // ✅ log final query
+  // console.log("Final Query:", finalQuery); // ✅ log final query
 
   const dataResult = await pool
     .request()
@@ -88,7 +88,7 @@ export async function getDApproveData({
     .input("limit", sql.Int, limit)
     .query(finalQuery);
 
-  console.log("Data Result:", dataResult.recordset); // ✅ log raw data result
+  // console.log("Data Result:", dataResult.recordset); // ✅ log raw data result
 
   const data = dataResult.recordset;
 

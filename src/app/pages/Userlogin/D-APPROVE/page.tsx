@@ -105,7 +105,7 @@ export default async function UserLoginPage() {
     }
   }
 
-  console.log("Form Options:", formOption);
+  // console.log("Form Options:", formOption);
   // Mapping tab → key ของ formOption/DepOption
   const tabKeyMap: Record<Tab, keyof Option> = {
     Check_TAB: "check",
@@ -128,7 +128,7 @@ export default async function UserLoginPage() {
 
 
   const data = await GetupdateStatus(user.formaccess ?? [], user.Dep ?? []);
-  console.log("key", key);
+  // console.log("key", key);
 
   return (
     <DApproveTable

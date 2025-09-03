@@ -145,7 +145,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                     : formOption?.[key]
                         ? Object.keys(formOption[key])
                         : [];
-            console.log("forms", forms);
+            // console.log("forms", forms);
 
             // สร้าง FormDep สำหรับแต่ละ form
             const FormDep: Record<string, string[]> = {};
@@ -157,7 +157,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                         : formOption?.[key]?.[f] || [];
                 FormDep[f] = deps;
             });
-            console.log("FormDep", FormDep);
+            // console.log("FormDep", FormDep);
 
             const res = await fetch("/api/D-approve", {
                 method: "POST",
@@ -175,7 +175,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
 
             if (res.ok) {
                 const data = await res.json();
-                console.log("Fetched Data:", data); // ✅ log ข้อมูลที่ได้จาก API
+                // console.log("Fetched Data:", data); // ✅ log ข้อมูลที่ได้จาก API
                 setApproveData(data);
                 setOffset(newOffset);
                 refreshAmount();
