@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import SupervisorPopup from "./BT_SupervisorPage";
 import Manager from "./BT_ManagerPage";
+import { Key } from "lucide-react";
 
 
 interface ApproveData {
@@ -31,6 +32,8 @@ interface DApproveTableProps {
     AmountData: AmountData;
     formOption?: FormOption;
     formkey: FormOptionKey;
+    formaccess: string[];
+    FormDep: Record<string, string[]>;
 }
 
 interface FormOption {
@@ -55,7 +58,7 @@ const tabToKeyMap: Record<Tab, FormOptionKey> = {
 
 type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
 
-export default function DApproveTable({ user, initialData, AmountData, formOption, formkey }: DApproveTableProps) {
+export default function DApproveTable({ user, initialData, AmountData, formOption, formkey, formaccess, FormDep }: DApproveTableProps) {
     // form options จาก formOption[key] เช่น formOption.all
     const [selectedForm, setSelectedForm] = useState<string>(""); // Form ที่เลือก
     const [selectedDep, setSelectedDep] = useState<string>(""); // Dep ที่เลือก
@@ -147,15 +150,15 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                         : [];
             // console.log("forms", forms);
 
-            // สร้าง FormDep สำหรับแต่ละ form
-            const FormDep: Record<string, string[]> = {};
+            // สร้าง FormDeps สำหรับแต่ละ form
+            const FormDeps: Record<string, string[]> = {};
             forms.forEach(f => {
                 const deps = selectedDep
                     ? [selectedDep]
                     : key === "all"
                         ? user.Dep ?? []
                         : formOption?.[key]?.[f] || [];
-                FormDep[f] = deps;
+                FormDeps[f] = deps;
             });
             // console.log("FormDep", FormDep);
 
@@ -168,7 +171,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                     search: query,
                     statusType: newTab,
                     formaccess: forms,
-                    FormDep: FormDep,
+                    FormDep: FormDeps,
                 }),
                 credentials: "include",
             });
@@ -186,24 +189,37 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
             setLoading(false);
         }
     };
-
     // ✅ ถ้าอยาก refresh หลัง mount หรือหลัง approve/reject
+    // DApproveTable.tsx
     const refreshAmount = async () => {
         try {
+            console.log("🟢 refreshAmount called with:");
+            console.log("formaccess:", formaccess);
+            console.log("FormDep:", FormDep); // ต้องเป็น object { form: [dep] }
+
+            const payload = {
+                formaccess,
+                FormDep: FormDep
+            };
+
             const res = await fetch("/api/update-status", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify(user.formaccess ?? [], user.Dep ?? []),
+                body: JSON.stringify(payload)
             });
+
             if (res.ok) {
                 const data: AmountData = await res.json();
+                console.log("🟢 refreshAmount result:", data);
                 setDataAmount(data);
             }
         } catch (err) {
             console.error(err);
         }
     };
+
+
 
     const openPDF = (id: string | number, source: string, Dep: string) => {
         setPdfUrl(`/api/generate-filled-pdf?id=${id}&table=${source}`);

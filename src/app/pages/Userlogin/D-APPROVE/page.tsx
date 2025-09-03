@@ -133,7 +133,7 @@ export default async function UserLoginPage() {
   formaccess.forEach(f => {
     FormDep[f] = formOption[key][f]; // เอา dep ของแต่ละ form
   });
-console.log("FormDep", FormDep);
+// console.log("FormDep", FormDep);
   const data = await GetupdateStatus(formaccess, FormDep);
 
   return (
@@ -143,6 +143,8 @@ console.log("FormDep", FormDep);
       AmountData={data}
       formOption={formOption}
       formkey={key}
+      formaccess={formaccess}
+      FormDep={FormDep}
     />
   );
 }
