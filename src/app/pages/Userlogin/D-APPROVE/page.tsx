@@ -79,19 +79,29 @@ export default async function UserLoginPage() {
     }
 
     if (user.permissions.includes("All_TAB")) {
-      user.permissions
-        .filter((p) => p.startsWith("Check_F") || p.startsWith("Approve_F"))
-        .forEach((p) => {
-          const parts = p.split("_");
-          const form = parts.slice(1, -1).join("_");
-          const dep = parts[parts.length - 1];
-
-          if (!formOption.all[form]) formOption.all[form] = [];
-          formOption.all[form].push(dep);
+      user.formaccess?.forEach((f) => {
+        user.Dep?.forEach((d) => {
+          if (!formOption.all[f]) formOption.all[f] = [];
+          formOption.all[f].push(d);
         });
+      });
       for (const f in formOption.all) {
         formOption.all[f] = Array.from(new Set(formOption.all[f]));
       }
+
+      // user.permissions
+      //   .filter((p) => p.startsWith("Check_F") || p.startsWith("Approve_F"))
+      //   .forEach((p) => {
+      //     const parts = p.split("_");
+      //     const form = parts.slice(1, -1).join("_");
+      //     const dep = parts[parts.length - 1];
+
+      //     if (!formOption.all[form]) formOption.all[form] = [];
+      //     formOption.all[form].push(dep);
+      //   });
+      // for (const f in formOption.all) {
+      //   formOption.all[f] = Array.from(new Set(formOption.all[f]));
+      // }
     }
   }
 
@@ -118,6 +128,7 @@ export default async function UserLoginPage() {
 
 
   const data = await GetupdateStatus(user.formaccess ?? [], user.Dep ?? []);
+  console.log("key", key);
 
   return (
     <DApproveTable
@@ -125,6 +136,7 @@ export default async function UserLoginPage() {
       user={user}
       AmountData={data}
       formOption={formOption}
+      formkey = {key}
     />
   );
 }

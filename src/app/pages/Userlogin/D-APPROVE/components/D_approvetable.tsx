@@ -30,6 +30,7 @@ interface DApproveTableProps {
     initialData: ApproveData;
     AmountData: AmountData;
     formOption?: FormOption;
+    formkey: FormOptionKey;
 }
 
 interface FormOption {
@@ -37,6 +38,8 @@ interface FormOption {
     approve: Record<string, string[]>;
     all: Record<string, string[]>;
 }
+
+type FormOptionKey = keyof FormOption; // "check" | "approve" | "all"
 
 interface SelectedDoc {
     id: number;
@@ -46,13 +49,15 @@ interface SelectedDoc {
 
 type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
 
-export default function DApproveTable({ user, initialData, AmountData, formOption }: DApproveTableProps) {
-    // console.log("formOption prop:", formOption?.approve.FM_IT_03); // ตรวจสอบ prop ที่ส่งมา
-    const [filterOption] = useState<string[]>(["", ...(user.formaccess || [])]);
-    const [filterForm, setFilterForm] = useState<string | null>(null);
+export default function DApproveTable({ user, initialData, AmountData, formOption, formkey }: DApproveTableProps) {
+    // form options จาก formOption[key] เช่น formOption.all
+    const [selectedForm, setSelectedForm] = useState<string>(""); // Form ที่เลือก
+    const [selectedDep, setSelectedDep] = useState<string>(""); // Dep ที่เลือก
 
-    const [DepOption] = useState<string[]>(["", ...(user.Dep || [])]);
-    const [filterDep, setFilterDep] = useState<string | null>(null);
+    const formOptions = formOption?.[formkey] ? Object.keys(formOption[formkey]) : [];
+    const depOptions = selectedForm && formOption?.[formkey]?.[selectedForm]
+        ? formOption[formkey][selectedForm]
+        : [];
 
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
@@ -121,9 +126,23 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
     };
 
     const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
-        // console.log('newtab', newTab)
         setLoading(true);
         try {
+            const FormDep: Record<string, string[]> = {};
+
+            const forms = selectedForm
+                ? [selectedForm] // เลือก Form เดียว
+                : formOption?.[formkey]
+                    ? Object.keys(formOption[formkey]) // ทุก Form ของ formOption[key]
+                    : [];
+
+            forms.forEach(f => {
+                const deps = selectedDep
+                    ? [selectedDep] // เลือก Dep เดียว
+                    : formOption?.[formkey]?.[f] || []; // ส่ง Dep ทั้งหมดของ Form
+                FormDep[f] = deps;
+            });
+
             const res = await fetch("/api/D-approve", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -132,14 +151,14 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                     limit,
                     search: query,
                     statusType: newTab,
-                    formaccess: filterForm ? [filterForm] : user.formaccess,
-                    Dep: filterDep ? [filterDep] : user.Dep,
+                    formaccess: forms,
+                    FormDep,
                 }),
                 credentials: "include",
             });
+
             if (res.ok) {
                 const data = await res.json();
-                // console.log('data', data);
                 setApproveData(data);
                 setOffset(newOffset);
                 refreshAmount();
@@ -150,6 +169,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
             setLoading(false);
         }
     };
+
 
 
     // ✅ ถ้าอยาก refresh หลัง mount หรือหลัง approve/reject
@@ -290,29 +310,38 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                             className="border border-gray-300 rounded-md px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
                         />
 
+                        {/* Dropdown Form */}
                         <select
-                            value={filterForm || ""}
-                            onChange={(e) => setFilterForm(e.target.value === "" ? null : e.target.value)}
+                            value={selectedForm}
+                            onChange={(e) => {
+                                setSelectedForm(e.target.value);
+                                setSelectedDep(""); // reset Dep ทุกครั้งที่เปลี่ยน Form
+                            }}
                             className="border border-gray-300 rounded-md px-3 py-2"
                         >
-                            {filterOption.map((source) => (
-                                <option key={source} value={source}>
-                                    {source || "All"}
+                            <option value="">All Forms</option>
+                            {formOptions.map((f) => (
+                                <option key={f} value={f}>
+                                    {f}
                                 </option>
                             ))}
                         </select>
 
+                        {/* Dropdown Department */}
                         <select
-                            value={filterDep || ""}
-                            onChange={(e) => setFilterDep(e.target.value === "" ? null : e.target.value)}
-                            className="border border-gray-300 rounded-md px-3 py-2"
+                            value={selectedDep}
+                            onChange={(e) => setSelectedDep(e.target.value)}
+                            className="border border-gray-300 rounded-md px-3 py-2 ml-2"
+                            disabled={!selectedForm} // ปิดถ้ายังไม่เลือก Form
                         >
-                            {DepOption.map((source) => (
-                                <option key={source} value={source}>
-                                    {source || "All"}
+                            <option value="">All Departments</option>
+                            {depOptions.map((d) => (
+                                <option key={d} value={d}>
+                                    {d}
                                 </option>
                             ))}
                         </select>
+
 
                         <button
                             type="submit"
