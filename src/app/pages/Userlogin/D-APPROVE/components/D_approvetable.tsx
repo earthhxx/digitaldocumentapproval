@@ -140,17 +140,21 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
             // กำหนด forms ที่จะส่งไป API
             const forms = selectedForm
                 ? [selectedForm]
-                : formOption?.[key]
-                    ? Object.keys(formOption[key])
-                    : [];
-                    console.log("forms", forms);
+                : key === "all"
+                    ? user.formaccess ?? []
+                    : formOption?.[key]
+                        ? Object.keys(formOption[key])
+                        : [];
+            console.log("forms", forms);
 
             // สร้าง FormDep สำหรับแต่ละ form
             const FormDep: Record<string, string[]> = {};
             forms.forEach(f => {
                 const deps = selectedDep
                     ? [selectedDep]
-                    : formOption?.[key]?.[f] || [];
+                    : key === "all"
+                        ? user.Dep ?? []
+                        : formOption?.[key]?.[f] || [];
                 FormDep[f] = deps;
             });
             console.log("FormDep", FormDep);
