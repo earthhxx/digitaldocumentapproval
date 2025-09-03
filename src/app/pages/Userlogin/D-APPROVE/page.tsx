@@ -127,8 +127,14 @@ export default async function UserLoginPage() {
   });
 
 
-  const data = await GetupdateStatus(user.formaccess ?? [], user.Dep ?? []);
-  // console.log("key", key);
+  const formaccess = Object.keys(formOption[key]); // ทั้งหมด
+  const FormDep: Record<string, string[]> = {};//create empty object
+  //loop push dep to FormDep
+  formaccess.forEach(f => {
+    FormDep[f] = formOption[key][f]; // เอา dep ของแต่ละ form
+  });
+console.log("FormDep", FormDep);
+  const data = await GetupdateStatus(formaccess, FormDep);
 
   return (
     <DApproveTable
@@ -136,7 +142,7 @@ export default async function UserLoginPage() {
       user={user}
       AmountData={data}
       formOption={formOption}
-      formkey = {key}
+      formkey={key}
     />
   );
 }
