@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { GetupdateStatus } from "@/lib/modules/GetupdateStatus";
-
+//fix
 export async function POST(req: NextRequest) {
     try {
         // 1️⃣ ตรวจสอบ token
