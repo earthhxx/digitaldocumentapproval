@@ -7,7 +7,7 @@ export interface ApproveQuery {
   search?: string;
   statusType?: string;
   formaccess: string[];
-  Dep: string[];
+  Dep: Record<string, string[]>; // key = form, value = dep list
 }
 
 export interface ApproveData {
@@ -24,7 +24,7 @@ export async function getDApproveData({
   search = "",
   statusType = "",
   formaccess = [],
-  Dep = [],
+  Dep = { "": [] },
 }: ApproveQuery): Promise<ApproveData> {
   const pool = await getDashboardConnection();
 
@@ -38,33 +38,35 @@ export async function getDApproveData({
   const tableMap: Record<string, string> = {};
   tablesResult.recordset.forEach(row => (tableMap[row.table_name] = row.db_table_name));
 
-  // console.log("Table Map:", tableMap); // ✅ log table mapping
+  console.log("Table Map:", tableMap); // ✅ log table mapping
 
   const validTabs = ["Check_TAB", "Approve_TAB", "All_TAB"];
   if (!validTabs.includes(statusType)) {
-    // console.log("Invalid statusType:", statusType); // ✅ log statusType ไม่ถูกต้อง
+    console.log("Invalid statusType:", statusType); // ✅ log statusType ไม่ถูกต้อง
     return { totalAll: 0, totals: {}, data: [], offset, limit };
   }
-  // console.log(statusType)
+  console.log(statusType)
 
   const queries = formaccess
     .filter(t => tableMap[t])
     .map(t => {
+      const depList = Dep[t]?.length
+        ? Dep[t].map(d => `'${d}'`).join(",")
+        : "''";
+
       let whereClause = `[Date] LIKE @search`;
       if (statusType === "Check_TAB") whereClause += ` AND StatusCheck IS NULL`;
-      else if (statusType === "ALL_TAB") whereClause += ` AND StatusApprove IS NOT NULL`;
-      else if (statusType === "Approve_TAB") whereClause += ` AND StatusCheck IS NOT NULL AND StatusCheck != N'ไม่อนุมัติ' AND StatusApprove IS NULL`;
-      const depList = Dep.length ? Dep.map(d => `'${d}'`).join(",") : "''";
+      else if (statusType === "All_TAB") whereClause += ` AND StatusApprove IS NOT NULL`;
+      else if (statusType === "Approve_TAB")
+        whereClause += ` AND StatusCheck IS NOT NULL AND StatusCheck != N'ไม่อนุมัติ' AND StatusApprove IS NULL`;
 
-      const q = `
-        SELECT id, FormID, Dep, [Date] AS date, StatusCheck, StatusApprove, '${t}' AS source
-        FROM ${tableMap[t]}
-        WHERE Dep IN (${depList}) AND ${whereClause}
-      `;
-      // console.log(`Query for ${t}:`, q); // ✅ log query แต่ละ table
-      return q;
-    })
-    .filter(q => q);
+      return `
+      SELECT id, FormID, Dep, [Date] AS date, StatusCheck, StatusApprove, '${t}' AS source
+      FROM ${tableMap[t]}
+      WHERE Dep IN (${depList}) AND ${whereClause}
+    `;
+    });
+  console.log("Generated Queries:", queries); // ✅ log generated queries
 
   const finalQuery = `
     SELECT *, COUNT(*) OVER() AS totalCount
@@ -74,7 +76,7 @@ export async function getDApproveData({
     ORDER BY date DESC
     OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
   `;
-  // console.log("Final Query:", finalQuery); // ✅ log final query
+  console.log("Final Query:", finalQuery); // ✅ log final query
 
   const dataResult = await pool
     .request()
@@ -83,7 +85,7 @@ export async function getDApproveData({
     .input("limit", sql.Int, limit)
     .query(finalQuery);
 
-  // console.log("Data Result:", dataResult.recordset); // ✅ log raw data result
+  console.log("Data Result:", dataResult.recordset); // ✅ log raw data result
 
   const data = dataResult.recordset;
 
