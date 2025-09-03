@@ -7,7 +7,7 @@ export interface ApproveQuery {
   search?: string;
   statusType?: string;
   formaccess: string[];
-  Dep: Record<string, string[]>; // key = form, value = dep list
+  FormDep: Record<string, string[]>; // key = form, value = dep list
 }
 
 export interface ApproveData {
@@ -24,7 +24,7 @@ export async function getDApproveData({
   search = "",
   statusType = "",
   formaccess = [],
-  Dep = { "": [] },
+  FormDep = { "": [] },
 }: ApproveQuery): Promise<ApproveData> {
   const pool = await getDashboardConnection();
 
@@ -50,8 +50,11 @@ export async function getDApproveData({
   const queries = formaccess
     .filter(t => tableMap[t])
     .map(t => {
-      const depList = Dep[t]?.length
-        ? Dep[t].map(d => `'${d}'`).join(",")
+      //t = FM_IT_03
+      // FormDep = { FM_IT_03: ['IT', 'HR'], FM_IT_04: ['IT'] }
+      // depList = "'IT','HR'"
+      const depList = FormDep[t]?.length
+        ? FormDep[t].map(d => `'${d}'`).join(",")
         : "''";
 
       let whereClause = `[Date] LIKE @search`;

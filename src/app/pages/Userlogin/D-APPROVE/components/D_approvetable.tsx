@@ -47,7 +47,7 @@ interface SelectedDoc {
 type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
 
 export default function DApproveTable({ user, initialData, AmountData, formOption }: DApproveTableProps) {
-// console.log("formOption prop:", formOption?.approve.FM_IT_03); // ตรวจสอบ prop ที่ส่งมา
+    // console.log("formOption prop:", formOption?.approve.FM_IT_03); // ตรวจสอบ prop ที่ส่งมา
     const [filterOption] = useState<string[]>(["", ...(user.formaccess || [])]);
     const [filterForm, setFilterForm] = useState<string | null>(null);
 
