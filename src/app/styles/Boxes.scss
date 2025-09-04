@@ -85,314 +85,317 @@
 
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .light-ray {
-  position: absolute;
-  top: 0;
-  width: 170px;
-  height: 200%;
-  background: linear-gradient(to bottom,
-      rgba(255 255 224 / 0.9) 0%,
-      rgba(255 255 224 / 0.6) 50%,
-      rgba(255 255 224 / 0) 100%);
-  filter: blur(35px);
-  mix-blend-mode: screen;
-  opacity: 0;
-  transform-origin: top left;
-  animation-fill-mode: forwards;
-  transform: rotate(145deg);
-  /* เริ่มต้นแบบเฉียง */
+    position: absolute;
+    top: 0;
+    width: 170px;
+    height: 200%;
+    background: linear-gradient(to bottom,
+            rgba(255 255 224 / 0.9) 0%,
+            rgba(255 255 224 / 0.6) 50%,
+            rgba(255 255 224 / 0) 100%);
+    filter: blur(35px);
+    mix-blend-mode: screen;
+    opacity: 0;
+    transform-origin: top left;
+    animation-fill-mode: forwards;
+    transform: rotate(145deg);
+    z-index: 49;
+    /* เริ่มต้นแบบเฉียง */
 }
 
 /* Ray 1 */
 .light-ray.ray1 {
-  width: 180px;
-  left: 50%;
-  top: 110%;
-  animation: slideLeftRandom1 40s infinite ease-in-out;
+    width: 180px;
+    left: 50%;
+    top: 110%;
+    animation: slideLeftRandom1 40s infinite ease-in-out;
+    z-index: 49
 }
 
 /* Ray 2 */
 .light-ray.ray2 {
-  width: 140px;
-  left: 75%;
-  top: 110%;
-  animation: slideLeftRandom2 50s infinite ease-in-out;
-  animation-delay: 10s;
+    width: 140px;
+    left: 75%;
+    top: 110%;
+    animation: slideLeftRandom2 50s infinite ease-in-out;
+    animation-delay: 10s;
+    z-index: 49;
 }
 
 /* Keyframes ไปทางซ้าย */
 @keyframes slideLeftRandom1 {
-  0% {
-    transform: rotate(145deg) translateX(0px);
-    opacity: 0;
-  }
+    0% {
+        transform: rotate(145deg) translateX(0px);
+        opacity: 0;
+    }
 
-  15% {
-    opacity: 0.5;
-  }
+    15% {
+        opacity: 0.5;
+    }
 
-  35% {
-    opacity: 0.8;
-  }
+    35% {
+        opacity: 0.8;
+    }
 
-  60% {
-    opacity: 0.6;
-  }
+    60% {
+        opacity: 0.6;
+    }
 
-  100% {
-    transform: rotate(145deg) translateX(-100px);
-    opacity: 0;
-  }
+    100% {
+        transform: rotate(145deg) translateX(-100px);
+        opacity: 0;
+    }
 }
 
 @keyframes slideLeftRandom2 {
-  0% {
-    transform: rotate(145deg) translateX(0px);
-    opacity: 0;
-  }
+    0% {
+        transform: rotate(145deg) translateX(0px);
+        opacity: 0;
+    }
 
-  20% {
-    opacity: 0.6;
-  }
+    20% {
+        opacity: 0.6;
+    }
 
-  50% {
-    opacity: 0.85;
-  }
+    50% {
+        opacity: 0.85;
+    }
 
-  75% {
-    opacity: 0.4;
-  }
+    75% {
+        opacity: 0.4;
+    }
 
-  100% {
-    transform: rotate(145deg) translateX(-150px);
-    opacity: 0;
-  }
+    100% {
+        transform: rotate(145deg) translateX(-150px);
+        opacity: 0;
+    }
 }
 
 /* สไตล์ scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+    width: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.5);
 }
 
 /* Animation Styles */
 .check-circle {
-  stroke-dasharray: 157;
-  stroke-dashoffset: 157;
-  animation: drawCircle 1s ease-out forwards;
+    stroke-dasharray: 157;
+    stroke-dashoffset: 157;
+    animation: drawCircle 1s ease-out forwards;
 }
 
 .check-mark {
-  stroke-dasharray: 48;
-  stroke-dashoffset: 48;
-  animation: drawCheck 0.5s ease-out forwards;
-  animation-delay: 1s;
-  animation-fill-mode: forwards;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: drawCheck 0.5s ease-out forwards;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
 }
 
 @keyframes drawCircle {
-  from {
-    stroke-dashoffset: 157;
-  }
+    from {
+        stroke-dashoffset: 157;
+    }
 
-  to {
-    stroke-dashoffset: 0;
-  }
+    to {
+        stroke-dashoffset: 0;
+    }
 }
 
 @keyframes drawCheck {
-  from {
-    stroke-dashoffset: 48;
-  }
+    from {
+        stroke-dashoffset: 48;
+    }
 
-  to {
-    stroke-dashoffset: 0;
-  }
+    to {
+        stroke-dashoffset: 0;
+    }
 }
 
 /* styles/global.css */
 .bg-pass {
-  background: linear-gradient(145deg, #d4edda, #a0d3a9);
-  /* สีสำหรับ pass */
+    background: linear-gradient(145deg, #d4edda, #a0d3a9);
+    /* สีสำหรับ pass */
 }
 
 .bg-fail {
-  background: linear-gradient(145deg, #f8d7da, #f1a7b2);
-  /* สีสำหรับ fail */
+    background: linear-gradient(145deg, #f8d7da, #f1a7b2);
+    /* สีสำหรับ fail */
 }
 
 .bg-pending {
-  background: linear-gradient(145deg, #fff3cd, #f7e1a7);
-  /* สีสำหรับ pending */
+    background: linear-gradient(145deg, #fff3cd, #f7e1a7);
+    /* สีสำหรับ pending */
 }
 
 .bg-adjusting {
-  background: linear-gradient(145deg, #cfe2ff, #9ec5fe);
-  /* ฟ้านุ่ม ๆ */
+    background: linear-gradient(145deg, #cfe2ff, #9ec5fe);
+    /* ฟ้านุ่ม ๆ */
 }
 
 .text-pass {
-  color: green;
-  /* สีข้อความสำหรับ pass */
+    color: green;
+    /* สีข้อความสำหรับ pass */
 }
 
 .text-fail {
-  color: red;
-  /* สีข้อความสำหรับ fail */
+    color: red;
+    /* สีข้อความสำหรับ fail */
 }
 
 .text-pending {
-  color: orange;
-  /* สีข้อความสำหรับ pending */
+    color: orange;
+    /* สีข้อความสำหรับ pending */
 }
 
 @keyframes spin-slow {
-  0% {
-    transform: rotate(0deg);
-  }
+    0% {
+        transform: rotate(0deg);
+    }
 
-  100% {
-    transform: rotate(360deg);
-  }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .animate-spin-slow {
-  animation: spin-slow 5s linear infinite;
-  /* หมุนช้า ๆ */
+    animation: spin-slow 5s linear infinite;
+    /* หมุนช้า ๆ */
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+    --radius: 0.625rem;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
 }
 
 /* Modal overlay */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  /* semi-transparent background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 49;
 }
 
 /* Modal content box */
 .modal-content-rg {
-  position: relative;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 80%;
-  max-width: 1000px;
-  height: 50%;
-  overflow: auto;
-  z-index: 10000;
-  /* สำคัญ: ให้แน่ใจว่าเหนือ PDF Viewer */
+    position: relative;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 1000px;
+    height: 50%;
+    overflow: auto;
+    z-index: 49;
+    /* สำคัญ: ให้แน่ใจว่าเหนือ PDF Viewer */
 }
 
 .flashing-border {
-  animation: flashing 1s infinite;
-  background-color: #eed3d8;
-  border-radius: 12px;
-  text-align: center;
+    animation: flashing 1s infinite;
+    background-color: #eed3d8;
+    border-radius: 12px;
+    text-align: center;
 }
 
 @keyframes flashing {
-  0% {
-    border: 10px solid red;
-  }
+    0% {
+        border: 10px solid red;
+    }
 
-  50% {
-    border: 10px solid darkred;
-  }
+    50% {
+        border: 10px solid darkred;
+    }
 
-  100% {
-    border: 10px solid red;
-  }
+    100% {
+        border: 10px solid red;
+    }
 }

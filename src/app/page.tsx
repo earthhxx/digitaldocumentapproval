@@ -24,7 +24,7 @@ export default function HomePage({ initialUser }: HomePageProps) {
   const displayUser = user || initialUser;
 
   return (
-    <div className="relative flex justify-center items-center w-full min-h-screen bg-gradient-to-r from-blue-200 via-sky-400 to-sky-200">
+    <div className="relative flex justify-center items-center w-full min-h-screen bg-gradient-to-r from-blue-400 via-sky-400 to-sky-200">
       {/* กล่องลอย */}
       {/* <div className="absolute inset-0 pointer-events-none">
         <div className="boxs">

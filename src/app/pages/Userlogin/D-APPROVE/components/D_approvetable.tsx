@@ -285,25 +285,23 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
     const canGoPrev = offset > 0;
 
     return (
-        <div className="flex flex-1 flex-col min-h-full w-full bg-white shadow-lg rounded-lg p-6 overflow-auto">
-            <h2 className="flex justify-center items-center  text-4xl font-bold mb-5 text-gray-800 mt-4">ระบบ ยืนยันเอกสาร</h2>
-
+        <div className="flex flex-1 flex-col min-h-full w-full bg-indigo-50 shadow-lg rounded-lg p-6 overflow-auto">
+            <h2 className="flex justify-center items-center text-4xl font-bold mb-5 text-gray-800 mt-4">
+                ระบบ ยืนยันเอกสาร
+            </h2>
 
             {/* Tabs */}
             <div className="flex mb-5 border-b border-gray-300">
                 {(Object.keys(tabLabels) as Tab[]).map((t) => (
                     <button
                         key={t}
-                        onClick={() => {
-                            handleTabChange(t);
-                        }}
+                        onClick={() => handleTabChange(t)}
                         className={`relative flex items-center px-5 py-2 font-medium border-b-2 transition-colors duration-200
-        ${user.permissions?.includes(t) ? " " : " hidden "}
-        ${tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"}
-      `}
+          ${user.permissions?.includes(t) ? "" : "hidden"}
+          ${tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"}
+        `}
                     >
                         {tabLabels[t]}
-
                         {/* Badge */}
                         {t === "Check_TAB" && dataAmount.CheckNull > 0 && (
                             <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
@@ -313,11 +311,6 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                         {t === "Approve_TAB" && dataAmount.ApproveNull > 0 && (
                             <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
                                 {dataAmount.ApproveNull}
-                            </div>
-                        )}
-                        {t === "All_TAB" && dataAmount.somethingNull > 0 && (
-                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full  text-xs text-white flex items-center justify-center">
-                                {/* {dataAmount.somethingNull} */}
                             </div>
                         )}
                     </button>
@@ -331,57 +324,44 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
             <div
                 className={user.permissions?.includes(tab) ? "" : "hidden"}
             >
-                <div className="flex flex-row justify-evenly items-center mb-4">
-                    {/* Search */}
-                    <form onSubmit={handleSearch} className=" flex items-center justify-center gap-2 text-black w-[40%]">
+                {/* Search & Filters */}
+                <div className="flex flex-row justify-evenly items-center mb-4 flex-wrap gap-3 ">
+                    <form onSubmit={handleSearch} className="flex items-center justify-center gap-2 text-black w-full sm:w-[40%] bg-white px-4 py-2 rounded-2xl border ">
                         <input
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search document..."
-                            className="border border-gray-300 rounded-md px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700"
+                            className="border border-gray-300 rounded-md px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 text-white"
                         />
 
-                        {/* Dropdown Form */}
                         <select
                             value={selectedForm}
-                            onChange={(e) => {
-                                setSelectedForm(e.target.value);
-                                setSelectedDep(""); // reset Dep ทุกครั้งที่เปลี่ยน Form
-                            }}
-                            className="border border-gray-300 rounded-md px-3 py-2"
+                            onChange={(e) => { setSelectedForm(e.target.value); setSelectedDep(""); }}
+                            className=" border border-gray-300 rounded-md px-3 py-2"
                         >
                             <option value="">All Forms</option>
-                            {formOptions.map((f) => (
-                                <option key={f} value={f}>
-                                    {f}
-                                </option>
-                            ))}
+                            {formOptions.map((f) => <option key={f} value={f}>{f}</option>)}
                         </select>
 
-                        {/* Dropdown Department */}
                         <select
                             value={selectedDep}
                             onChange={(e) => setSelectedDep(e.target.value)}
-                            className="border border-gray-300 rounded-md px-3 py-2 ml-2"
-                            disabled={!selectedForm} // ปิดถ้ายังไม่เลือก Form
+                            className="border border-gray-300 rounded-md px-3 py-2"
+                            disabled={!selectedForm}
                         >
                             <option value="">All Departments</option>
-                            {depOptions.map((d) => (
-                                <option key={d} value={d}>
-                                    {d}
-                                </option>
-                            ))}
+                            {depOptions.map((d) => <option key={d} value={d}>{d}</option>)}
                         </select>
-
 
                         <button
                             type="submit"
-                            className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                            className="bg-blue-500 text-white px-5 py-2 rounded-md hover:bg-blue-600 transition-colors"
                         >
                             Search
                         </button>
                     </form>
+
 
                     {/* Total per table horizontal inline */}
                     {/* <div className="flex gap-2 overflow-y-auto py-2 justify-end pe-4 w-full">
@@ -402,19 +382,18 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
 
 
 
-                <div className="p-2 flex gap-2">
+                <div className="p-2 flex gap-2 flex-wrap">
                     {canApproveSupervisor && tab === "Check_TAB" && (
                         <>
                             <button
                                 onClick={() => handleGroupApprove("check", "Supervisor")}
-                                className="px-3 py-1 rounded text-white bg-green-600 hover:bg-green-700"
+                                className="px-3 py-1 rounded text-white bg-green-500 hover:bg-green-600 transition-colors"
                             >
                                 Check Supervisor ({selected.length})
                             </button>
-
                             <button
                                 onClick={() => handleGroupApprove("reject", "Supervisor")}
-                                className="px-3 py-1 rounded text-white bg-red-600 hover:bg-red-700"
+                                className="px-3 py-1 rounded text-white bg-red-500 hover:bg-red-600 transition-colors"
                             >
                                 Reject Supervisor ({selected.length})
                             </button>
@@ -425,14 +404,13 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                         <>
                             <button
                                 onClick={() => handleGroupApprove("approve", "Manager")}
-                                className="px-3 py-1 rounded text-white bg-green-600 hover:bg-green-700"
+                                className="px-3 py-1 rounded text-white bg-green-500 hover:bg-green-600 transition-colors"
                             >
                                 Approve Manager ({selected.length})
                             </button>
-
                             <button
                                 onClick={() => handleGroupApprove("reject", "Manager")}
-                                className="px-3 py-1 rounded text-white bg-red-600 hover:bg-red-700"
+                                className="px-3 py-1 rounded text-white bg-red-500 hover:bg-red-600 transition-colors"
                             >
                                 Reject Manager ({selected.length})
                             </button>
@@ -440,57 +418,46 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                     )}
                 </div>
 
-
-                <div className="custom-scrollbar rounded-lg shadow-sm border border-gray-200 overflow-y-auto h-[64vh] overflow-hidden">
-                    <table className="min-w-full table-fixed bg-white text-black ">
-                        <thead className="bg-gray-100 sticky top-0 z-10">
+                {/* Table */}
+                <div className="custom-scrollbar rounded-lg shadow-sm border border-gray-200 overflow-y-auto h-[64vh] overflow-hidden bg-white">
+                    <table className="min-w-full table-fixed bg-white text-black">
+                        <thead className="bg-blue-100 sticky top-0 z-10">
                             <tr>
                                 {(tab === "Check_TAB" || tab === "Approve_TAB") && (
-
                                     <th className="px-2 py-2 text-center w-[5%]">
                                         <input
                                             type="checkbox"
                                             onChange={toggleSelectAll}
-                                            checked={
-                                                selected.length > 0 &&
-                                                approveData.data.every((doc) =>
-                                                    selected.some((s) => s.id === doc.id && s.source === doc.source)
-                                                )
-                                            }
+                                            checked={selected.length > 0 && approveData.data.every((doc) =>
+                                                selected.some((s) => s.id === doc.id && s.source === doc.source)
+                                            )}
                                         />
                                     </th>
-                                )
-                                }
+                                )}
                                 <th className="px-4 py-2 text-center w-[10%]">Number</th>
-                                {/* <th className="px-4 py-2 text-center w-[10%]">ID</th> */}
                                 <th className="px-4 py-2 text-center w-[25%]">DOC NAME</th>
                                 <th className="px-4 py-2 text-center w-[15%]">Source</th>
                                 <th className="px-4 py-2 text-center w-[15%]">Dep</th>
                                 <th className="px-4 py-2 text-center w-[15%]">Date</th>
-                                <th className="px-4 py-2 text-center w-[10%]">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan={8} className="text-center py-6">
-                                        Loading...
-                                    </td>
+                                    <td colSpan={8} className="text-center py-6">Loading...</td>
                                 </tr>
                             ) : approveData.data.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className="text-center py-6">
-                                        No data found
-                                    </td>
+                                    <td colSpan={8} className="text-center py-6">No data found</td>
                                 </tr>
                             ) : (
                                 approveData.data.map((doc, index) => (
                                     <tr
+                                        onClick={() => openPDF(doc.id, doc.source, doc.Dep)}
                                         key={`${doc.source}_${doc.id}_${index}`}
-                                        className={`transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:bg-amber-100 ${selected.some((s) => s.id === doc.id && s.source === doc.source)
-                                            ? "bg-amber-200"
-                                            : ""
-                                            }`}
+                                        className={`transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:bg-amber-100
+                ${selected.some((s) => s.id === doc.id && s.source === doc.source) ? "bg-amber-200/50" : ""}
+              `}
                                     >
                                         {(tab === "Check_TAB" || tab === "Approve_TAB") && (
                                             <td className="px-2 py-2 text-center border-t border-gray-200">
@@ -499,10 +466,8 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                                     checked={selected.some(s => s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep)}
                                                     onChange={(e) => {
                                                         if (e.target.checked) {
-                                                            // เพิ่มเข้า selected
                                                             setSelected((prev) => [...prev, { id: doc.id, source: doc.source, Dep: doc.Dep }]);
                                                         } else {
-                                                            // ลบออกจาก selected
                                                             setSelected((prev) =>
                                                                 prev.filter((s) => !(s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep))
                                                             );
@@ -511,40 +476,11 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                                 />
                                             </td>
                                         )}
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
-                                            {offset + 1 + index}
-                                        </td>
-                                        {/* <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
-                                            {doc.id}
-                                        </td> */}
-                                        <td className="px-4 py-2 border-t border-gray-200 w-[25%]">
-                                            {doc.source === "FM_IT_03"
-                                                ? "ฟอร์มเอกสารแจ้งซ่อม IT"
-                                                : doc.source === "FM_GA_03"
-                                                    ? "ฟอร์มขออนุญาตนำของออกนอกโรงงาน"
-                                                    : doc.source === "FM_GA_04"
-                                                        ? "ฟอร์มขออนุญาตออกนอกโรงงาน"
-                                                        : doc.source}
-                                        </td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">
-                                            {doc.source}
-                                        </td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">
-                                            {doc.Dep}
-                                        </td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">
-                                            {doc.date
-                                                ? new Date(doc.date).toLocaleDateString()
-                                                : "-"}
-                                        </td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">
-                                            <button
-                                                onClick={() => openPDF(doc.id, doc.source, doc.Dep)}
-                                                className="px-2 py-1 text-white bg-blue-500 rounded-sm hover:bg-blue-600"
-                                            >
-                                                OPEN
-                                            </button>
-                                        </td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">{offset + 1 + index}</td>
+                                        <td className="px-4 py-2 border-t border-gray-200 w-[25%]">{doc.source}</td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.source}</td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.Dep}</td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.date ? new Date(doc.date).toLocaleDateString() : "-"}</td>
                                     </tr>
                                 ))
                             )}
@@ -553,28 +489,19 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                 </div>
 
 
-
-
-
                 {/* Pagination */}
                 <div className="mt-5 flex justify-between items-center">
                     <button
                         onClick={() => fetchData(Math.max(offset - limit, 0), search, tab)}
                         disabled={!canGoPrev || loading}
-                        className={`px-4 py-2 rounded-md ${offset === 0 || loading
-                            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                            : "bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                            }`}
+                        className={`px-4 py-2 rounded-md ${offset === 0 || loading ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600 transition-colors"}`}
                     >
                         Previous
                     </button>
                     <button
                         onClick={() => fetchData(offset + limit, search, tab)}
                         disabled={!canGoNext || loading}
-                        className={`px-4 py-2 rounded-md ${offset + limit >= approveData.totalAll || loading
-                            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                            : "bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                            }`}
+                        className={`px-4 py-2 rounded-md ${offset + limit >= approveData.totalAll || loading ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600 transition-colors"}`}
                     >
                         Next
                     </button>
