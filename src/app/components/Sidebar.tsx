@@ -2,14 +2,19 @@
 import LoginForm from "./LoginForm";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link"; // ✅ ใช้ Link
 import { useAuth } from "../context/AuthContext";
 
-export interface User { userId: string; fullName: string; roles: string[]; permissions: string[]; }
+export interface User {
+  userId: string;
+  fullName: string;
+  roles: string[];
+  permissions: string[];
+}
 
 export default function Sidebar() {
-  const { user, login, logout } = useAuth();
+  const { user, login, logout, open, setOpen } = useAuth();
   const [mounted, setMounted] = useState(false);
-  const [open, setOpen] = useState(true);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setMounted(true), []);
@@ -35,7 +40,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {!open && (
+      {!open && user &&(
         <button
           onClick={() => setOpen(true)}
           className="fixed top-4 left-4 z-50 p-2 bg-white text-black rounded shadow-md"
@@ -45,13 +50,13 @@ export default function Sidebar() {
       )}
 
       <div
-        className={`fixed inset-0 z-50 bg-white/10 backdrop-blur-[4px] transition-opacity duration-300 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        className={`fixed inset-0 z-40 bg-white/10 backdrop-blur-[4px] transition-opacity duration-300 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
       ></div>
-
 
       <aside
         ref={sidebarRef}
-        className={`fixed h-screen w-64 bg-gray-900 text-white z-50 transform transition-transform duration-300 ${open ? "translate-x-0" : "-translate-x-full"
+        className={`fixed h-screen w-74 bg-gray-900 text-white z-50 transform transition-transform duration-300 ${open ? "translate-x-0" : "-translate-x-full"
           }`}
       >
         <div className="relative w-full h-full flex flex-col justify-center items-center">
@@ -70,9 +75,7 @@ export default function Sidebar() {
                 </div>
               </div>
 
-              <LoginForm
-                onLoginSuccess={(loggedUser) => login(loggedUser)}
-              />
+              <LoginForm onLoginSuccess={(loggedUser) => login(loggedUser)} />
             </div>
           )}
 
@@ -84,23 +87,45 @@ export default function Sidebar() {
               </div>
 
               <nav className="flex flex-col gap-3 p-6 flex-1 w-full">
-                <a href="/" className="hover:bg-gray-700 bg-gray-700/30 p-3 rounded font-medium">Home</a>
+                <Link
+                  href="/"
+                  onClick={() => setOpen(false)}
+                  className="hover:bg-gray-700 bg-gray-700/30 p-3 rounded font-medium"
+                >
+                  Home
+                </Link>
+
                 {roles?.includes("admin") && (
-                  <a href="/pages/admin" className="hover:bg-green-700 bg-green-700/30 p-3 rounded font-medium text-green-400">
+                  <Link
+                    href="/pages/admin"
+                    onClick={() => setOpen(false)}
+                    className="hover:bg-green-700 bg-green-700/30 p-3 rounded font-medium text-green-400"
+                  >
                     Admin Panel
-                  </a>
+                  </Link>
                 )}
+
                 {permission?.includes("D_Approve") && (
-                  <a href="/pages/Userlogin/D-APPROVE" className="hover:bg-red-700 bg-red-700/30 p-3 rounded font-medium text-red-400">
+                  <Link
+                    href="/pages/Userlogin/D-APPROVE"
+                    onClick={() => setOpen(false)}
+                    className="hover:bg-red-700 bg-red-700/30 p-3 rounded font-medium text-red-400"
+                  >
                     ระบบ ยืนยันเอกสาร
-                  </a>
+                  </Link>
                 )}
               </nav>
 
               <div className="px-6 pt-4 pb-2 border-t border-gray-700 text-gray-400 text-sm space-y-1">
-                <div><span className="font-semibold">Roles:</span> {roles.join(", ")}</div>
-                <div><span className="font-semibold">User ID:</span> {userId}</div>
-                <div><span className="font-semibold">Full Name:</span> {fullName}</div>
+                <div>
+                  <span className="font-semibold">Roles:</span> {roles.join(", ")}
+                </div>
+                <div>
+                  <span className="font-semibold">User ID:</span> {userId}
+                </div>
+                <div>
+                  <span className="font-semibold">Full Name:</span> {fullName}
+                </div>
               </div>
 
               <button

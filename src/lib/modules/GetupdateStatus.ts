@@ -9,9 +9,9 @@ export async function GetupdateStatus(
         throw new Error("missing parameter");
     }
 
-    console.log("🟢 GetupdateStatus called with:");
-    console.log("formaccess:", formaccess);
-    console.log("FormDep:", FormDep);
+    // console.log("🟢 GetupdateStatus called with:");
+    // console.log("formaccess:", formaccess);
+    // console.log("FormDep:", FormDep);
 
     const pool = await getDashboardConnection();
 
@@ -26,7 +26,7 @@ export async function GetupdateStatus(
         tableMap[row.table_name] = row.db_table_name;
     });
 
-    console.log("📋 TableMap:", tableMap);
+    // console.log("📋 TableMap:", tableMap);
 
     const queries = formaccess
         .filter(t => tableMap[t])
@@ -69,7 +69,7 @@ export async function GetupdateStatus(
 
     const result = await pool.request().query(finalQuery);
 
-    console.log("✅ Result:", result.recordset[0]);
+    // console.log("✅ Result:", result.recordset[0]);
 
     return result.recordset[0];
 }

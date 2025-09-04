@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Sidebar from "./components/Sidebar";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono , Kanit } from "next/font/google";
 import { cookies } from "next/headers"; // สำหรับ SSR cookie
 import { jwtVerify } from "jose";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
+import { c } from "node_modules/framer-motion/dist/types.d-Cjd591yU";
 
 export interface User { userId: string; fullName: string; roles: string[]; permissions: string[]; }
 
@@ -16,6 +17,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const kanit = Kanit({
+  variable: "--font-kanit",
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -56,7 +63,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable}`}
+        className={`${geistSans.variable} ${geistMono.variable} ${kanit.variable} font-sans bg-gray-100`}
       >
         <AuthProvider initialUser={initialUser}>
           <div className="flex flex-col min-h-screen w-screen">

@@ -193,9 +193,9 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
     // DApproveTable.tsx
     const refreshAmount = async () => {
         try {
-            console.log("🟢 refreshAmount called with:");
-            console.log("formaccess:", formaccess);
-            console.log("FormDep:", FormDep); // ต้องเป็น object { form: [dep] }
+            // console.log("🟢 refreshAmount called with:");
+            // console.log("formaccess:", formaccess);
+            // console.log("FormDep:", FormDep); // ต้องเป็น object { form: [dep] }
 
             const payload = {
                 formaccess,
@@ -211,7 +211,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
 
             if (res.ok) {
                 const data: AmountData = await res.json();
-                console.log("🟢 refreshAmount result:", data);
+                // console.log("🟢 refreshAmount result:", data);
                 setDataAmount(data);
             }
         } catch (err) {
@@ -384,7 +384,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                     </form>
 
                     {/* Total per table horizontal inline */}
-                    <div className="flex gap-2 overflow-y-auto py-2 justify-end pe-4 w-full">
+                    {/* <div className="flex gap-2 overflow-y-auto py-2 justify-end pe-4 w-full">
                         {Object.entries(approveData.totals).map(([source, count]) => (
                             <div
                                 key={source}
@@ -394,7 +394,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                 <span className="text-blue-600 font-bold text-sm ml-2">{count}</span>
                             </div>
                         ))}
-                    </div>
+                    </div> */}
 
 
 

@@ -3,12 +3,14 @@
 
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { User } from "../components/Sidebar";
-import { useRouter } from "next/navigation";  
+import { useRouter } from "next/navigation";
 
 interface AuthContextType {
   user: User | null;
   login: (user: User) => void;
-  logout: () => void;
+  logout: () => void
+  open: boolean;
+  setOpen: (value: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,6 +24,8 @@ export const AuthProvider = ({
   initialUser?: User | null;
 }) => {
   const [user, setUser] = useState<User | null>(initialUser || null);
+  const [open, setOpen] = useState(false);
+
   const router = useRouter();
 
   const login = (newUser: User) => {
@@ -36,7 +40,7 @@ export const AuthProvider = ({
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, open, setOpen, logout }}>
       {children}
     </AuthContext.Provider>
   );
