@@ -68,7 +68,7 @@ export default async function RootLayout({
         <AuthProvider initialUser={initialUser}>
           <div className="flex flex-col min-h-screen w-screen">
             <Sidebar />
-            <main className="flex-1 flex h-full">
+            <main className="flex-1 flex flex-col overflow-hidden">
               {children}
             </main>
           </div>
