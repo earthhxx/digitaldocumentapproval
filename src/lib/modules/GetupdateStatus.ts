@@ -34,9 +34,9 @@ export async function GetupdateStatus(
             const deps = FormDep[t]?.length ? FormDep[t] : [];
             const depList = deps.length ? deps.map(d => `'${d}'`).join(",") : "''";
 
-            console.log(`🔎 Building query for: ${t}`);
-            console.log(`   deps:`, deps);
-            console.log(`   depList:`, depList);
+            // console.log(`🔎 Building query for: ${t}`);
+            // console.log(`   deps:`, deps);
+            // console.log(`   depList:`, depList);
 
             return `
                 SELECT 

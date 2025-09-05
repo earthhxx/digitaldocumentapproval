@@ -3,13 +3,12 @@
 import React, { useState } from "react";
 import SupervisorPopup from "./BT_SupervisorPage";
 import Manager from "./BT_ManagerPage";
-import { Key } from "lucide-react";
 
 
 interface ApproveData {
     totalAll: number;
     totals: Record<string, number>; // เพิ่มตรงนี้
-    data: { id: number; FormThai: string; Dep: string; name: string; source: string; date?: string; DateRequest?: string;  }[];
+    data: { id: number; FormThai: string; Dep: string; name: string; source: string; date?: string; DateRequest?: string; DateApprove?: string }[];
     error?: string;
 }
 
@@ -63,6 +62,9 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
     // form options จาก formOption[key] เช่น formOption.all
     const [selectedForm, setSelectedForm] = useState<string>(""); // Form ที่เลือก
     const [selectedDep, setSelectedDep] = useState<string>(""); // Dep ที่เลือก
+
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
 
     const formOptions = formOption?.[formkey] ? Object.keys(formOption[formkey]) : [];
     const depOptions = selectedForm && formOption?.[formkey]?.[selectedForm]
@@ -162,6 +164,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                 FormDeps[f] = deps;
             });
             // console.log("FormDep", FormDep);
+            console.log("startdate",startDate, endDate);
 
             const res = await fetch("/api/D-approve", {
                 method: "POST",
@@ -173,6 +176,8 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                     statusType: newTab,
                     formaccess: forms,
                     FormDep: FormDeps,
+                    startDate: startDate || null,
+                    endDate: endDate || null,
                 }),
                 credentials: "include",
             });
@@ -324,24 +329,28 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
             >
                 {/* Search & Filters */}
                 <div className="flex flex-row justify-evenly items-center mb-4 flex-wrap gap-3 ">
-                    <form onSubmit={handleSearch} className="flex items-center justify-center gap-2 text-black w-full sm:w-[40%] bg-white px-4 py-2 rounded-2xl border ">
+                    <form onSubmit={handleSearch} className="flex items-center justify-center gap-2 text-black w-fit bg-white px-4 py-2 rounded-2xl border flex-wrap">
+
+                        {/* Search Input */}
                         <input
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search document..."
-                            className="border border-gray-300 rounded-md px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 text-white"
+                            className="border border-gray-300 rounded-md px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 text-black"
                         />
 
+                        {/* Form Select */}
                         <select
                             value={selectedForm}
                             onChange={(e) => { setSelectedForm(e.target.value); setSelectedDep(""); }}
-                            className=" border border-gray-300 rounded-md px-3 py-2"
+                            className="border border-gray-300 rounded-md px-3 py-2"
                         >
                             <option value="">All Forms</option>
                             {formOptions.map((f) => <option key={f} value={f}>{f}</option>)}
                         </select>
 
+                        {/* Department Select */}
                         <select
                             value={selectedDep}
                             onChange={(e) => setSelectedDep(e.target.value)}
@@ -352,6 +361,22 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                             {depOptions.map((d) => <option key={d} value={d}>{d}</option>)}
                         </select>
 
+                        {/* Date Range */}
+                        <input
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className="border border-gray-300 rounded-md px-3 py-2"
+                        />
+                        <span className="mx-1">to</span>
+                        <input
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            className="border border-gray-300 rounded-md px-3 py-2"
+                        />
+
+                        {/* Submit */}
                         <button
                             type="submit"
                             className="bg-blue-500 text-white px-5 py-2 rounded-md hover:bg-blue-600 transition-colors"
@@ -359,10 +384,10 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                             Search
                         </button>
                     </form>
+                </div>
 
-
-                    {/* Total per table horizontal inline */}
-                    {/* <div className="flex gap-2 overflow-y-auto py-2 justify-end pe-4 w-full">
+                {/* Total per table horizontal inline */}
+                {/* <div className="flex gap-2 overflow-y-auto py-2 justify-end pe-4 w-full">
                         {Object.entries(approveData.totals).map(([source, count]) => (
                             <div
                                 key={source}
@@ -373,11 +398,6 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                             </div>
                         ))}
                     </div> */}
-
-
-
-                </div>
-
 
 
                 <div className="p-2 flex gap-2 flex-wrap">
@@ -436,7 +456,9 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                 <th className="px-4 py-2 text-center w-[25%]">DOC NAME</th>
                                 <th className="px-4 py-2 text-center w-[15%]">Source</th>
                                 <th className="px-4 py-2 text-center w-[15%]">Dep</th>
-                                <th className="px-4 py-2 text-center w-[15%]">Date</th>
+                                <th className="px-4 py-2 text-center w-[15%]">DateRequest</th>
+                                {tab === "All_TAB" && <th className="px-4 py-2 text-center w-[15%]">DateApprove</th>}
+
                             </tr>
                         </thead>
                         <tbody>
@@ -458,7 +480,9 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
               `}
                                     >
                                         {(tab === "Check_TAB" || tab === "Approve_TAB") && (
-                                            <td className="px-2 py-2 text-center border-t border-gray-200">
+                                            <td
+                                                onClick={(e) => e.stopPropagation()} // กันไม่ให้ trigger row onClick
+                                                className="px-2 py-2 text-center border-t border-gray-200">
                                                 <input
                                                     type="checkbox"
                                                     checked={selected.some(s => s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep)}
@@ -479,6 +503,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.source}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.Dep}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.DateRequest ? new Date(doc.DateRequest).toLocaleDateString() : "-"}</td>
+                                        {tab === "All_TAB" && <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.DateApprove ? new Date(doc.DateApprove).toLocaleDateString() : "-"}</td>}
                                     </tr>
                                 ))
                             )}

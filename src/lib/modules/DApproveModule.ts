@@ -8,6 +8,8 @@ export interface ApproveQuery {
   statusType?: string;
   formaccess: string[];
   FormDep: Record<string, string[]>; // key = form, value = dep list
+  startDate?: string | null;
+  endDate?: string | null;
 }
 
 export interface ApproveData {
@@ -25,8 +27,11 @@ export async function getDApproveData({
   statusType = "",
   formaccess = [],
   FormDep = { "": [] },
+  startDate = null,
+  endDate = null,
 }: ApproveQuery): Promise<ApproveData> {
   const pool = await getDashboardConnection();
+  console.log("startDate", startDate, endDate);
   // console.log("api in", offset, limit, search, statusType, formaccess, FormDep);
   // ดึง mapping ของ table
   const tablesResult = await pool.request().query(`
@@ -51,28 +56,38 @@ export async function getDApproveData({
   const queries = formaccess
     .filter(t => tableMap[t])
     .map(t => {
-      //t = FM_IT_03
-      // FormDep = { FM_IT_03: ['IT', 'HR'], FM_IT_04: ['IT'] }
-      // depList = "'IT','HR'"
       const depList = FormDep[t]?.length
         ? FormDep[t].map(d => `'${d}'`).join(",")
         : "''";
 
       let whereClause = `FormThai LIKE @search`;
-      if (statusType === "Check_TAB") whereClause += ` AND StatusCheck IS NULL`;
-      else if (statusType === "All_TAB") whereClause += ` AND StatusApprove IS NOT NULL AND StatusApprove != N'ไม่อนุมัติ'`;
+
+      // Status filter
+      if (statusType === "Check_TAB")
+        whereClause += ` AND StatusCheck IS NULL`;
       else if (statusType === "Approve_TAB")
         whereClause += ` AND StatusCheck IS NOT NULL AND StatusCheck != N'ไม่อนุมัติ' AND StatusApprove IS NULL`;
+      else if (statusType === "All_TAB")
+        whereClause += ` AND StatusApprove IS NOT NULL AND StatusApprove != N'ไม่อนุมัติ'`;
+
+      // DateApprove filter
+      if (startDate && endDate) {
+        whereClause += ` AND DateApprove BETWEEN @startDate AND @endDate`;
+      } else if (startDate) {
+        whereClause += ` AND DateApprove >= @startDate`;
+      } else if (endDate) {
+        whereClause += ` AND DateApprove <= @endDate`;
+      }
 
       return `
-              SELECT id, FormID, FormThai, Dep, [Date] AS date,
-                    DateRequest, StatusCheck, StatusApprove,
-                    DateApprove, DateCheck, '${t}' AS source
-              FROM ${tableMap[t]}
-              WHERE Dep IN (${depList}) AND ${whereClause}
-            `;
+      SELECT id, FormID, FormThai, Dep, [Date] AS date,
+             DateRequest, StatusCheck, StatusApprove,
+             DateApprove, DateCheck, '${t}' AS source
+      FROM ${tableMap[t]}
+      WHERE Dep IN (${depList}) AND ${whereClause}
+    `;
     });
-  // console.log("Generated Queries:", queries); // ✅ log generated queries
+  // log("Generated Queries:", queries); // ✅ log generated queries
 
   let Orderby = "date DESC"; // ค่าเริ่มต้น
   if (statusType === "Check_TAB") Orderby = "DateRequest ASC, date DESC";
@@ -89,12 +104,17 @@ export async function getDApproveData({
                   `;
   // console.log("Final Query:", finalQuery); // ✅ log final query
 
-  const dataResult = await pool
+  const request = pool
     .request()
-    .input("search", sql.VarChar, `%${search}%`)
+    .input("search", sql.NVarChar, `%${search}%`)
     .input("offset", sql.Int, offset)
-    .input("limit", sql.Int, limit)
-    .query(finalQuery);
+    .input("limit", sql.Int, limit);
+
+  if (startDate) request.input("startDate", sql.Date, startDate);
+  if (endDate) request.input("endDate", sql.Date, endDate);
+
+  const dataResult = await request.query(finalQuery);
+
 
   // console.log("Data Result:", dataResult.recordset); // ✅ log raw data result
 
