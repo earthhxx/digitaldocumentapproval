@@ -421,7 +421,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                     </form>
                 </div>
               
-                {/* <div className="flex gap-2 overflow-y-auto py-2 justify-end pe-4 s w-full">
+                {/* <div className="flex gap-2 overflow-y-auto py-2 justify-end pe-4 s w-full s">
                         {Object.entries(approveData.totals).map(([source, count]) => (
                             <div
                                 key={source}
