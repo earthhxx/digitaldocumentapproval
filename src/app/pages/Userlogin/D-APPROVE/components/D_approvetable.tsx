@@ -137,34 +137,37 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
         }
     };
 
-    const fetchData = async (newOffset = 0, query = "", newTab: Tab = tab) => {
+    const fetchData = async (
+        newOffset = 0,
+        query = "",
+        newTab: Tab = tab,
+        form = selectedForm,
+        dep = selectedDep,
+        start = startDate,
+        end = endDate
+    ) => {
         setLoading(true);
 
         try {
-            const key = tabToKeyMap[newTab]; // map newTab เป็น key ของ formOption
+            const key = tabToKeyMap[newTab];
 
-            // กำหนด forms ที่จะส่งไป API
-            const forms = selectedForm
-                ? [selectedForm]
+            const forms = form
+                ? [form]
                 : key === "all"
                     ? user.formaccess ?? []
                     : formOption?.[key]
                         ? Object.keys(formOption[key])
                         : [];
-            // console.log("forms", forms);
 
-            // สร้าง FormDeps สำหรับแต่ละ form
             const FormDeps: Record<string, string[]> = {};
             forms.forEach(f => {
-                const deps = selectedDep
-                    ? [selectedDep]
+                const deps = dep
+                    ? [dep]
                     : key === "all"
                         ? user.Dep ?? []
                         : formOption?.[key]?.[f] || [];
                 FormDeps[f] = deps;
             });
-            // console.log("FormDep", FormDep);
-            console.log("startdate",startDate, endDate);
 
             const res = await fetch("/api/D-approve", {
                 method: "POST",
@@ -176,25 +179,31 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                     statusType: newTab,
                     formaccess: forms,
                     FormDep: FormDeps,
-                    startDate: startDate || null,
-                    endDate: endDate || null,
+                    startDate: start || null,
+                    endDate: end || null,
                 }),
                 credentials: "include",
             });
 
             if (res.ok) {
                 const data = await res.json();
-                // console.log("Fetched Data:", data); // ✅ log ข้อมูลที่ได้จาก API
-                setApproveData(data);
+                setApproveData({
+                    totalAll: data.totalAll ?? 0,
+                    totals: data.totals ?? {},
+                    data: data.data ?? [],
+                });
                 setOffset(newOffset);
                 refreshAmount();
             }
         } catch (err) {
             console.error(err);
+            setApproveData({ totalAll: 0, totals: {}, data: [] });
         } finally {
             setLoading(false);
         }
     };
+
+
     // ✅ ถ้าอยาก refresh หลัง mount หรือหลัง approve/reject
     // DApproveTable.tsx
     const refreshAmount = async () => {
@@ -260,7 +269,13 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
         setShowPDF(false);
         setSelectID('');
         setSelectTable('');
+        //search
+        setSearch('');
+        setOffset(0);
         setselectDep('');
+        setSelectedForm(""); // รีเซ็ต selected form ทุกครั้งที่เปลี่ยน tab
+        setStartDate('');
+        setEndDate('');
         refreshAmount();
         setSelected([]);
         fetchData(offset, search, tab);
@@ -274,12 +289,32 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
     // ใช้ handleTabChange แค่เรียก fetchData ตาม tab ใหม่
     const handleTabChange = (newTab: Tab) => {
         setTab(newTab);
+
+        // รีเซ็ต state
+        setSelectedForm("");
+        setSelectedDep("");
+        setSearch("");
+        setStartDate("");
+        setEndDate("");
+        setSelectID('');
+        setSelectTable('');
         setOffset(0);
-        setSelected([]); // รีเซ็ต selected เมื่อเปลี่ยน tab
-        setSelectedForm(""); // รีเซ็ต selected form ทุกครั้งที่เปลี่ยน tab
-        setSelectedDep("");  // รีเซ็ต selected dep ด้วย
-        fetchData(0, search, newTab);
+        setSelected([]);
+
+        // fetchData โดยใช้ค่า default แทน state
+        fetchData(
+            0,                     // offset
+            "",                    // search
+            newTab,                // tab
+            "",                     // selectedForm
+            "",                     // selectedDep
+            "",                     // startDate
+            ""                      // endDate
+        );
     };
+
+
+
 
     const [tabLabels] = useState<Record<Tab, string>>({
         Check_TAB: `Check`,
