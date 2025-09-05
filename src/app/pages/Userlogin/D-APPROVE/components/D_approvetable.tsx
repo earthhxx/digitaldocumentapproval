@@ -423,7 +423,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
               
                 {/* <div className="flex gap-2 overflow-y-auto py-2 justify-end pe-4 s w-full s">
                         {Object.entries(approveData.totals).map(([source, count]) => (
-                            <div
+                            <divs
                                 key={source}
                                 className="flex flex-row items-center justify-between min-w-[90px] px-3 py-2 border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
                             >
