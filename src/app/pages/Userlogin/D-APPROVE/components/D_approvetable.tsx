@@ -346,12 +346,12 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                         {tabLabels[t]}
                         {/* Badge */}
                         {t === "Check_TAB" && dataAmount.CheckNull > 0 && (
-                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center z-50">
+                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center z-49">
                                 {dataAmount.CheckNull}
                             </div>
                         )}
                         {t === "Approve_TAB" && dataAmount.ApproveNull > 0 && (
-                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center z-50">
+                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center z-49">
                                 {dataAmount.ApproveNull}
                             </div>
                         )}
