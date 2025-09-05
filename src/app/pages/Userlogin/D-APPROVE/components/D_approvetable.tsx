@@ -270,6 +270,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
     const handleTabChange = (newTab: Tab) => {
         setTab(newTab);
         setOffset(0);
+        setSelected([]); // รีเซ็ต selected เมื่อเปลี่ยน tab
         setSelectedForm(""); // รีเซ็ต selected form ทุกครั้งที่เปลี่ยน tab
         setSelectedDep("");  // รีเซ็ต selected dep ด้วย
         fetchData(0, search, newTab);
