@@ -9,7 +9,7 @@ import { Key } from "lucide-react";
 interface ApproveData {
     totalAll: number;
     totals: Record<string, number>; // เพิ่มตรงนี้
-    data: { id: number; Dep: string; name: string; source: string; date?: string }[];
+    data: { id: number; FormThai: string; Dep: string; name: string; source: string; date?: string; DateRequest?: string;  }[];
     error?: string;
 }
 
@@ -48,6 +48,7 @@ interface SelectedDoc {
     id: number;
     source: string;
     Dep: string;
+
 }
 
 const tabToKeyMap: Record<Tab, FormOptionKey> = {
@@ -285,41 +286,37 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
     const canGoPrev = offset > 0;
 
     return (
-        <div className="flex flex-1 flex-col min-h-full w-full bg-indigo-50 shadow-lg rounded-lg p-6 overflow-auto">
-            <h2 className="flex justify-center items-center text-4xl font-bold mb-5 text-gray-800 mt-4">
+        <div className="flex flex-1 flex-col min-h-full w-full bg-white shadow-lg p-6 overflow-auto">
+            <h2 className="flex justify-center items-center text-4xl font-bold mb-5 text-blue-900 mt-4">
                 ระบบ ยืนยันเอกสาร
             </h2>
 
             {/* Tabs */}
-            <div className="flex mb-5 border-b border-gray-300">
+            <div className="flex mb-5 border-b border-blue-900 text-blue-900 ">
                 {(Object.keys(tabLabels) as Tab[]).map((t) => (
                     <button
                         key={t}
                         onClick={() => handleTabChange(t)}
-                        className={`relative flex items-center px-5 py-2 font-medium border-b-2 transition-colors duration-200
+                        className={`relative flex items-center px-5 py-2 font-medium transition-colors duration-200
           ${user.permissions?.includes(t) ? "" : "hidden"}
-          ${tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"}
+          ${tab === t ? "border-blue-600 bg-blue-900 text-white rounded-t-2xl" : " bg-blue-100 rounded-t-2xl border-blue-900 border-t-1 border-r-1 border-l-1"}
         `}
                     >
                         {tabLabels[t]}
                         {/* Badge */}
                         {t === "Check_TAB" && dataAmount.CheckNull > 0 && (
-                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
+                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center z-50">
                                 {dataAmount.CheckNull}
                             </div>
                         )}
                         {t === "Approve_TAB" && dataAmount.ApproveNull > 0 && (
-                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center">
+                            <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-xs text-white flex items-center justify-center z-50">
                                 {dataAmount.ApproveNull}
                             </div>
                         )}
                     </button>
                 ))}
             </div>
-
-
-
-
 
             <div
                 className={user.permissions?.includes(tab) ? "" : "hidden"}
@@ -477,10 +474,10 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                             </td>
                                         )}
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">{offset + 1 + index}</td>
-                                        <td className="px-4 py-2 border-t border-gray-200 w-[25%]">{doc.source}</td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[25%]">{doc.FormThai}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.source}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.Dep}</td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.date ? new Date(doc.date).toLocaleDateString() : "-"}</td>
+                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.DateRequest ? new Date(doc.DateRequest).toLocaleDateString() : "-"}</td>
                                     </tr>
                                 ))
                             )}

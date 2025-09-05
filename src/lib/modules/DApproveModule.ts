@@ -47,6 +47,7 @@ export async function getDApproveData({
   }
   // console.log(statusType)
 
+
   const queries = formaccess
     .filter(t => tableMap[t])
     .map(t => {
@@ -57,28 +58,35 @@ export async function getDApproveData({
         ? FormDep[t].map(d => `'${d}'`).join(",")
         : "''";
 
-      let whereClause = `[Date] LIKE @search`;
+      let whereClause = `FormThai LIKE @search`;
       if (statusType === "Check_TAB") whereClause += ` AND StatusCheck IS NULL`;
       else if (statusType === "All_TAB") whereClause += ` AND StatusApprove IS NOT NULL AND StatusApprove != N'ไม่อนุมัติ'`;
       else if (statusType === "Approve_TAB")
         whereClause += ` AND StatusCheck IS NOT NULL AND StatusCheck != N'ไม่อนุมัติ' AND StatusApprove IS NULL`;
 
       return `
-      SELECT id, FormID, Dep, [Date] AS date, StatusCheck, StatusApprove, '${t}' AS source
-      FROM ${tableMap[t]}
-      WHERE Dep IN (${depList}) AND ${whereClause}
-    `;
+              SELECT id, FormID, FormThai, Dep, [Date] AS date,
+                    DateRequest, StatusCheck, StatusApprove,
+                    DateApprove, DateCheck, '${t}' AS source
+              FROM ${tableMap[t]}
+              WHERE Dep IN (${depList}) AND ${whereClause}
+            `;
     });
   // console.log("Generated Queries:", queries); // ✅ log generated queries
 
+  let Orderby = "date DESC"; // ค่าเริ่มต้น
+  if (statusType === "Check_TAB") Orderby = "DateRequest ASC, date DESC";
+  else if (statusType === "Approve_TAB") Orderby = "DateCheck DESC, date DESC";
+  else if (statusType === "All_TAB") Orderby = "DateApprove ASC, date DESC";
+
   const finalQuery = `
-    SELECT *, COUNT(*) OVER() AS totalCount
-    FROM (
-      ${queries.join(" UNION ALL ")}
-    ) AS unioned
-    ORDER BY date DESC
-    OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
-  `;
+                    SELECT *, COUNT(*) OVER() AS totalCount
+                    FROM (
+                      ${queries.join(" UNION ALL ")}
+                    ) AS unioned
+                    ORDER BY ${Orderby}
+                    OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
+                  `;
   // console.log("Final Query:", finalQuery); // ✅ log final query
 
   const dataResult = await pool
