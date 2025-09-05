@@ -312,14 +312,13 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
             ""                      // endDate
         );
     };
-S
 
 
 
     const [tabLabels] = useState<Record<Tab, string>>({
-        Check_TAB: `Check`,
-        Approve_TAB: `Approve`,
-        All_TAB: `All-Report`,
+        Check_TAB: `เอกสารรอตรวจสอบ`,
+        Approve_TAB: `เอกสารรออนุมัติ`,
+        All_TAB: `เอกสารทั้งหมด`,
     });
 
 
@@ -328,8 +327,8 @@ S
 
     return (
         <div className="flex flex-1 flex-col min-h-full w-full bg-white shadow-lg p-6 overflow-auto">
-            <h2 className="flex justify-center items-center text-4xl font-bold mb-5 text-blue-900 mt-4">
-                ระบบ ยืนยันเอกสาร
+            <h2 className="flex justify-center items-center text-6xl font-light mb-5 text-blue-900 mt-4 font-kanit ">
+                ระบบยืนยันเอกสาร
             </h2>
 
             {/* Tabs */}
@@ -371,7 +370,7 @@ S
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search document..."
+                            placeholder="ค้นหาชื่อเอกสาร..."
                             className="border border-gray-300 rounded-md px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 text-black"
                         />
 
@@ -381,7 +380,7 @@ S
                             onChange={(e) => { setSelectedForm(e.target.value); setSelectedDep(""); }}
                             className="border border-gray-300 rounded-md px-3 py-2"
                         >
-                            <option value="">All Forms</option>
+                            <option value="">หมายเลขเอกสาร</option>
                             {formOptions.map((f) => <option key={f} value={f}>{f}</option>)}
                         </select>
 
@@ -392,10 +391,11 @@ S
                             className="border border-gray-300 rounded-md px-3 py-2"
                             disabled={!selectedForm}
                         >
-                            <option value="">All Departments</option>
+                            <option value="">แผนก</option>
                             {depOptions.map((d) => <option key={d} value={d}>{d}</option>)}
                         </select>
 
+                        <span className="mx-1">วันที่</span>
                         {/* Date Range */}
                         <input
                             type="date"
@@ -403,7 +403,7 @@ S
                             onChange={(e) => setStartDate(e.target.value)}
                             className="border border-gray-300 rounded-md px-3 py-2"
                         />
-                        <span className="mx-1">to</span>
+                        <span className="mx-1">ถึง</span>
                         <input
                             type="date"
                             value={endDate}
@@ -416,11 +416,11 @@ S
                             type="submit"
                             className="bg-blue-500 text-white px-5 py-2 rounded-md hover:bg-blue-600 transition-colors"
                         >
-                            Search
+                            ค้นหา
                         </button>
                     </form>
                 </div>
-              
+
                 {/* <div className="flex gap-2 overflow-y-auto py-2 justify-end pe-4 s w-full s">
                         {Object.entries(approveDฟata.totals).map(([source, count]) => (
                             <divs
@@ -441,7 +441,7 @@ S
                                 onClick={() => handleGroupApprove("check", "Supervisor")}
                                 className="px-3 py-1 rounded text-white bg-green-500 hover:bg-green-600 transition-colors"
                             >
-                            
+
                                 Check Supervisor ({selected.length})
                             </button>
                             <button
@@ -487,12 +487,12 @@ S
                                         />
                                     </th>
                                 )}
-                                <th className="px-4 py-2 text-center w-[10%]">Number</th>
-                                <th className="px-4 py-2 text-center w-[25%]">DOC NAME</th>
-                                <th className="px-4 py-2 text-center w-[15%]">Source</th>
-                                <th className="px-4 py-2 text-center w-[15%]">Dep</th>
-                                <th className="px-4 py-2 text-center w-[15%]">DateRequest</th>
-                                {tab === "All_TAB" && <th className="px-4 py-2 text-center w-[15%]">DateApprove</th>}
+                                <th className="px-4 py-2 text-center w-[10%]">No</th>
+                                <th className="px-4 py-2 text-center w-[25%]">ชื่อเอกสาร</th>
+                                <th className="px-4 py-2 text-center w-[15%]">หมายเลขเอกสาร</th>
+                                <th className="px-4 py-2 text-center w-[15%]">แผนก</th>
+                                <th className="px-4 py-2 text-center w-[15%]">วันที่ร้องขอ</th>
+                                {tab === "All_TAB" && <th className="px-4 py-2 text-center w-[15%]">วันที่อนุมัติ</th>}
 
                             </tr>
                         </thead>
