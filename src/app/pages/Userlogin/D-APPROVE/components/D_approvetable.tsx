@@ -441,6 +441,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                 onClick={() => handleGroupApprove("check", "Supervisor")}
                                 className="px-3 py-1 rounded text-white bg-green-500 hover:bg-green-600 transition-colors"
                             >
+                            
                                 Check Supervisor ({selected.length})
                             </button>
                             <button
