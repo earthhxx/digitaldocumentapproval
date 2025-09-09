@@ -70,12 +70,31 @@ export async function getDApproveData({
       else if (statusType === "All_TAB")
         whereClause += ` AND StatusApprove IS NOT NULL AND StatusApprove != N'ไม่อนุมัติ'`;
 
+
+      // DateRequest filter
+      if (startDate && endDate && statusType === "Check_TAB") {
+        whereClause += ` AND DateRequest BETWEEN @startDate AND @endDate`;
+      } else if (startDate && statusType === "Check_TAB") {
+        whereClause += ` AND DateRequest >= @startDate`;
+      } else if (endDate && statusType === "Check_TAB") {
+        whereClause += ` AND DateRequest <= @endDate`;
+      }
+
+      // DateCheck filter
+      if (startDate && endDate && statusType === "Approve_TAB") {
+        whereClause += ` AND DateCheck BETWEEN @startDate AND @endDate`;
+      } else if (startDate && statusType === "Approve_TAB") {
+        whereClause += ` AND DateCheck >= @startDate`;
+      } else if (endDate && statusType === "Approve_TAB") {
+        whereClause += ` AND DateCheck <= @endDate`;
+      }
+
       // DateApprove filter
-      if (startDate && endDate) {
+      if (startDate && endDate && statusType === "All_TAB") {
         whereClause += ` AND DateApprove BETWEEN @startDate AND @endDate`;
-      } else if (startDate) {
+      } else if (startDate && statusType === "All_TAB") {
         whereClause += ` AND DateApprove >= @startDate`;
-      } else if (endDate) {
+      } else if (endDate && statusType === "All_TAB") {
         whereClause += ` AND DateApprove <= @endDate`;
       }
 

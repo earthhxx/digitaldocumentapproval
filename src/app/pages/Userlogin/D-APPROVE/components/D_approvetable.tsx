@@ -8,7 +8,7 @@ import Manager from "./BT_ManagerPage";
 interface ApproveData {
     totalAll: number;
     totals: Record<string, number>; // เพิ่มตรงนี้
-    data: { id: number; FormThai: string; Dep: string; name: string; source: string; date?: string; DateRequest?: string; DateApprove?: string }[];
+    data: { id: number; FormThai: string; Dep: string; name: string; source: string; date?: string; DateRequest?: string; DateCheck: string; DateApprove?: string }[];
     error?: string;
 }
 
@@ -492,6 +492,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                 <th className="px-4 py-2 text-center w-[15%]">หมายเลขเอกสาร</th>
                                 <th className="px-4 py-2 text-center w-[15%]">แผนก</th>
                                 <th className="px-4 py-2 text-center w-[15%]">วันที่ร้องขอ</th>
+                                {tab === "Approve_TAB" && <th className="px-4 py-2 text-center w-[15%]">วันที่เช็ค</th>}
                                 {tab === "All_TAB" && <th className="px-4 py-2 text-center w-[15%]">วันที่อนุมัติ</th>}
 
                             </tr>
@@ -538,6 +539,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.source}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.Dep}</td>
                                         <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.DateRequest ? new Date(doc.DateRequest).toLocaleDateString() : "-"}</td>
+                                        {tab === "Approve_TAB" && <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.DateCheck ? new Date(doc.DateCheck).toLocaleDateString() : "-"}</td>}
                                         {tab === "All_TAB" && <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.DateApprove ? new Date(doc.DateApprove).toLocaleDateString() : "-"}</td>}
                                     </tr>
                                 ))
