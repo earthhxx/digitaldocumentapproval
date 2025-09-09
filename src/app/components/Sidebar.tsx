@@ -1,6 +1,6 @@
 "use client";
 import LoginForm from "./LoginForm";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link"; // ✅ ใช้ Link
 import { useAuth } from "../context/AuthContext";
@@ -36,11 +36,15 @@ export default function Sidebar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
+  useEffect(() => {
+    if (!user) setOpen(false);
+  }, [user]);
+
   if (!mounted) return null;
 
   return (
     <>
-      {!open && user &&(
+      {!open && user && (
         <button
           onClick={() => setOpen(true)}
           className="fixed top-4 left-4 z-50 p-2 bg-white text-black rounded shadow-md"
@@ -60,7 +64,7 @@ export default function Sidebar() {
           }`}
       >
         <div className="relative w-full h-full flex flex-col justify-center items-center">
-          {!user && (
+          {/* {!user && (
             <div className="absolute inset-0 flex flex-col justify-center items-center">
               <div className="relative mb-6 w-[150px] h-[150px]">
                 <div className="absolute flex justify-center items-center pb-4 inset-0 rounded-full bg-white opacity-80 shadow-2xl animate-spin-coin-reverse preserve-3d">
@@ -77,7 +81,7 @@ export default function Sidebar() {
 
               <LoginForm onLoginSuccess={(loggedUser) => login(loggedUser)} />
             </div>
-          )}
+          )} */}
 
           {user && (
             <>
