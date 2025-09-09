@@ -327,6 +327,12 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
 
     return (
         <div className="flex flex-1 flex-col min-h-full w-full bg-white shadow-lg p-6 overflow-auto">
+            <div className="relative">
+                <div className="absolute top-4 right-2 text-sm text-gray-500">
+                    <img src="/images/LOGO2.png" alt="Logo" className="w-auto h-20 mb-1 mx-auto" />
+                </div>
+            </div>
+
             <h2 className="flex justify-center items-center text-6xl font-light mb-5 text-blue-900 mt-4 font-kanit ">
                 ระบบยืนยันเอกสาร
             </h2>
@@ -362,7 +368,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                 className={user.permissions?.includes(tab) ? "" : "hidden"}
             >
                 {/* Search & Filters */}
-                <div className="flex flex-row justify-evenly items-center mb-4 flex-wrap gap-3 ">
+                <div className="flex flex-row justify-evenly items-center mb-4 mt-2 flex-wrap gap-3 ">
                     <form onSubmit={handleSearch} className="flex items-center justify-center gap-2 text-black w-fit bg-white px-4 py-2 rounded-2xl border flex-wrap">
 
                         {/* Search Input */}
