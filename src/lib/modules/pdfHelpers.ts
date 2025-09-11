@@ -34,6 +34,7 @@ const tableFieldMap: Record<string, Record<string, FieldMapping>> = {
         // StatusApprove: { x: 150, y: 570, size: 14, font: "check" },
         NameApprove: { x: 420, y: 430, size: 11, font: "thai" },
         // DateAppove: { x: 150, y: 570, size: 14, font: "date", font: "thai" },
+        
     },
     FM_GA_04: {
         id: { x: 653, y: 503, size: 15, font: "thai" },
