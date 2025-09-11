@@ -1,7 +1,7 @@
 import sql from 'mssql';
 import dotenv from 'dotenv';
 
-dotenv.config(); // โหลด .env
+dotenv.config({ path: ".env", quiet: true });
 
 let pool_NewFCXT: sql.ConnectionPool | null = null;
 let pool_DASHBOARD: sql.ConnectionPool | null = null;
