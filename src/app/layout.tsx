@@ -26,7 +26,7 @@ const kanit = Kanit({
 });
 
 export const metadata: Metadata = {
-  title: "My App",
+  title: "IM D-APPROVE",
   description: "PDF Approval System",
 };
 
