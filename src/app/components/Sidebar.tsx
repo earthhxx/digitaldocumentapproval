@@ -94,16 +94,16 @@ export default function Sidebar() {
                 <Link
                   href="/"
                   onClick={() => setOpen(false)}
-                  className="hover:bg-gray-700 bg-gray-700/30 p-3 rounded font-medium"
+                  className="hover:bg-gray-700 bg-gray-700/30 p-3 rounded font-medium text-center"
                 >
-                  Home
+                  หน้าหลัก
                 </Link>
 
                 {roles?.includes("admin") && (
                   <Link
                     href="/pages/admin"
                     onClick={() => setOpen(false)}
-                    className="hover:bg-green-700 bg-green-700/30 p-3 rounded font-medium text-green-400"
+                    className="hover:bg-green-700 bg-green-700/30 p-3 rounded font-medium text-green-400 text-center"
                   >
                     Admin Panel
                   </Link>
@@ -113,7 +113,7 @@ export default function Sidebar() {
                   <Link
                     href="/pages/Userlogin/D-APPROVE"
                     onClick={() => setOpen(false)}
-                    className="hover:bg-red-700 bg-red-700/30 p-3 rounded font-medium text-red-400"
+                    className="hover:bg-red-700 bg-red-700/20 p-3 rounded font-medium text-red-400 text-center"
                   >
                     ระบบ ยืนยันเอกสาร
                   </Link>

@@ -493,11 +493,11 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                         />
                                     </th>
                                 )}
-                                <th className="px-4 py-2 text-center w-[10%]">No</th>
-                                <th className="px-4 py-2 text-center w-[25%]">ชื่อเอกสาร</th>
-                                <th className="px-4 py-2 text-center w-[15%]">หมายเลขเอกสาร</th>
-                                <th className="px-4 py-2 text-center w-[15%]">แผนก</th>
-                                <th className="px-4 py-2 text-center w-[15%]">วันที่ร้องขอ</th>
+                                <th className="px-4 py-2 text-left w-[10%]">No</th>
+                                <th className="px-4 py-2 text-left w-[25%]">ชื่อเอกสาร</th>
+                                <th className="px-4 py-2 text-left w-[15%]">หมายเลขเอกสาร</th>
+                                <th className="px-4 py-2 text-left w-[15%]">แผนก</th>
+                                <th className="px-4 py-2 text-left w-[15%]">วันที่ร้องขอ</th>
                                 {tab === "Approve_TAB" && <th className="px-4 py-2 text-center w-[15%]">วันที่เช็ค</th>}
                                 {tab === "All_TAB" && <th className="px-4 py-2 text-center w-[15%]">วันที่อนุมัติ</th>}
 
@@ -524,7 +524,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                         {(tab === "Check_TAB" || tab === "Approve_TAB") && (
                                             <td
                                                 onClick={(e) => e.stopPropagation()} // กันไม่ให้ trigger row onClick
-                                                className="px-2 py-2 text-center border-t border-gray-200">
+                                                className="px-2 py-2 text-left border-t border-gray-200">
                                                 <input
                                                     type="checkbox"
                                                     checked={selected.some(s => s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep)}
@@ -540,12 +540,12 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                                 />
                                             </td>
                                         )}
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[10%]">{offset + 1 + index}</td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[25%]">{doc.FormThai}</td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.source}</td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.Dep}</td>
-                                        <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.DateRequest ? new Date(doc.DateRequest).toLocaleDateString() : "-"}</td>
-                                        {tab === "Approve_TAB" && <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.DateCheck ? new Date(doc.DateCheck).toLocaleDateString() : "-"}</td>}
+                                        <td className="px-4 py-2 text-left border-t border-gray-200 w-[10%]">{offset + 1 + index}</td>
+                                        <td className="px-4 py-2 text-left border-t border-gray-200 w-[25%]">{doc.FormThai}</td>
+                                        <td className="px-4 py-2 text-left border-t border-gray-200 w-[15%]">{doc.source}</td>
+                                        <td className="px-4 py-2 text-left border-t border-gray-200 w-[15%]">{doc.Dep}</td>
+                                        <td className="px-4 py-2 text-left border-t border-gray-200 w-[15%]">{doc.DateRequest ? new Date(doc.DateRequest).toLocaleDateString() : "-"}</td>
+                                        {tab === "Approve_TAB" && <td className="px-4 py-2 text-left border-t border-gray-200 w-[15%]">{doc.DateCheck ? new Date(doc.DateCheck).toLocaleDateString() : "-"}</td>}
                                         {tab === "All_TAB" && <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.DateApprove ? new Date(doc.DateApprove).toLocaleDateString() : "-"}</td>}
                                     </tr>
                                 ))
