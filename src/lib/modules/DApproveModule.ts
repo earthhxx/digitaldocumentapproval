@@ -31,7 +31,7 @@ export async function getDApproveData({
   endDate = null,
 }: ApproveQuery): Promise<ApproveData> {
   const pool = await getDashboardConnection();
-  console.log("startDate", startDate, endDate);
+  // console.log("startDate", startDate, endDate);
   // console.log("api in", offset, limit, search, statusType, formaccess, FormDep);
   // ดึง mapping ของ table
   const tablesResult = await pool.request().query(`
