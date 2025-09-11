@@ -524,7 +524,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                         {(tab === "Check_TAB" || tab === "Approve_TAB") && (
                                             <td
                                                 onClick={(e) => e.stopPropagation()} // กันไม่ให้ trigger row onClick
-                                                className="px-2 py-2 text-left border-t border-gray-200">
+                                                className="px-2 py-2 text-center border-t border-gray-200">
                                                 <input
                                                     type="checkbox"
                                                     checked={selected.some(s => s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep)}
