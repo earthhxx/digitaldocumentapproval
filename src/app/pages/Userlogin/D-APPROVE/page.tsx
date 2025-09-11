@@ -105,6 +105,8 @@ export default async function UserLoginPage() {
     }
   }
 
+  console.log("Form Options:", formOption);
+
   // console.log("Form Options:", formOption);
   // Mapping tab → key ของ formOption/DepOption
   const tabKeyMap: Record<Tab, keyof Option> = {
@@ -127,13 +129,18 @@ export default async function UserLoginPage() {
   });
 
 
+
   const formaccess = Object.keys(formOption[key]); // ทั้งหมด
   const FormDep: Record<string, string[]> = {};//create empty object
   //loop push dep to FormDep
-  formaccess.forEach(f => {
-    FormDep[f] = formOption[key][f]; // เอา dep ของแต่ละ form
+  availableTabs.forEach(tab => {
+    const key = tabKeyMap[tab];
+    Object.keys(formOption[key]).forEach(f => {
+      if (!FormDep[f]) FormDep[f] = [];
+      FormDep[f] = Array.from(new Set([...FormDep[f], ...formOption[key][f]]));
+    });
   });
-// console.log("FormDep", FormDep);
+  console.log("FormDep", FormDep);
   const data = await GetupdateStatus(formaccess, FormDep);
 
   return (
