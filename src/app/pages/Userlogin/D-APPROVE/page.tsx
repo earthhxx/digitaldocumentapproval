@@ -134,13 +134,16 @@ export default async function UserLoginPage() {
   const FormDep: Record<string, string[]> = {};//create empty object
   //loop push dep to FormDep
   availableTabs.forEach(tab => {
+    //key ของ formOption
     const key = tabKeyMap[tab];
+    //loop formOption[key] เพื่อเอา dep ไปใส่ใน FormDep, key = available tab จะได้ 
     Object.keys(formOption[key]).forEach(f => {
+      //check ถ้าไม่มี key นี้ใน FormDep ให้สร้าง array เปล่า
       if (!FormDep[f]) FormDep[f] = [];
       FormDep[f] = Array.from(new Set([...FormDep[f], ...formOption[key][f]]));
     });
   });
-  console.log("FormDep", FormDep);
+  // console.log("FormDep", FormDep);
   const data = await GetupdateStatus(formaccess, FormDep);
 
   return (

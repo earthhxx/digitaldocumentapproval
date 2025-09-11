@@ -12,6 +12,12 @@ interface ApproveData {
     error?: string;
 }
 
+interface FormOption {
+    check: Record<string, string[]>;
+    approve: Record<string, string[]>;
+    all: Record<string, string[]>;
+}
+
 interface UserPayload {
     userId?: number | string;
     username?: string;
@@ -66,10 +72,10 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
 
-    const formOptions = formOption?.[formkey] ? Object.keys(formOption[formkey]) : [];
-    const depOptions = selectedForm && formOption?.[formkey]?.[selectedForm]
-        ? formOption[formkey][selectedForm]
-        : [];
+    const [formOptions, setFormOptions] = useState<string[]>(() =>
+        formOption?.[formkey] ? Object.keys(formOption[formkey]) : []
+    );
+    const [depOptions, setDepOptions] = useState<string[]>(() => formOption?.[formkey] ? Array.from(new Set(Object.values(formOption[formkey]).flat())) : []);
 
     const [search, setSearch] = useState("");
     const [offset, setOffset] = useState(0);
@@ -286,9 +292,29 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
         fetchData(0, search, tab);
     };
 
+    const [tabKeyMap] = useState<Record<Tab, string>>({
+        Check_TAB: `check`,
+        Approve_TAB: `approve`,
+        All_TAB: `all`,
+    });
+
     // ใช้ handleTabChange แค่เรียก fetchData ตาม tab ใหม่
     const handleTabChange = (newTab: Tab) => {
         setTab(newTab);
+
+        // อัปเดต formOptions ตาม tab
+        const key = tabKeyMap[newTab] as keyof FormOption; // tabKeyMap = { Check_TAB: "check", Approve_TAB: "approve", All_TAB: "all" }
+        if (key === 'all') {
+            setFormOptions(user.formaccess ?? []);
+            setDepOptions(user.Dep ?? []);
+        }
+        else {
+            setFormOptions(formOption?.[key] ? Object.keys(formOption[key]) : []);
+            // อัปเดต depOptions ให้รวมทุก dep ของ tab ใหม่
+            setDepOptions(formOption?.[key] ? Array.from(new Set(Object.values(formOption[key]).flat())) : []);
+        }
+
+
 
         // รีเซ็ต state
         setSelectedForm("");
