@@ -115,7 +115,7 @@ export default function Sidebar() {
                     onClick={() => setOpen(false)}
                     className="hover:bg-red-700 bg-red-700/20 p-3 rounded font-medium text-red-400 text-center"
                   >
-                    ระบบ ยืนยันเอกสาร
+                    ระบบอนุมัติอิเล็กทรอนิกส์
                   </Link>
                 )}
               </nav>

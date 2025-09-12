@@ -110,9 +110,9 @@ console.log('form',formaccess)
   // log("Generated Queries:", queries); // ✅ log generated queries
 
   let Orderby = "date DESC"; // ค่าเริ่มต้น
-  if (statusType === "Check_TAB") Orderby = "DateRequest ASC, date DESC";
+  if (statusType === "Check_TAB") Orderby = "DateRequest DESC, date DESC";
   else if (statusType === "Approve_TAB") Orderby = "DateCheck DESC, date DESC";
-  else if (statusType === "All_TAB") Orderby = "DateApprove ASC, date DESC";
+  else if (statusType === "All_TAB") Orderby = "DateApprove DESC, date DESC";
 
   const finalQuery = `
                     SELECT *, COUNT(*) OVER() AS totalCount
