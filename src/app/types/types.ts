@@ -13,3 +13,4 @@ export interface ApproveData {
     data: { id: number; name: string; source: string; Dep: string; }[];
     error?: string;   // เพิ่ม option นี้
 }
+
