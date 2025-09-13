@@ -395,6 +395,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                 {dataAmount.CheckNull}
                             </div>
                         )}
+                        
                         {t === "Approve_TAB" && dataAmount.ApproveNull > 0 && (
                             <div className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-yellow-500 text-xs font-bold text-white shadow-md">
                                 {dataAmount.ApproveNull}
