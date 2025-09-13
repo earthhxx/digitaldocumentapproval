@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       .input("UserID", UserID)
       .input("RoleID", RoleID)
       .query(`
-        INSERT INTO [mydb].[dbo].[UserRoles] (UserID, RoleID)
+        INSERT INTO [dbo].[UserRoles] (UserID, RoleID)
         VALUES (@UserID, @RoleID)
       `);
 

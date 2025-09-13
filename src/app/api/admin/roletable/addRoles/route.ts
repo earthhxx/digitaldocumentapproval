@@ -11,14 +11,14 @@ export async function POST(req: NextRequest) {
       .input("RoleName", body.RoleName)
       .input("Description", body.Description)
       .query(`
-        INSERT INTO [mydb].[dbo].[Roles] (RoleName, Description)
+        INSERT INTO [dbo].[Roles] (RoleName, Description)
         VALUES (@RoleName, @Description);
       `);
 
     // Fetch all sorted
     const allRoles = await pool.request().query(`
       SELECT RoleID, RoleName, Description
-      FROM [mydb].[dbo].[Roles]
+      FROM .[dbo].[Roles]
       ORDER BY RoleID DESC
     `);
 

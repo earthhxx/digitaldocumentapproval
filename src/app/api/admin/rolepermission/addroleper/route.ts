@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
             .input("PermissionID", PermissionID)
             .query(`
                 SELECT 1 
-                FROM [mydb].[dbo].[RolePermissions]
+                FROM [dbo].[RolePermissions]
                 WHERE RoleID = @RoleID AND PermissionID = @PermissionID
             `);
 

@@ -20,7 +20,7 @@ type ComponentType =
 export default function AdminAccessPage() {
   const { user } = useAuth();
   const roles = user?.roles ?? [];
-  const isAdmin = roles.includes("admin"); // ถ้าหน้านี้ "เฉพาะแอดมินเข้าได้" ให้กลับเงื่อนไขด้านล่าง
+  const isAdmin = roles.includes("Admin"); // ถ้าหน้านี้ "เฉพาะแอดมินเข้าได้" ให้กลับเงื่อนไขด้านล่าง
 
   // NOTE: ถ้าหน้านี้ "ไม่ให้แอดมินเข้า" ใช้แบบนี้ (ตามโค้ดเดิม)
   if (!user) {
@@ -85,7 +85,7 @@ export default function AdminAccessPage() {
 
 
   return (
-    <div className="font-mono text-white bg-black pt-20">
+    <div className="font-mono text-white bg-black pt-20 h-screen">
       <div className="flex flex-row items-center gap-3 mb-4 ">
         <span className="font-bold ps-4">Select Function :</span>
         <div ref={dropdownRef} tabIndex={0} onKeyDown={handleKey} className="relative">

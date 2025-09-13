@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
         await pool.request()
             .input("User_Id", User_Id)
             .query(`
-                DELETE FROM [mydb].[dbo].[tb_im_employee]
+                DELETE FROM [dbo].[tb_im_employee]
                 WHERE User_Id=@User_Id
             `);
 

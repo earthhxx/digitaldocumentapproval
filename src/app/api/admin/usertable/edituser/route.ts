@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
             .input("Department", Department)
             .input("Pass", Pass)
             .query(`
-                UPDATE [mydb].[dbo].[tb_im_employee]
+                UPDATE [dbo].[tb_im_employee]
                 SET Name=@Name, Department=@Department, Pass=@Pass
                 WHERE User_Id=@User_Id
             `);
