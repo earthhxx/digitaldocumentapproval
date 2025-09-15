@@ -495,13 +495,13 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                 className="px-3 py-1 rounded text-white bg-green-500 hover:bg-green-600 transition-colors"
                             >
 
-                                Check Supervisor ({selected.length})
+                                อนุมัติ ({selected.length})
                             </button>
                             <button
                                 onClick={() => handleGroupApprove("reject", "Supervisor")}
                                 className="px-3 py-1 rounded text-white bg-red-500 hover:bg-red-600 transition-colors"
                             >
-                                Reject Supervisor ({selected.length})
+                                ไม่อนุมัติ ({selected.length})
                             </button>
                         </>
                     )}
@@ -512,13 +512,13 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                 onClick={() => handleGroupApprove("approve", "Manager")}
                                 className="px-3 py-1 rounded text-white bg-green-500 hover:bg-green-600 transition-colors"
                             >
-                                Approve Manager ({selected.length})
+                                อนุมัติ ({selected.length})
                             </button>
                             <button
                                 onClick={() => handleGroupApprove("reject", "Manager")}
                                 className="px-3 py-1 rounded text-white bg-red-500 hover:bg-red-600 transition-colors"
                             >
-                                Reject Manager ({selected.length})
+                                ไม่อนุมัติ ({selected.length})
                             </button>
                         </>
                     )}
@@ -611,14 +611,14 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                         disabled={!canGoPrev || loading}
                         className={`px-4 py-2 rounded-md ${offset === 0 || loading ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600 transition-colors"}`}
                     >
-                        Previous
+                        ก่อนหน้า
                     </button>
                     <button
                         onClick={() => fetchData(offset + limit, search, tab)}
                         disabled={!canGoNext || loading}
                         className={`px-4 py-2 rounded-md ${offset + limit >= approveData.totalAll || loading ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600 transition-colors"}`}
                     >
-                        Next
+                        ถัดไป
                     </button>
                 </div>
 
