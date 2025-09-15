@@ -395,7 +395,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                 {dataAmount.CheckNull}
                             </div>
                         )}
-                        
+
                         {t === "Approve_TAB" && dataAmount.ApproveNull > 0 && (
                             <div className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-yellow-500 text-xs font-bold text-white shadow-md">
                                 {dataAmount.ApproveNull}
@@ -630,7 +630,12 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                     {/* <h2 className="text-lg font-semibold text-gray-800">PDF Viewer</h2> */}
                                     <button
                                         className="text-white bg-red-600 hover:bg-red-700 rounded-full w-10 h-10 flex items-center justify-center text-2xl"
-                                        onClick={() => setShowPDF(false)}
+                                        onClick={() => {
+                                            setShowPDF(false);
+                                            setSelectID('');
+                                            setSelectTable('');
+                                            setselectDep('');
+                                        }}
                                     >
                                         ✕
                                     </button>
@@ -662,9 +667,6 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                     <SupervisorPopup
                                         onClose={() => {
                                             setShowSupervisorPopup(false);
-                                            setSelectID('');
-                                            setSelectTable('');
-                                            setselectDep('');
                                         }}
                                         onApprove={() => handleApproval(selectID, selectTable, "check", "Supervisor")}
                                         onReject={() => handleApproval(selectID, selectTable, "reject", "Supervisor")}
@@ -675,9 +677,6 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                     <Manager
                                         onClose={() => {
                                             setShowManagerPopup(false);
-                                            setSelectID('');
-                                            setSelectTable('');
-                                            setselectDep('');
                                         }}
                                         onApprove={() => handleApproval(selectID, selectTable, "approve", "Manager")}
                                         onReject={() => handleApproval(selectID, selectTable, "reject", "Manager")}
