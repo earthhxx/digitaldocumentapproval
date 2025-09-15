@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Sidebar from "./components/Sidebar";
-import { Geist, Geist_Mono , Kanit } from "next/font/google";
+import { Geist, Geist_Mono, Kanit } from "next/font/google";
 import { cookies } from "next/headers"; // สำหรับ SSR cookie
 import { jwtVerify } from "jose";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 import { c } from "node_modules/framer-motion/dist/types.d-Cjd591yU";
+
+import ClientOnly from "./components/ClientOnly";
+import ResetPasswordModal from "./components/ForgetPass";
 
 export interface User { userId: string; fullName: string; roles: string[]; permissions: string[]; }
 
@@ -67,6 +70,14 @@ export default async function RootLayout({
       >
         <AuthProvider initialUser={initialUser}>
           <div className="flex flex-col min-h-screen w-screen">
+            {/* ClientOnly modal */}
+            
+            {/* {initialUser?.roles?.includes('Sup-User') && (
+              <ResetPasswordModal
+                initialUser={initialUser.userId}
+              />
+            )} */}
+
             <Sidebar />
             <main className="flex-1 flex flex-col overflow-hidden">
               {children}

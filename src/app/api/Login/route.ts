@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
       isValid = await bcrypt.compare(password, userrow.Pass);
     } else {
       isValid = password === userrow.Pass;
+      
     }
 
     if (!isValid) {

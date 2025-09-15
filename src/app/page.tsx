@@ -45,7 +45,7 @@ export default function HomePage({ initialUser }: HomePageProps) {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="relative z-50 bg-white/70 backdrop-blur-[10px] rounded-2xl shadow-lg w-[30%] text-center border border-gray-200 gap-8 p-8 px-4 flex flex-col md:flex-row justify-center items-center "
+        className="relative z-49 bg-white/70 backdrop-blur-[10px] rounded-2xl shadow-lg w-[30%] text-center border border-gray-200 gap-8 p-8 px-4 flex flex-col md:flex-row justify-center items-center "
       >
         {/* Version */}
         <div className="absolute top-4 right-4 text-sm text-black">
