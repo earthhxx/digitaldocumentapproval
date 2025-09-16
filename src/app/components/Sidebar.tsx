@@ -4,13 +4,7 @@ import { use, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link"; // ✅ ใช้ Link
 import { useAuth } from "../context/AuthContext";
-
-export interface User {
-  userId: string;
-  fullName: string;
-  roles: string[];
-  permissions: string[];
-}
+import { User } from "@/app/types/types"; // ใช้ path ที่ถูกกับโปรเจกต์ของคุณ
 
 export default function Sidebar() {
   const { user, login, logout, open, setOpen } = useAuth();
@@ -47,7 +41,7 @@ export default function Sidebar() {
       {!open && user && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed top-4 left-4 z-50 p-2 bg-white text-black rounded shadow-md"
+          className="fixed top-4 left-4 z-49 p-2 bg-white text-black rounded shadow-md"
         >
           ☰ MENU
         </button>

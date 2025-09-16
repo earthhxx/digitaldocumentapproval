@@ -6,7 +6,18 @@ export interface UserPayload {
     permissions?: string[];
     formaccess?: string[];
     Dep?: string[];
+    ForgetPass?: string,
 }
+
+export interface User {
+  userId: string;
+  fullName: string;
+  roles: string[];
+  permissions: string[];
+  ForgetPass: string; // ✅ ชื่อต้องตรงกับฝั่ง backend
+}
+
+
 export interface ApproveData {
     totalAll: number;
     totals: Record<string, number>; // เพิ่มตรงนี้

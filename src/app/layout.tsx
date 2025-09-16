@@ -10,7 +10,8 @@ import { c } from "node_modules/framer-motion/dist/types.d-Cjd591yU";
 import ClientOnly from "./components/ClientOnly";
 import ResetPasswordModal from "./components/ForgetPass";
 
-export interface User { userId: string; fullName: string; roles: string[]; permissions: string[]; }
+import { User } from "@/app/types/types"; // ใช้ path ที่ถูกกับโปรเจกต์ของคุณ
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,7 +58,9 @@ export default async function RootLayout({
         permissions: Array.isArray(payload.permissions)
           ? payload.permissions
           : [payload.permissions as string],
+        ForgetPass: payload.ForgetPass as string,
       };
+      console.log('ini',initialUser)
     } catch {
       initialUser = null;
     }
@@ -71,12 +74,10 @@ export default async function RootLayout({
         <AuthProvider initialUser={initialUser}>
           <div className="flex flex-col min-h-screen w-screen">
             {/* ClientOnly modal */}
-            
-            {/* {initialUser?.roles?.includes('Sup-User') && (
+
               <ResetPasswordModal
-                initialUser={initialUser.userId}
+                initialUser={initialUser}
               />
-            )} */}
 
             <Sidebar />
             <main className="flex-1 flex flex-col overflow-hidden">

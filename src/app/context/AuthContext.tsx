@@ -2,7 +2,7 @@
 "use client";
 
 import React, { createContext, useState, useContext, ReactNode } from "react";
-import { User } from "../components/Sidebar";
+import { User } from "@/app/types/types"; // ใช้ path ที่ถูกกับโปรเจกต์ของคุณ
 import { useRouter } from "next/navigation";
 
 interface AuthContextType {

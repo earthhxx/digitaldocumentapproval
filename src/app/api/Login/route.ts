@@ -12,6 +12,7 @@ export type JwtPayload = {
   permissions: string[];
   formaccess: string[];
   Dep: string[];
+  ForgetPass: string;
 };
 
 export async function POST(req: NextRequest) {
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
     const userResult = await pool.request()
       .input('username', sql.Int, username)
       .query(`
-        SELECT [User_Id],[Name],[Pass]
+        SELECT [User_Id],[Name],[Pass],[ForgetPass]
         FROM tb_im_employee
         WHERE User_Id = @username
       `);
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
     }
 
     const userrow = userResult.recordset[0];
+    const ForgetPass = userrow.ForgetPass
 
     const isBcryptHash = (str: string) => typeof str === 'string' && str.startsWith('$2');
     let isValid = false;
@@ -46,7 +48,7 @@ export async function POST(req: NextRequest) {
       isValid = await bcrypt.compare(password, userrow.Pass);
     } else {
       isValid = password === userrow.Pass;
-      
+
     }
 
     if (!isValid) {
@@ -109,13 +111,14 @@ export async function POST(req: NextRequest) {
       permissions,
       formaccess,
       Dep,
+      ForgetPass
     })
       .setProtectedHeader({ alg: "HS256" })
       .setExpirationTime("8h")
       .sign(secret);
 
     // สร้าง NextResponse แล้ว set cookie HttpOnly
-    const res = NextResponse.json({ success: true, fullName: userrow.Name, User_Id: userrow.User_Id, roles, permissions });
+    const res = NextResponse.json({ success: true, fullName: userrow.Name, User_Id: userrow.User_Id, roles, permissions, ForgetPass: userrow.ForgetPass });
     res.cookies.set("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

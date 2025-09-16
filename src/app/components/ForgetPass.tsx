@@ -1,6 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+
+export interface User {
+    userId: string;
+    fullName: string;
+    roles: string[];
+    permissions: string[];
+    ForgetPass: string;
+}
 
 export default function ResetPasswordModal({
     initialUser,
@@ -14,6 +22,15 @@ export default function ResetPasswordModal({
     const { user } = useAuth();
     const userId = user?.userId || "";
     const roles = user?.roles || [];
+    const userForgetPass = user?.ForgetPass || initialUser?.ForgetPass || "";
+
+    // const [mounted, setMounted] = useState(false);
+    // useEffect(() => setMounted(true), []);
+    // if (!mounted) return null;
+
+    console.log("roles", roles)
+    console.log("forget", userForgetPass)
+
 
     const handleSubmit = async () => {
         if (!newPass || !confirmPass) {
@@ -57,44 +74,47 @@ export default function ResetPasswordModal({
         setVisible(false); // ✅ ปิด modal
     };
 
-    if (!roles.includes("Sup-User")) return null; // ✅ ซ่อนถ้าไม่มี user
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-            <div className="bg-white shadow-lg rounded p-6 w-[50%] max-w-md flex flex-col">
-                <h2 className="text-xl font-bold mb-4 text-center">ตั้งรหัสผ่านใหม่</h2>
+            <>
+                {userForgetPass === 'yes' && (
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+                        <div className="bg-white shadow-lg rounded p-6 w-[90%] max-w-md flex flex-col">
+                            <h2 className="text-xl font-bold mb-4 text-center">ตั้งรหัสผ่านใหม่</h2>
 
-                {error && <p className="text-red-500 mb-2">{error}</p>}
+                            {error && <p className="text-red-500 mb-2">{error}</p>}
 
-                <input
-                    type="password"
-                    placeholder="รหัสผ่านใหม่"
-                    className="border p-2 mb-4 w-full"
-                    value={newPass}
-                    onChange={(e) => setNewPass(e.target.value)}
-                />
-                <input
-                    type="password"
-                    placeholder="ยืนยันรหัสผ่าน"
-                    className="border p-2 mb-4 w-full"
-                    value={confirmPass}
-                    onChange={(e) => setConfirmPass(e.target.value)}
-                />
+                            <input
+                                type="password"
+                                placeholder="รหัสผ่านใหม่"
+                                className="border p-2 mb-4 w-full"
+                                value={newPass}
+                                onChange={(e) => setNewPass(e.target.value)}
+                            />
+                            <input
+                                type="password"
+                                placeholder="ยืนยันรหัสผ่าน"
+                                className="border p-2 mb-4 w-full"
+                                value={confirmPass}
+                                onChange={(e) => setConfirmPass(e.target.value)}
+                            />
 
-                <button
-                    className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600 mb-2"
-                    onClick={handleSubmit}
-                >
-                    บันทึก
-                </button>
+                            <button
+                                className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600 mb-2"
+                                onClick={handleSubmit}
+                            >
+                                บันทึก
+                            </button>
 
-                <button
-                    className="bg-gray-300 text-black p-2 rounded w-full hover:bg-gray-400"
-                    onClick={handleClose} // ✅ ใช้ handleClose ที่เราสร้างเอง
-                >
-                    ยกเลิก
-                </button>
-            </div>
-        </div>
+                            <button
+                                className="bg-gray-300 text-black p-2 rounded w-full hover:bg-gray-400"
+                                onClick={handleClose}
+                            >
+                                ยกเลิก
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </>
     );
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { User } from "./Sidebar";
+import { User } from "@/app/types/types"; // ใช้ path ที่ถูกกับโปรเจกต์ของคุณ
 
 type Props = {
   onLoginSuccess: (loggedUser: User) => void;
@@ -34,6 +34,7 @@ export default function LoginForm({ onLoginSuccess }: Props) {
           fullName: data.fullName,
           roles: data.roles,
           permissions: data.permissions,
+          ForgetPass: data.ForgetPass,
         });
       } else {
         alert(data.error || "Login ล้มเหลว ❌");

@@ -24,19 +24,19 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "ไม่พบผู้ใช้งาน" }, { status: 404 });
         }
 
-        // UPDATE เฉพาะ Pass
         await pool.request()
             .input("User_Id", User_Id)
             .input("Pass", Pass)
             .query(`
-                UPDATE [dbo].[tb_im_employee]
-                SET Pass=@Pass
-                WHERE User_Id=@User_Id
-            `);
+                        UPDATE [dbo].[tb_im_employee]
+                        SET Pass = @Pass, ForgetPass = NULL
+                        WHERE User_Id = @User_Id
+                    `);
+
 
         // SELECT ข้อมูลทั้งหมดส่งกลับ
         const result = await pool.request().query(`
-            SELECT [id],[User_Id],[Pass],[Name],[Age],[Sex],[Tel],[Department],[Process],[Image],[StartDate],[Status],[CreateDate]
+            SELECT [id],[User_Id],[Pass],[Name],[Age],[Sex],[Tel],[Department],[Process],[Image],[StartDate],[Status],[CreateDate],[ForgetPass]
             FROM [dbo].[tb_im_employee]
         `);
 

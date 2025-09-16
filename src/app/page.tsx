@@ -2,7 +2,7 @@
 "use client";
 import { useEffect } from "react";
 import { useAuth } from "./context/AuthContext";
-import type { User } from "./components/Sidebar";
+import { User } from "@/app/types/types"; // ใช้ path ที่ถูกกับโปรเจกต์ของคุณ
 import { motion } from "framer-motion";
 import Image from "next/image";
 import LoginForm from "../app/components/LoginForm";
