@@ -72,7 +72,7 @@ export default function ResetPasswordModal({
 
     const handleClose = () => {
         setVisible(false); // ✅ ปิด modal
-
+        logout();
     };
 
 
@@ -109,7 +109,7 @@ export default function ResetPasswordModal({
 
                         <button
                             className="bg-gray-300 text-black p-2 rounded w-full hover:bg-gray-400"
-                            onClick={logout}
+                            onClick={handleClose}
                         >
                             ยกเลิก
                         </button>
