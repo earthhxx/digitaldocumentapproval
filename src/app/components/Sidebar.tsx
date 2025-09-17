@@ -1,16 +1,15 @@
 "use client";
-import LoginForm from "./LoginForm";
-import { use, useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link"; // ✅ ใช้ Link
 import { useAuth } from "../context/AuthContext";
-import { User } from "@/app/types/types"; // ใช้ path ที่ถูกกับโปรเจกต์ของคุณ
+import ChangePasswordModal from "@/app/components/changePass"
+
 
 export default function Sidebar() {
   const { user, login, logout, open, setOpen } = useAuth();
   const [mounted, setMounted] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const [changePassword, setchangePassword] = useState(false);
+  let SetVisible: ((v: boolean) => void) | null = null;
 
   useEffect(() => setMounted(true), []);
 
@@ -48,10 +47,12 @@ export default function Sidebar() {
         </button>
       )}
 
+
       <div
         className={`fixed inset-0 z-40 bg-white/10 backdrop-blur-[4px] transition-opacity duration-300 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           }`}
       ></div>
+      <ChangePasswordModal registerSetState={(fn) => (SetVisible = fn)} />
 
       <aside
         ref={sidebarRef}
@@ -128,10 +129,10 @@ export default function Sidebar() {
               </div>
 
               <button
-                onClick={() => setchangePassword(true)}
-                className="mt-2 w-[80%] bg-gray-700 hover:bg-gray-600 px-8 py-2 font-semibold rounded-sm mb-4"
+                onClick={() => SetVisible && SetVisible(true)}
+                className="mt-2 w-[80%] bg-gray-700 hover:bg-gray-600 px-8 py-2 font-kanit rounded-sm mb-4"
               >
-                Setting
+                เปลี่ยนรหัสผ่าน
               </button>
 
               <button
