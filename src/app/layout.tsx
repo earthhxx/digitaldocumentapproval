@@ -76,7 +76,6 @@ export default async function RootLayout({
             {/* ClientOnly modal */}
 
               <ResetPasswordModal
-                initialUser={initialUser}
               />
 
             <Sidebar />

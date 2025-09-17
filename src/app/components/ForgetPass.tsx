@@ -2,35 +2,27 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 
-export interface User {
-    userId: string;
-    fullName: string;
-    roles: string[];
-    permissions: string[];
-    ForgetPass: string;
-}
-
-export default function ResetPasswordModal({
-    initialUser,
-}: {
-    initialUser: any;
-}) {
+export default function ResetPasswordModal() {
     const [newPass, setNewPass] = useState("");
     const [confirmPass, setConfirmPass] = useState("");
     const [error, setError] = useState("");
-    const [visible, setVisible] = useState(true); // ✅ state ควบคุม modal
+    const [visible, setVisible] = useState(false); // 👈 เริ่ม false ไว้ก่อน
     const { user, logout } = useAuth();
+
     const userId = user?.userId || "";
     const roles = user?.roles || [];
-    const userForgetPass = user?.ForgetPass || initialUser?.ForgetPass || "";
+    const userForgetPass = user?.ForgetPass || "";
 
-    // const [mounted, setMounted] = useState(false);
-    // useEffect(() => setMounted(true), []);
-    // if (!mounted) return null;
+    // 👇 reset visible ทุกครั้งที่ ForgetPass = yes
+    useEffect(() => {
+        if (userForgetPass === "yes") {
+            setVisible(true);
+        }
+    }, [userForgetPass]);
 
-    console.log("roles", roles)
-    console.log("forget", userForgetPass)
-
+    console.log("roles", roles);
+    console.log("forget", userForgetPass);
+    console.log("userf", userForgetPass, "and vis", visible);
 
     const handleSubmit = async () => {
         if (!newPass || !confirmPass) {
@@ -43,23 +35,19 @@ export default function ResetPasswordModal({
         }
 
         try {
-            const res = await fetch("/api/usertable/edituser", {
+            const res = await fetch("/api/Forgetpass", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    User_Id: userId, // ✅ ใช้ displayUser
+                    User_Id: userId,
                     Pass: newPass,
                 }),
             });
 
             if (res.ok) {
                 alert("เปลี่ยนรหัสผ่านเรียบร้อย");
-
-                // ✅ logout ทันที
-                await fetch("/api/logout", { method: "POST" });
-
-                // ✅ redirect ไป login
-                window.location.href = "/login";
+                await fetch("/api/Logout", { method: "POST" });
+                window.location.href = "/";
             } else {
                 const data = await res.json();
                 setError(data.error || "เกิดข้อผิดพลาด");
@@ -71,14 +59,13 @@ export default function ResetPasswordModal({
     };
 
     const handleClose = () => {
-        setVisible(false); // ✅ ปิด modal
+        setVisible(false);
         logout();
     };
 
-
     return (
         <>
-            {userForgetPass === 'yes' && visible && (
+            {userForgetPass === "yes" && visible && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
                     <div className="bg-white shadow-lg rounded p-6 w-[90%] max-w-md flex flex-col">
                         <h2 className="text-xl font-bold mb-4 text-center">ตั้งรหัสผ่านใหม่</h2>

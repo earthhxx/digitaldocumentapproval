@@ -10,6 +10,7 @@ export default function Sidebar() {
   const { user, login, logout, open, setOpen } = useAuth();
   const [mounted, setMounted] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const [changePassword, setchangePassword] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
@@ -125,6 +126,13 @@ export default function Sidebar() {
                   <span className="font-semibold">Full Name:</span> {fullName}
                 </div>
               </div>
+
+              <button
+                onClick={() => setchangePassword(true)}
+                className="mt-2 w-[80%] bg-gray-700 hover:bg-gray-600 px-8 py-2 font-semibold rounded-sm mb-4"
+              >
+                Setting
+              </button>
 
               <button
                 onClick={logout}
