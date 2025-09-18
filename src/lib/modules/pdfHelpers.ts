@@ -153,10 +153,11 @@ const tableFieldMap: TableFieldMap = {
         Day2: { x: 665, y: 287, size: 15, font: "check" },
 
         // Checkboxes
-        Forget: { x: 152, y: 249, size: 15, font: "check" },
-        Record: { x: 282, y: 249, size: 15, font: "check" },
-        Offsite: { x: 409, y: 249, size: 15, font: "check" },
-        Other: { x: 535, y: 249, size: 15, font: "check" },
+        Forget: { x: 135, y: 249, size: 15, font: "check" },
+        Outtime: { x: 235, y: 249, size: 15, font: "check" },
+        Record: { x: 337, y: 249, size: 15, font: "check" },
+        Offsite: { x: 438, y: 249, size: 15, font: "check" },
+        Other: { x: 538, y: 249, size: 15, font: "check" },
         Other_Detail: { x: 580, y: 249, size: 15, font: "thai" },
 
         // Request & Approve
@@ -194,6 +195,7 @@ export async function mapFieldsToPDF(
     table: string
 ) {
     const fieldMap = tableFieldMap[table];
+    console.log('fm',fieldMap);
     if (!fieldMap) return;
 
     const markFields: Record<string, string> = {
@@ -221,6 +223,7 @@ export async function mapFieldsToPDF(
         BB2: "✓",
         CC2: "✓",
         Forget: "✓",
+        Outtime: "✓",
         Record: "✓",
         Offsite: "✓",
         Day1: "✓",
