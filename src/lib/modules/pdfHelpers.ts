@@ -129,28 +129,28 @@ const tableFieldMap: TableFieldMap = {
         // OT Table 1
         No1: { x: 93, y: 310, size: 15, font: "thai" },
         Date: { x: 127, y: 310, size: 15, font: "thai", format: "date" },
-        TimeIN1: { x: 225, y: 310, size: 15, font: "thai", format: "time" },
-        TimeOut1: { x: 300, y: 310, size: 15, font: "thai", format: "time" },
+        TimeIN1: { x: 200, y: 310, size: 15, font: "thai", format: "time" },
+        TimeOut1: { x: 275, y: 310, size: 15, font: "thai", format: "time" },
         OT150_1: { x: 370, y: 310, size: 15, font: "thai" },
         OT200_1: { x: 420, y: 310, size: 15, font: "thai" },
         OT300_1: { x: 470, y: 310, size: 15, font: "thai" },
-        AA1: { x: 512, y: 307, size: 15, font: "check" },
-        BB1: { x: 563, y: 307, size: 15, font: "check" },
-        CC1: { x: 615, y: 307, size: 15, font: "check" },
-        Day1: { x: 665, y: 307, size: 15, font: "check" },
+        AA1: { x: 515, y: 307, size: 15, font: "check" },
+        BB1: { x: 570, y: 307, size: 15, font: "check" },
+        CC1: { x: 625, y: 307, size: 15, font: "check" },
+        Day1: { x: 683, y: 307, size: 15, font: "check" },
 
         // OT Table 2
         No2: { x: 93, y: 287, size: 15, font: "thai" },
         Date2: { x: 127, y: 287, size: 15, font: "thai", format: "date" },
-        TimeIN2: { x: 225, y: 287, size: 15, font: "thai", format: "time" },
-        TimeOut2: { x: 300, y: 287, size: 15, font: "thai", format: "time" },
+        TimeIN2: { x: 200, y: 287, size: 15, font: "thai", format: "time" },
+        TimeOut2: { x: 275, y: 287, size: 15, font: "thai", format: "time" },
         OT150_2: { x: 370, y: 287, size: 15, font: "thai" },
         OT200_2: { x: 420, y: 287, size: 15, font: "thai" },
         OT300_2: { x: 470, y: 287, size: 15, font: "thai" },
-        AA2: { x: 512, y: 287, size: 15, font: "check" },
-        BB2: { x: 563, y: 287, size: 15, font: "check" },
-        CC2: { x: 615, y: 287, size: 15, font: "check" },
-        Day2: { x: 665, y: 287, size: 15, font: "check" },
+        AA2: { x: 515, y: 287, size: 15, font: "check" },
+        BB2: { x: 570, y: 287, size: 15, font: "check" },
+        CC2: { x: 625, y: 287, size: 15, font: "check" },
+        Day2: { x: 683, y: 287, size: 15, font: "check" },
 
         // Checkboxes
         Forget: { x: 135, y: 249, size: 15, font: "check" },
@@ -162,11 +162,11 @@ const tableFieldMap: TableFieldMap = {
 
         // Request & Approve
         NameRequest: { x: 180, y: 205, size: 15, font: "thai" },
-        DateRequest: { x: 360, y: 205, size: 15, font: "thai", format: "date" },
+        DateRequest: { x: 340, y: 205, size: 15, font: "thai", format: "date" },
         SupRequest: { x: 560, y: 205, size: 15, font: "thai" },
 
         NameRequest2: { x: 180, y: 178, size: 15, font: "thai" },
-        DateRequest2: { x: 360, y: 178, size: 15, font: "thai", format: "date" },
+        DateRequest2: { x: 340, y: 178, size: 15, font: "thai", format: "date" },
         SupRequest2: { x: 560, y: 178, size: 15, font: "thai" },
 
 
@@ -175,8 +175,8 @@ const tableFieldMap: TableFieldMap = {
             { x: 180, y: 122, size: 15, font: "thai" },
         ],
         DateCheck: [
-            { x: 360, y: 150, size: 15, font: "thai", format: "date" },
-            { x: 360, y: 122, size: 15, font: "thai", format: "date" },
+            { x: 340, y: 150, size: 15, font: "thai", format: "date" },
+            { x: 340, y: 122, size: 15, font: "thai", format: "date" },
         ],
         NameApprove: [
             { x: 560, y: 150, size: 15, font: "thai" },
