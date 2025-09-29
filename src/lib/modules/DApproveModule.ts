@@ -32,7 +32,7 @@ export async function getDApproveData({
 }: ApproveQuery): Promise<ApproveData> {
   const pool = await getDashboardConnection();
   // console.log("startDate", startDate, endDate);
-  console.log("api in", offset, limit, search, statusType, formaccess, FormDep);
+  // console.log("api in", offset, limit, search, statusType, formaccess, FormDep);
   // ดึง mapping ของ table
   const tablesResult = await pool.request().query(`
     SELECT table_name, db_table_name
@@ -51,7 +51,7 @@ export async function getDApproveData({
     return { totalAll: 0, totals: {}, data: [], offset, limit };
   }
   // console.log(statusType)
-  console.log('form', formaccess)
+  // console.log('form', formaccess)
 
   const queries = formaccess
     .filter(t => tableMap[t])

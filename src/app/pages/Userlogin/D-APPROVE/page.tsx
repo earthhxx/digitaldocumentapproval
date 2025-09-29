@@ -124,11 +124,11 @@ export default async function UserLoginPage() {
     all: formOption.all,
   };
 
-  console.log(tabFormMap)
+  // console.log(tabFormMap)
 
   // เรียกใช้งาน GetupdateStatus แล้วรวมผลเป็น object เดียว
   const statusData = await GetupdateStatus(tabFormMap);
-  console.log('sta', statusData)
+  // console.log('sta', statusData)
   const AmountData: AmountData = {
     CheckNull: statusData.check?.CheckNull || 0,
     ApproveNull: statusData.approve?.ApproveNull || 0,

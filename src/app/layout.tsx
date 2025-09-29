@@ -60,7 +60,7 @@ export default async function RootLayout({
           : [payload.permissions as string],
         ForgetPass: payload.ForgetPass as string,
       };
-      console.log('ini',initialUser)
+      // console.log('ini',initialUser)
     } catch {
       initialUser = null;
     }

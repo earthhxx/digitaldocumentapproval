@@ -86,9 +86,9 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
 
     const [loading, setLoading] = useState(false);
     const [approveData, setApproveData] = useState<ApproveData>(initialData);
-    console.log("csr", AmountData)
+    // console.log("csr", AmountData)
     const [dataAmount, setDataAmount] = useState<AmountData>(AmountData);
-    console.log("dataamo", dataAmount)
+    // console.log("dataamo", dataAmount)
     const availableTabs = (["Check_TAB", "Approve_TAB", "All_TAB"] as Tab[]).filter(t =>
         user.permissions?.includes(t)
     );
@@ -228,7 +228,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                 FormDep: tabFormMap,   // ✅ ต้องส่งเป็น FormDep
             };
 
-            console.log('payload', payload)
+            // console.log('payload', payload)
 
             const res = await fetch("/api/update-status", {
                 method: "POST",
