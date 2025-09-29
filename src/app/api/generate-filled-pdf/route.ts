@@ -14,12 +14,12 @@ export interface PDFData {
 
 export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
-    const id = searchParams.get("id");
+    const ID = searchParams.get("ID");
     const table = searchParams.get("table");
 
-    if (!id || !table) {
+    if (!ID || !table) {
         return NextResponse.json(
-            { error: "ต้องมี id และ table" },
+            { error: "ต้องมี ID และ table" },
             { status: 400 }
         );
     }
@@ -51,11 +51,11 @@ export async function GET(req: NextRequest) {
         // --- ดึงข้อมูลจริงจาก table ---
         const result = await pool
             .request()
-            .input("id", sql.NVarChar, id)
+            .input("ID", sql.NVarChar, ID)
             .query(`
         SELECT TOP 1 *
         FROM ${dbTableName}
-        WHERE [Id] = @id
+        WHERE [ID] = @ID
       `);
 
         if (result.recordset.length === 0) {
@@ -63,7 +63,6 @@ export async function GET(req: NextRequest) {
         }
 
         const data = result.recordset[0];
-console.log(data)
         // --- โหลด template PDF ---
         const templatePath = path.join(
             process.cwd(),

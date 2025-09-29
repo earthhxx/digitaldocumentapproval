@@ -8,7 +8,7 @@ import Manager from "./BT_ManagerPage";
 interface ApproveData {
     totalAll: number;
     totals: Record<string, number>; // เพิ่มตรงนี้
-    data: { id: number; FormThai: string; Dep: string; name: string; source: string; date?: string; DateRequest?: string; DateCheck: string; NameRequest: string; DateApprove?: string }[];
+    data: { ID: number; FormThai: string; Dep: string; name: string; source: string; date?: string; DateRequest?: string; DateCheck: string; NameRequest: string; DateApprove?: string }[];
     error?: string;
 }
 
@@ -53,7 +53,7 @@ interface FormOption {
 type FormOptionKey = keyof FormOption; // "check" | "approve" | "all"
 
 interface SelectedDoc {
-    id: number;
+    ID: number;
     source: string;
     Dep: string;
 
@@ -106,7 +106,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
 
 
     const [selected, setSelected] = useState<SelectedDoc[]>([]);
-    const allDocs = approveData.data.map((doc) => ({ id: doc.id, source: doc.source }));
+    const allDocs = approveData.data.map((doc) => ({ ID: doc.ID, source: doc.source }));
 
     const canApproveSupervisor = selected.length > 0 && selected.every(s =>
         user?.permissions?.includes(`Check_${s.source}_${s.Dep}`)
@@ -121,7 +121,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
         if (selected.length === allDocs.length) {
             setSelected([]);
         } else {
-            setSelected(approveData.data.map(doc => ({ id: doc.id, source: doc.source, Dep: doc.Dep })));
+            setSelected(approveData.data.map(doc => ({ ID: doc.ID, source: doc.source, Dep: doc.Dep })));
         }
     };
 
@@ -253,22 +253,22 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
 
 
 
-    const openPDF = (id: string | number, source: string, Dep: string) => {
-        setPdfUrl(`/api/generate-filled-pdf?id=${id}&table=${source}`);
+    const openPDF = (ID: string | number, source: string, Dep: string) => {
+        setPdfUrl(`/api/generate-filled-pdf?ID=${ID}&table=${source}`);
         setShowPDF(true);
-        setSelectID(id);
+        setSelectID(ID);
         setSelectTable(source);
         setselectDep(Dep);
     };
 
 
-    const handleApproval = async (id: string | number, source: string, status: "check" | "approve" | "reject", card: "Supervisor" | "Manager") => {
+    const handleApproval = async (ID: string | number, source: string, status: "check" | "approve" | "reject", card: "Supervisor" | "Manager") => {
         try {
             const res = await fetch("/api/save-status-report", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    id: id,
+                    ID: ID,
                     source: source,
                     status: status,
                     fullname: user.fullName,
@@ -535,7 +535,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                             type="checkbox"
                                             onChange={toggleSelectAll}
                                             checked={selected.length > 0 && approveData.data.every((doc) =>
-                                                selected.some((s) => s.id === doc.id && s.source === doc.source)
+                                                selected.some((s) => s.ID === doc.ID && s.source === doc.source)
                                             )}
                                         />
                                     </th>
@@ -563,10 +563,10 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                             ) : (
                                 approveData.data.map((doc, index) => (
                                     <tr
-                                        onClick={() => openPDF(doc.id, doc.source, doc.Dep)}
-                                        key={`${doc.source}_${doc.id}_${index}`}
+                                        onClick={() => openPDF(doc.ID, doc.source, doc.Dep)}
+                                        key={`${doc.source}_${doc.ID}_${index}`}
                                         className={`transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:bg-amber-100
-                ${selected.some((s) => s.id === doc.id && s.source === doc.source) ? "bg-amber-200/50" : ""}
+                ${selected.some((s) => s.ID === doc.ID && s.source === doc.source) ? "bg-amber-200/50" : ""}
               `}
                                     >
                                         {(tab === "Check_TAB" || tab === "Approve_TAB") && (
@@ -575,13 +575,13 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                                 className="px-2 py-2 text-center border-t border-gray-200">
                                                 <input
                                                     type="checkbox"
-                                                    checked={selected.some(s => s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep)}
+                                                    checked={selected.some(s => s.ID === doc.ID && s.source === doc.source && s.Dep === doc.Dep)}
                                                     onChange={(e) => {
                                                         if (e.target.checked) {
-                                                            setSelected((prev) => [...prev, { id: doc.id, source: doc.source, Dep: doc.Dep }]);
+                                                            setSelected((prev) => [...prev, { ID: doc.ID, source: doc.source, Dep: doc.Dep }]);
                                                         } else {
                                                             setSelected((prev) =>
-                                                                prev.filter((s) => !(s.id === doc.id && s.source === doc.source && s.Dep === doc.Dep))
+                                                                prev.filter((s) => !(s.ID === doc.ID && s.source === doc.source && s.Dep === doc.Dep))
                                                             );
                                                         }
                                                     }}

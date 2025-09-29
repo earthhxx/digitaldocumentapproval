@@ -18,7 +18,7 @@ type TableFieldMap = Record<string, Record<string, FieldMapping | FieldMapping[]
 // ตัวอย่าง mapping ของแต่ละ table
 const tableFieldMap: TableFieldMap = {
     FM_IT_03: {
-        id: { x: 500, y: 682, size: 14, font: "thai" },
+        ID: { x: 500, y: 682, size: 14, font: "thai" },
         // FormID: { x: 500, y: 750, size: 14, font: "thai" },
         Date: { x: 435, y: 665, size: 12, format: "date", font: "thai" },
         NameThi: { x: 220, y: 656, size: 10, font: "thai" },
@@ -43,7 +43,7 @@ const tableFieldMap: TableFieldMap = {
 
     },
     FM_GA_04: {
-        id: { x: 653, y: 503, size: 15, font: "thai" },
+        ID: { x: 653, y: 503, size: 15, font: "thai" },
         Date: { x: 570, y: 440, size: 15, format: "date", font: "thai" },
         TitleName: { x: 262, y: 420, size: 15, font: "thai" },
         TitleName1: { x: 282, y: 420, size: 15, font: "check" },
@@ -67,7 +67,7 @@ const tableFieldMap: TableFieldMap = {
         Date3: { x: 380, y: 150, size: 15, format: "date", font: "thai" },
     },
     FM_GA_03: {
-        id: { x: 705, y: 523, size: 15, font: "thai" },
+        ID: { x: 705, y: 523, size: 15, font: "thai" },
         Date: { x: 590, y: 460, size: 15, format: "date", font: "thai" },
 
         // Trital Name
@@ -183,6 +183,69 @@ const tableFieldMap: TableFieldMap = {
             { x: 560, y: 122, size: 15, font: "thai" },
         ],
     },
+    FM_GA_13: {
+        ID: { x: 670, y: 452, size: 15, font: "thai" },
+        Dep: { x: 140, y: 435, size: 15, font: "thai" },
+        Withdrawn: { x: 140, y: 419, size: 15, font: "thai" },
+
+        Date: { x: 60, y: 361, size: 15, font: "thai", format: "date" },
+        Disbursement: { x: 140, y: 361, size: 15, font: "thai" },
+        QTY: { x: 340, y: 361, size: 15, font: "thai" },
+        Unit: { x: 405, y: 361, size: 15, font: "thai" },
+        Remark: { x: 470, y: 361, size: 15, font: "thai" },
+
+        Date1: { x: 60, y: 342, size: 15, font: "thai", format: "date" },
+        Disbursement1: { x: 140, y: 342, size: 15, font: "thai" },
+        QTY1: { x: 340, y: 342, size: 15, font: "thai" },
+        Unit1: { x: 405, y: 342, size: 15, font: "thai" },
+        Remark1: { x: 470, y: 342, size: 15, font: "thai" },
+
+        Date2: { x: 60, y: 323, size: 15, font: "thai", format: "date" },
+        Disbursement2: { x: 140, y: 323, size: 15, font: "thai" },
+        QTY2: { x: 340, y: 323, size: 15, font: "thai" },
+        Unit2: { x: 405, y: 323, size: 15, font: "thai" },
+        Remark2: { x: 470, y: 323, size: 15, font: "thai" },
+
+        Date3: { x: 60, y: 305, size: 15, font: "thai", format: "date" },
+        Disbursement3: { x: 140, y: 305, size: 15, font: "thai" },
+        QTY3: { x: 340, y: 305, size: 15, font: "thai" },
+        Unit3: { x: 405, y: 305, size: 15, font: "thai" },
+        Remark3: { x: 470, y: 305, size: 15, font: "thai" },
+
+        Date4: { x: 60, y: 287, size: 15, font: "thai", format: "date" },
+        Disbursement4: { x: 140, y: 287, size: 15, font: "thai" },
+        QTY4: { x: 340, y: 287, size: 15, font: "thai" },
+        Unit4: { x: 405, y: 287, size: 15, font: "thai" },
+        Remark4: { x: 470, y: 287, size: 15, font: "thai" },
+
+        Date5: { x: 60, y: 268, size: 15, font: "thai", format: "date" },
+        Disbursement5: { x: 140, y: 268, size: 15, font: "thai" },
+        QTY5: { x: 340, y: 268, size: 15, font: "thai" },
+        Unit5: { x: 405, y: 268, size: 15, font: "thai" },
+        Remark5: { x: 470, y: 268, size: 15, font: "thai" },
+
+        Date6: { x: 60, y: 250, size: 15, font: "thai", format: "date" },
+        Disbursement6: { x: 140, y: 250, size: 15, font: "thai" },
+        QTY6: { x: 340, y: 250, size: 15, font: "thai" },
+        Unit6: { x: 405, y: 250, size: 15, font: "thai" },
+        Remark6: { x: 470, y: 250, size: 15, font: "thai" },
+
+        Date7: { x: 60, y: 230, size: 15, font: "thai", format: "date" },
+        Disbursement7: { x: 140, y: 230, size: 15, font: "thai" },
+        QTY7: { x: 340, y: 230, size: 15, font: "thai" },
+        Unit7: { x: 405, y: 230, size: 15, font: "thai" },
+        Remark7: { x: 470, y: 230, size: 15, font: "thai" },
+
+        Date8: { x: 60, y: 212, size: 15, font: "thai", format: "date" },
+        Disbursement8: { x: 140, y: 212, size: 15, font: "thai" },
+        QTY8: { x: 340, y: 212, size: 15, font: "thai" },
+        Unit8: { x: 405, y: 212, size: 15, font: "thai" },
+        Remark8: { x: 470, y: 212, size: 15, font: "thai" },
+
+        NameRequest: { x: 335, y: 177, size: 15, font: "thai" },
+        NameCheck: { x: 435, y: 177, size: 15, font: "thai" },
+        NameApprove: { x: 530, y: 177, size: 15, font: "thai" },
+    }
     // เพิ่ม table ใหม่ ๆ ที่นี่ได้เลย
 };
 
@@ -195,7 +258,7 @@ export async function mapFieldsToPDF(
     table: string
 ) {
     const fieldMap = tableFieldMap[table];
-    console.log('fm',fieldMap);
+    console.log('fm', fieldMap);
     if (!fieldMap) return;
 
     const markFields: Record<string, string> = {

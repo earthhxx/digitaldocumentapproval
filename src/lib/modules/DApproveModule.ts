@@ -51,7 +51,7 @@ export async function getDApproveData({
     return { totalAll: 0, totals: {}, data: [], offset, limit };
   }
   // console.log(statusType)
-console.log('form',formaccess)
+  console.log('form', formaccess)
 
   const queries = formaccess
     .filter(t => tableMap[t])
@@ -99,10 +99,18 @@ console.log('form',formaccess)
       }
 
       return `
-      SELECT id, FormID, FormThai, Dep, [Date] AS date,
+      SELECT ID,
+       FormID, 
+       FormThai, 
+       Dep, 
+       [Date] AS date,
              NameRequest,
-             DateRequest, StatusCheck, StatusApprove,
-             DateApprove, DateCheck, '${t}' AS source
+             DateRequest,
+              StatusCheck,
+               StatusApprove,
+             DateApprove,
+              DateCheck,
+               '${t}' AS source
       FROM ${tableMap[t]}
       WHERE Dep IN (${depList}) AND ${whereClause}
     `;
