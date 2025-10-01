@@ -24,27 +24,27 @@ export default function RolesPermissionList() {
 
   const [choice, setChoice] = useState<"Yes" | "No">("No");
 
-  const fetchRolesPer = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/admin/rolepermission/role-permissions", {
-        method: "GET",
-        credentials: "include", // ✅ สำคัญ
-      });
-      if (!res.ok) throw new Error("Failed to fetch role permissions");
-      const data = await res.json();
-      setItems(data.data ?? []);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError(String(err)); // fallback สำหรับค่าอื่น ๆ
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchRolesPer = async () => {
+  //   setLoading(true);
+  //   setError(null);
+  //   try {
+  //     const res = await fetch("/api/admin/rolepermission/role-permissions", {
+  //       method: "GET",
+  //       credentials: "include", // ✅ สำคัญ
+  //     });
+  //     if (!res.ok) throw new Error("Failed to fetch role permissions");
+  //     const data = await res.json();
+  //     setItems(data.data ?? []);
+  //   } catch (err: unknown) {
+  //     if (err instanceof Error) {
+  //       setError(err.message);
+  //     } else {
+  //       setError(String(err)); // fallback สำหรับค่าอื่น ๆ
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // --- Fetch on mount ---
   useEffect(() => {

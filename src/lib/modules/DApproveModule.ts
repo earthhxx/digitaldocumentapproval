@@ -12,10 +12,24 @@ export interface ApproveQuery {
   endDate?: string | null;
 }
 
+export interface ApproveRow {
+  ID: number;
+  FormThai: string;
+  Dep: string;
+  nameRequest: string;
+  source: string;
+  date?: string;
+  DateRequest?: string;
+  DateCheck: string;
+  NameRequest: string;
+  DateApprove?: string;
+}
+
+
 export interface ApproveData {
   totalAll: number;
   totals: Record<string, number>; // เพิ่มตรงนี้
-  data: any[];
+  data:  ApproveRow[];
   offset: number;
   limit: number;
 }

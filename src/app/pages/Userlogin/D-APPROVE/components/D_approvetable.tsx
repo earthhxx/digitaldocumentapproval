@@ -3,12 +3,13 @@
 import React, { useState } from "react";
 import SupervisorPopup from "./BT_SupervisorPage";
 import Manager from "./BT_ManagerPage";
+import Image from "next/image";
 
 
 interface ApproveData {
     totalAll: number;
     totals: Record<string, number>; // เพิ่มตรงนี้
-    data: { ID: number; FormThai: string; Dep: string; name: string; source: string; date?: string; DateRequest?: string; DateCheck: string; NameRequest: string; DateApprove?: string }[];
+    data: { ID: number; FormThai: string; Dep: string; source: string; date?: string; DateRequest?: string; DateCheck: string; NameRequest: string; DateApprove?: string }[];
     error?: string;
 }
 
@@ -33,6 +34,9 @@ interface AmountData {
 }
 
 
+type FormOptionMap = {
+    [formCode: string]: string[];
+};
 
 interface DApproveTableProps {
     user: UserPayload;
@@ -41,7 +45,11 @@ interface DApproveTableProps {
     formOption?: FormOption;
     formkey: FormOptionKey;
     formaccess: string[];
-    tabFormMap: {};
+    tabFormMap: {
+        check: FormOptionMap;
+        approve: FormOptionMap;
+        all: FormOptionMap;
+    };
 }
 
 interface FormOption {
@@ -239,6 +247,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
 
             if (res.ok) {
                 const statusData = await res.json(); // ✅ TabFormAmount
+                console.log(startDate)
                 const AmountData: AmountData = {
                     CheckNull: statusData.check?.CheckNull || 0,
                     ApproveNull: statusData.approve?.ApproveNull || 0,
@@ -278,8 +287,8 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
             if (!res.ok) throw new Error("บันทึกข้อมูลล้มเหลว");
 
             alert(`บันทึกข้อมูลสำเร็จ (${source}: ${status})`);
-        } catch (err: any) {
-            alert(err.message);
+        } catch (err: unknown) {
+            alert(err);
         }
         setShowSupervisorPopup(false);
         setShowManagerPopup(false);
@@ -366,7 +375,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
         <div className="flex flex-1 flex-col min-h-full w-full bg-white shadow-lg p-6 overflow-auto">
             <div className="relative">
                 <div className="absolute top-4 right-2 text-sm text-gray-500">
-                    <img src="/images/LOGO2.png" alt="Logo" className="w-auto h-20 mb-1 mx-auto" />
+                    <Image src="/images/LOGO2.png" alt="Logo" className="w-auto h-20 mb-1 mx-auto" />
                 </div>
             </div>
 

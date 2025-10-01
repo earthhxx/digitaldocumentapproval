@@ -57,9 +57,13 @@ export default function UsersList() {
     };
 
     const triggerEditConfirm = () => {
-        if (!editingUserId) return;
+        if (!editingUserId || !form.Name || !form.Department || !form.Pass) {
+            alert("Please fill all fields before saving.");
+            return;
+        }
         setConfirm({ visible: true, type: "edit", User_Id: editingUserId });
     };
+
 
     const triggerDeleteConfirm = (User_Id: string) => {
         setConfirm({ visible: true, type: "delete", User_Id });
@@ -111,6 +115,7 @@ export default function UsersList() {
             setItems(updatedUsers);
             setForm({ User_Id: "", Name: "", Department: "", Pass: "" });
             setEditingUserId(null);
+            setActiveTab("add"); // ✅ กลับไปโหมด add
             setConfirm({ visible: false, type: "edit" });
         } catch (err: unknown) {
             if (err instanceof Error) setError(err.message);
@@ -119,6 +124,7 @@ export default function UsersList() {
             setLoading(false);
         }
     };
+
 
     // --- Delete user ---
     const deleteUser = async (User_Id: string) => {
@@ -209,9 +215,9 @@ export default function UsersList() {
                                         u.User_Id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                                         u.Department?.toLowerCase().includes(searchTerm.toLowerCase())
                                 )
-                                .map((u) => (
+                                .map((u, index) => (
                                     <tr key={u.User_Id} className="hover:bg-white/10">
-                                        <td className="border px-2 py-1">{u.User_Id}</td>
+                                        <td className="border px-2 py-1">{index + 1}</td> {/* ✅ ลำดับ */}
                                         <td className="border px-2 py-1">{u.User_Id}</td>
                                         <td className="border px-2 py-1">{u.Name}</td>
                                         <td className="border px-2 py-1">{u.Department}</td>
@@ -276,7 +282,9 @@ export default function UsersList() {
                             <input placeholder="Name" value={form.Name} onChange={e => setForm({ ...form, Name: e.target.value })} className="p-2 bg-black border border-white" />
                             <input placeholder="Department" value={form.Department} onChange={e => setForm({ ...form, Department: e.target.value })} className="p-2 bg-black border border-white" />
                             <input placeholder="Pass" value={form.Pass} onChange={e => setForm({ ...form, Pass: e.target.value })} className="p-2 bg-black border border-white" />
-                            <button onClick={triggerAddConfirm} className="mt-2 bg-white text-black py-1">Add</button>
+                            <button onClick={triggerAddConfirm} disabled={loading} className="mt-2 bg-white text-black py-1">
+                                {loading ? "Saving..." : "Add"}
+                            </button>
                             <button onClick={() => setForm({ User_Id: "", Name: "", Department: "", Pass: "" })} className="mt-2 bg-white text-black py-1">Clear</button>
                         </>
                     )}
@@ -293,9 +301,10 @@ export default function UsersList() {
                                 }}
                                 className="p-2 bg-black border border-white"
                             >
-                                <option value="">Select User to Edit</option>
+                                <option value="" disabled hidden>Select User to Edit</option> {/* ✅ placeholder */}
                                 {items.map(u => <option key={u.User_Id} value={u.User_Id}>{u.Name}</option>)}
                             </select>
+
 
                             {/* User_Id readonly */}
                             <input
@@ -322,8 +331,20 @@ export default function UsersList() {
                                 onChange={e => setForm({ ...form, Pass: e.target.value })}
                                 className="p-2 bg-black border border-white"
                             />
-                            <button onClick={triggerEditConfirm} className="mt-2 bg-white text-black py-1">Save</button>
-                            <button onClick={() => setForm({ User_Id: "", Name: "", Department: "", Pass: "" })} className="mt-2 bg-white text-black py-1">Clear</button>
+                            <button onClick={triggerEditConfirm} disabled={loading} className="mt-2 bg-white text-black py-1">
+                                {loading ? "Saving..." : "Save"}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setForm({ User_Id: "", Name: "", Department: "", Pass: "" });
+                                    setEditingUserId(null);
+                                    setActiveTab("add"); // ✅ reset กลับไปโหมด Add
+                                }}
+                                className="mt-2 bg-white text-black py-1"
+                            >
+                                Clear
+                            </button>
+
                         </>
                     )}
 

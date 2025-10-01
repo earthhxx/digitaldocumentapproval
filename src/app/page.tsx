@@ -1,40 +1,20 @@
 // app/page.tsx
 "use client";
-import { useEffect } from "react";
 import { useAuth } from "./context/AuthContext";
-import { User } from "@/app/types/types"; // ใช้ path ที่ถูกกับโปรเจกต์ของคุณ
 import { motion } from "framer-motion";
 import Image from "next/image";
 import LoginForm from "../app/components/LoginForm";
 import "../app/styles/Boxes.scss";
 
-interface HomePageProps {
-  initialUser?: User;
-}
-
-export default function HomePage({ initialUser }: HomePageProps) {
+export default function HomePage() {
   const { user, login, setOpen } = useAuth();
 
-  useEffect(() => {
-    if (initialUser && !user) {
-      login(initialUser);
-    }
-  }, [initialUser, login, user]);
 
-  const displayUser = user || initialUser;
+
+  const displayUser = user ;
 
   return (
     <div className="relative flex justify-center items-center w-full min-h-screen bg-gradient-to-r from-blue-400 via-sky-400 to-sky-200">
-      {/* กล่องลอย */}
-      {/* <div className="absolute inset-0 pointer-events-none">
-        <div className="boxs">
-          <div className="box one"></div>
-          <div className="box two"></div>
-          <div className="box three"></div>
-          <div className="box four"></div>
-        </div>
-      </div> */}
-
       {/* Light rays, pointer-events-none to avoid blocking clicks */}
       <div className="light-ray-container pointer-events-none z-50">
         <div className="light-ray ray1" />

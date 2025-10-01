@@ -9,7 +9,7 @@ import fontkit from "@pdf-lib/fontkit";
 import { mapFieldsToPDF } from "@/lib/modules/pdfHelpers";
 
 export interface PDFData {
-    [key: string]: any; // รองรับทุก field
+  [key: string]: unknown;
 }
 
 export async function GET(req: NextRequest) {
@@ -103,8 +103,14 @@ export async function GET(req: NextRequest) {
                 "Content-Disposition": `inline; filename="filled.pdf"`,
             },
         });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
-        return NextResponse.json({ error: "เกิดข้อผิดพลาด", detail: err.message }, { status: 500 });
+        // 🔍 ตรวจสอบว่า err มี message หรือไม่
+        const errorMessage =
+            err instanceof Error ? err.message : "Unknown error occurred";
+        return NextResponse.json(
+            { error: "เกิดข้อผิดพลาด", detail: errorMessage },
+            { status: 500 }
+        );
     }
 }

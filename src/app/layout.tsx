@@ -5,9 +5,7 @@ import { cookies } from "next/headers"; // สำหรับ SSR cookie
 import { jwtVerify } from "jose";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
-import { c } from "node_modules/framer-motion/dist/types.d-Cjd591yU";
 
-import ClientOnly from "./components/ClientOnly";
 import ResetPasswordModal from "./components/ForgetPass";
 
 import { User } from "@/app/types/types"; // ใช้ path ที่ถูกกับโปรเจกต์ของคุณ

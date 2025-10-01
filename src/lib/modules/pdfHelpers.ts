@@ -304,15 +304,35 @@ export async function mapFieldsToPDF(
 
             // date/time format
             if (format === "date" && data[dataKey]) {
-                const date = new Date(data[dataKey]);
-                text = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+                const rawValue = data[dataKey];
+
+                if (typeof rawValue === "string" || typeof rawValue === "number" || rawValue instanceof Date) {
+                    const date = new Date(rawValue);
+                    text = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+                } else {
+                    // handle unexpected type
+                    console.warn(`Unexpected date type: ${typeof rawValue}`, rawValue);
+                    text = ""; // or fallback
+                }
             }
 
+
             if (format === "time" && data[dataKey]) {
-                const date = new Date(data[dataKey]);
-                const hh = String(date.getHours()).padStart(2, "0");
-                const mm = String(date.getMinutes()).padStart(2, "0");
-                text = `${hh}:${mm}`;
+                const rawValue = data[dataKey];
+
+                if (
+                    typeof rawValue === "string" ||
+                    typeof rawValue === "number" ||
+                    rawValue instanceof Date
+                ) {
+                    const date = new Date(rawValue);
+                    const hh = String(date.getHours()).padStart(2, "0");
+                    const mm = String(date.getMinutes()).padStart(2, "0");
+                    text = `${hh}:${mm}`;
+                } else {
+                    console.warn(`Invalid time format for key: ${dataKey}`, rawValue);
+                    text = "";
+                }
             }
 
             // checkbox

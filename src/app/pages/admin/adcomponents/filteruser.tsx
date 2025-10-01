@@ -44,7 +44,7 @@ export default function FilterUser() {
         const data: User[] = await res.json();
         setUsers(Array.isArray(data) ? data : []);
       } catch (err: unknown) {
-        if ((err as any)?.name === "AbortError") return;
+        if ((err as unknown)) return;
         setError(err instanceof Error ? err.message : String(err));
       } finally {
         setLoading(false);

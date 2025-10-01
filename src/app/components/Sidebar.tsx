@@ -6,7 +6,7 @@ import ChangePasswordModal from "@/app/components/changePass"
 
 
 export default function Sidebar() {
-  const { user, login, logout, open, setOpen } = useAuth();
+  const { user, logout, open, setOpen } = useAuth();
   const [mounted, setMounted] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   let SetVisible: ((v: boolean) => void) | null = null;
@@ -18,21 +18,27 @@ export default function Sidebar() {
   const userId = user?.userId || "";
   const fullName = user?.fullName || "";
 
-  const handleClickOutside = (e: MouseEvent) => {
-    if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) {
-      setOpen(false);
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
     }
-  };
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open, setOpen]);
+
 
   useEffect(() => {
-    if (open) document.addEventListener("mousedown", handleClickOutside);
-    else document.removeEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
-
-  useEffect(() => {
-    if (!user) setOpen(false);
-  }, [user]);
+    if (!user) { setOpen(false) };
+  }, [user, setOpen]);
 
   if (!mounted) return null;
 

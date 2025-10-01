@@ -10,7 +10,6 @@ export default function ResetPasswordModal() {
   const { user, logout } = useAuth();
 
   const userId = user?.userId || "";
-  const roles = user?.roles || [];
   const userForgetPass = user?.ForgetPass || "";
 
   // แสดง modal ทุกครั้งที่ ForgetPass = yes

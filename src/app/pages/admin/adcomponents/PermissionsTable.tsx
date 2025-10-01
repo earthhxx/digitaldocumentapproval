@@ -73,8 +73,8 @@ export default function PermissionsList() {
             // reset form
             setForm({ PermissionName: "", Description: "" });
             setConfirm({ visible: false, type: "add" });
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : String(err));
         }
     };
 
@@ -100,8 +100,8 @@ export default function PermissionsList() {
 
             setItems(prev => prev.filter(p => p.PermissionID !== id));
             setConfirm({ visible: false, type: "delete" });
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : String(err));
         }
     };
 

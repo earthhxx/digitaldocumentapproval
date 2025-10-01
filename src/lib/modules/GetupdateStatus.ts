@@ -43,7 +43,7 @@ export async function GetupdateStatus(tabFormMap: TabFormDep): Promise<{
 
   for (const tab of ["check", "approve", "all"] as const) {
     const forms = tabFormMap[tab] || {};
-    let temp: AmountData = {};
+    const temp: AmountData = {};
 
     for (const form of Object.keys(forms)) {
       const tableName = tableMap[form];

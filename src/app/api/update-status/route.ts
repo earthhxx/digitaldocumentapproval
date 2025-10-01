@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
     const data = await GetupdateStatus(tabFormMap);
 
     return NextResponse.json(data);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
-    return NextResponse.json({ error: err.message || "Something went wrong" }, { status: 500 });
+    return NextResponse.json({ error: err || "Something went wrong" }, { status: 500 });
   }
 }
