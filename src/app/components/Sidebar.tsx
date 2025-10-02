@@ -115,7 +115,7 @@ export default function Sidebar() {
                   <Link
                     href="/pages/Userlogin/D-APPROVE"
                     onClick={() => setOpen(false)}
-                    className="hover:bg-red-700 bg-red-700/20 p-3 rounded font-medium text-red-400 text-center"
+                    className="hover:bg-sky-700 bg-sky-700/20 p-3 rounded font-medium text-sky-400 text-center"
                   >
                     ระบบอนุมัติอิเล็กทรอนิกส์
                   </Link>
