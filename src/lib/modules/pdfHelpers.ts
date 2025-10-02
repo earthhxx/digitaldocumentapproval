@@ -118,69 +118,68 @@ const tableFieldMap: TableFieldMap = {
     },
     FM_HR_07: {
         // Personal Info
-        NameThi: { x: 150, y: 395, size: 15, font: "thai" },
+        NameThi: { x: 135, y: 395, size: 15, font: "thai" },
         Dep: { x: 470, y: 395, size: 15, font: "thai" },
         EmployeeID: { x: 640, y: 395, size: 15, font: "thai" },
 
-        NameEng: { x: 150, y: 375, size: 15, font: "thai" },
+        NameEng: { x: 135, y: 375, size: 15, font: "thai" },
         Dep_Eng: { x: 470, y: 375, size: 15, font: "thai" },
         EmployeeID_Eng: { x: 640, y: 375, size: 15, font: "thai" },
 
         // OT Table 1
-        No1: { x: 93, y: 310, size: 15, font: "thai" },
-        Date: { x: 127, y: 310, size: 15, font: "thai", format: "date" },
+        No1: { x: 78, y: 310, size: 15, font: "thai" },
+        Date: { x: 110, y: 310, size: 15, font: "thai", format: "date" },
         TimeIN1: { x: 200, y: 310, size: 15, font: "thai", format: "time" },
         TimeOut1: { x: 275, y: 310, size: 15, font: "thai", format: "time" },
-        OT150_1: { x: 370, y: 310, size: 15, font: "thai" },
-        OT200_1: { x: 420, y: 310, size: 15, font: "thai" },
-        OT300_1: { x: 470, y: 310, size: 15, font: "thai" },
+        OT150_1: { x: 350, y: 310, size: 15, font: "thai" },
+        OT200_1: { x: 400, y: 310, size: 15, font: "thai" },
+        OT300_1: { x: 450, y: 310, size: 15, font: "thai" },
         AA1: { x: 515, y: 307, size: 15, font: "check" },
         BB1: { x: 570, y: 307, size: 15, font: "check" },
         CC1: { x: 625, y: 307, size: 15, font: "check" },
         Day1: { x: 683, y: 307, size: 15, font: "check" },
 
         // OT Table 2
-        No2: { x: 93, y: 287, size: 15, font: "thai" },
-        Date2: { x: 127, y: 287, size: 15, font: "thai", format: "date" },
+        No2: { x: 78, y: 287, size: 15, font: "thai" },
+        Date2: { x: 110, y: 287, size: 15, font: "thai", format: "date" },
         TimeIN2: { x: 200, y: 287, size: 15, font: "thai", format: "time" },
         TimeOut2: { x: 275, y: 287, size: 15, font: "thai", format: "time" },
-        OT150_2: { x: 370, y: 287, size: 15, font: "thai" },
-        OT200_2: { x: 420, y: 287, size: 15, font: "thai" },
-        OT300_2: { x: 470, y: 287, size: 15, font: "thai" },
+        OT150_2: { x: 350, y: 287, size: 15, font: "thai" },
+        OT200_2: { x: 400, y: 287, size: 15, font: "thai" },
+        OT300_2: { x: 450, y: 287, size: 15, font: "thai" },
         AA2: { x: 515, y: 287, size: 15, font: "check" },
         BB2: { x: 570, y: 287, size: 15, font: "check" },
         CC2: { x: 625, y: 287, size: 15, font: "check" },
         Day2: { x: 683, y: 287, size: 15, font: "check" },
 
         // Checkboxes
-        Forget: { x: 135, y: 249, size: 15, font: "check" },
+        Forget: { x: 132, y: 249, size: 15, font: "check" },
         Outtime: { x: 235, y: 249, size: 15, font: "check" },
         Record: { x: 337, y: 249, size: 15, font: "check" },
         Offsite: { x: 438, y: 249, size: 15, font: "check" },
         Other: { x: 538, y: 249, size: 15, font: "check" },
-        Other_Detail: { x: 580, y: 249, size: 15, font: "thai" },
+        Other_Detail: { x: 590, y: 249, size: 15, font: "thai" },
 
         // Request & Approve
-        NameRequest: { x: 180, y: 205, size: 15, font: "thai" },
+        NameRequest: { x: 160, y: 205, size: 15, font: "thai" },
         DateRequest: { x: 340, y: 205, size: 15, font: "thai", format: "date" },
-        SupRequest: { x: 560, y: 205, size: 15, font: "thai" },
+        SupRequest: { x: 563, y: 205, size: 15, font: "thai" },
 
-        NameRequest2: { x: 180, y: 178, size: 15, font: "thai" },
+        NameRequest2: { x: 160, y: 178, size: 15, font: "thai" },
         DateRequest2: { x: 340, y: 178, size: 15, font: "thai", format: "date" },
-        SupRequest2: { x: 560, y: 178, size: 15, font: "thai" },
-
+        SupRequest2: { x: 563, y: 178, size: 15, font: "thai" },
 
         NameCheck: [
-            { x: 180, y: 150, size: 15, font: "thai" },
-            { x: 180, y: 122, size: 15, font: "thai" },
+            { x: 160, y: 150, size: 15, font: "thai" },
+            { x: 160, y: 122, size: 15, font: "thai" },
         ],
         DateCheck: [
             { x: 340, y: 150, size: 15, font: "thai", format: "date" },
             { x: 340, y: 122, size: 15, font: "thai", format: "date" },
         ],
         NameApprove: [
-            { x: 560, y: 150, size: 15, font: "thai" },
-            { x: 560, y: 122, size: 15, font: "thai" },
+            { x: 563, y: 150, size: 15, font: "thai" },
+            { x: 563, y: 122, size: 15, font: "thai" },
         ],
     },
     FM_GA_13: {
