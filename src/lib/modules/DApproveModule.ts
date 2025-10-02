@@ -18,7 +18,6 @@ export interface ApproveRow {
   Dep: string;
   nameRequest: string;
   source: string;
-  date?: string;
   DateRequest?: string;
   DateCheck: string;
   NameRequest: string;
@@ -29,7 +28,7 @@ export interface ApproveRow {
 export interface ApproveData {
   totalAll: number;
   totals: Record<string, number>; // เพิ่มตรงนี้
-  data:  ApproveRow[];
+  data: ApproveRow[];
   offset: number;
   limit: number;
 }
@@ -117,7 +116,6 @@ export async function getDApproveData({
        FormID, 
        FormThai, 
        Dep, 
-       [Date] AS date,
              NameRequest,
              DateRequest,
               StatusCheck,
@@ -131,10 +129,10 @@ export async function getDApproveData({
     });
   // log("Generated Queries:", queries); // ✅ log generated queries
 
-  let Orderby = "date DESC"; // ค่าเริ่มต้น
-  if (statusType === "Check_TAB") Orderby = "DateRequest DESC, date DESC";
-  else if (statusType === "Approve_TAB") Orderby = "DateCheck DESC, date DESC";
-  else if (statusType === "All_TAB") Orderby = "DateApprove DESC, date DESC";
+  let Orderby = "DateRequest DESC"; // ค่าเริ่มต้น
+  if (statusType === "Check_TAB") Orderby = "DateRequest DESC";
+  else if (statusType === "Approve_TAB") Orderby = "DateCheck DESC";
+  else if (statusType === "All_TAB") Orderby = "DateApprove DESC";
 
   const finalQuery = `
                     SELECT *, COUNT(*) OVER() AS totalCount
