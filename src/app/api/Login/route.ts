@@ -121,11 +121,12 @@ export async function POST(req: NextRequest) {
     const res = NextResponse.json({ success: true, fullName: userrow.Name, User_Id: userrow.User_Id, roles, permissions, ForgetPass: userrow.ForgetPass });
     res.cookies.set("auth_token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: false, // <== ปิด secure cookie ชั่วคราว
+      sameSite: "lax", // หรือ "none" ถ้าข้าม origin
       path: "/",
-      maxAge: 8 * 60 * 60, // 8 ชั่วโมง
+      maxAge: 8 * 60 * 60,
     });
+
 
     return res;
 

@@ -23,6 +23,7 @@ export default function LoginForm({ onLoginSuccess }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
+        credentials: "include", // <== สำคัญมาก
       });
 
       const data = await res.json();

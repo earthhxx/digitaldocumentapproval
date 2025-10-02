@@ -375,7 +375,14 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
         <div className="flex flex-1 flex-col min-h-full w-full bg-white shadow-lg p-6 overflow-auto">
             <div className="relative">
                 <div className="absolute top-4 right-2 text-sm text-gray-500">
-                    <Image src="/images/LOGO2.png" alt="Logo" className="w-auto h-20 mb-1 mx-auto" />
+                    <Image
+                        src="/images/LOGO2.png"
+                        alt="Logo"
+                        width={200}   // Replace with actual image width
+                        height={80}   // Replace with actual image height
+                        className="w-auto h-20 mb-1 mx-auto"
+                    />
+
                 </div>
             </div>
 
