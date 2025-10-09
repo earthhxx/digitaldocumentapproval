@@ -113,8 +113,8 @@ const tableFieldMap: TableFieldMap = {
         NameApprove: { x: 360, y: 152, size: 15, font: "thai" },
 
         // More Dates
-        Date2: { x: 130, y: 130, size: 15, format: "date", font: "thai" },
-        Date3: { x: 370, y: 130, size: 15, format: "date", font: "thai" },
+        DateCheck: { x: 130, y: 130, size: 15, format: "date", font: "thai" },
+        DateApprove: { x: 370, y: 130, size: 15, format: "date", font: "thai" },
     },
     FM_HR_07: {
         // Personal Info
@@ -257,7 +257,7 @@ export async function mapFieldsToPDF(
     table: string
 ) {
     const fieldMap = tableFieldMap[table];
-    // console.log('fm', fieldMap);
+    console.log('fm', fieldMap);
     if (!fieldMap) return;
 
     const markFields: Record<string, string> = {

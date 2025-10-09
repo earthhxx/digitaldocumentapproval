@@ -83,7 +83,7 @@ export default async function UserLoginPage() {
   }
 
 
-  console.log(user, 'user');
+  // console.log(user, 'user');
   if (!user || !user.permissions?.includes("D_Approve")) {
     return <div>Access Denied</div>;
   }
