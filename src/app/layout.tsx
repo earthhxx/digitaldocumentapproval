@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Sidebar from "./components/Sidebar";
 import { Geist, Geist_Mono, Kanit } from "next/font/google";
 import { cookies } from "next/headers"; // สำหรับ SSR cookie
-import { jwtVerify } from "jose";
+import { getDashboardConnection } from "@/lib/db";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
-
+import sql from "mssql";
 import ResetPasswordModal from "./components/ForgetPass";
 
 import { User } from "@/app/types/types"; // ใช้ path ที่ถูกกับโปรเจกต์ของคุณ
@@ -39,27 +39,38 @@ export default async function RootLayout({
 }) {
   // --- SSR: อ่าน cookie ---
   const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
+  const sessionId = cookieStore.get("session_id")?.value;
 
   let initialUser: User | null = null;
-  if (token) {
-    try {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
-      const { payload } = await jwtVerify(token, secret);
 
-      initialUser = {
-        userId: payload.userId as string,
-        fullName: payload.fullName as string,
-        roles: Array.isArray(payload.roles)
-          ? payload.roles
-          : [payload.roles as string],
-        permissions: Array.isArray(payload.permissions)
-          ? payload.permissions
-          : [payload.permissions as string],
-        ForgetPass: payload.ForgetPass as string,
-      };
-      // console.log('ini',initialUser)
-    } catch {
+  // --- ดึงข้อมูล user จาก sessionId ---
+  if (sessionId) {
+    try {
+      const pool = await getDashboardConnection();
+
+      // ดึงข้อมูล session และ user จากฐานข้อมูล ตาม sessionId
+      const sessionResult = await pool.request()
+        .input("sessionId", sql.VarChar, sessionId)
+        .query(`
+          SELECT u.User_Id, u.Name, u.ForgetPass
+          FROM Sessions s
+          INNER JOIN tb_im_employee u ON s.User_Id = u.User_Id
+          WHERE s.SessionId = @sessionId
+        `);
+
+      if (sessionResult.recordset.length > 0) {
+        const user = sessionResult.recordset[0];
+        // ดึง roles, permissions ตามต้องการ หรือจะดึงจาก session ก็ได้
+        initialUser = {
+          userId: user.User_Id,
+          fullName: user.Name,
+          roles: [],         // เติมข้อมูลจริงจาก DB ตามต้องการ
+          permissions: [],   // เติมข้อมูลจริงจาก DB ตามต้องการ
+          ForgetPass: user.ForgetPass,
+        };
+      }
+    } catch (error) {
+      console.error("Error fetching session user:", error);
       initialUser = null;
     }
   }
@@ -73,8 +84,8 @@ export default async function RootLayout({
           <div className="flex flex-col min-h-screen w-screen">
             {/* ClientOnly modal */}
 
-              <ResetPasswordModal
-              />
+            <ResetPasswordModal
+            />
 
             <Sidebar />
             <main className="flex-1 flex flex-col overflow-hidden">

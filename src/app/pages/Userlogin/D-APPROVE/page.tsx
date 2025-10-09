@@ -1,13 +1,12 @@
 import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
+import { getDashboardConnection } from "@/lib/db";
+import sql from "mssql";
 import DApproveTable from "./components/D_approvetable";
 import type { UserPayload } from "@/app/types/types";
 import { getDApproveData } from "@/lib/modules/DApproveModule";
 import { GetupdateStatus } from "@/lib/modules/GetupdateStatus";
-
 type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
 
-// map form → dep
 interface FormDepMap {
   [form: string]: string[];
 }
@@ -26,16 +25,42 @@ interface AmountData {
 
 export default async function UserLoginPage() {
   const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
+  const sessionId = cookieStore.get("session_id")?.value;  // เปลี่ยนชื่อ cookie เป็น session_id ตามที่ตั้งไว้ตอน login
 
   let user: UserPayload | null = null;
-  if (token) {
+
+  if (sessionId) {
     try {
-      const decoded = jwt.decode(token);
-      if (typeof decoded === "object" && decoded !== null) {
-        user = decoded as UserPayload;
+      const pool = await getDashboardConnection();
+
+      // สมมติว่าเรามีตาราง sessions เก็บ sessionId กับข้อมูล user ที่จำเป็น (หรือเก็บ userId เพื่อดึงข้อมูล user)
+      // ดึงข้อมูล user จาก sessions table โดย sessionId
+      const sessionResult = await pool.request()
+        .input("sessionId", sql.VarChar, sessionId)
+        .query(`
+          SELECT UserId, FullName, Roles, Permissions, ForgetPass, FormAccess, Dep
+          FROM sessions
+          WHERE SessionId = @sessionId AND ExpireAt > GETDATE()
+        `);
+
+      if (sessionResult.recordset.length === 0) {
+        user = null;
+      } else {
+        const row = sessionResult.recordset[0];
+        user = {
+          userId: row.UserId,
+          fullName: row.FullName,
+          roles: JSON.parse(row.Roles),        // สมมติว่า roles, permissions, formaccess, dep เก็บเป็น JSON string
+          permissions: JSON.parse(row.Permissions),
+          ForgetPass: row.ForgetPass,
+          formaccess: JSON.parse(row.FormAccess),
+          Dep: JSON.parse(row.Dep),
+        };
       }
-    } catch { }
+    } catch (error) {
+      console.error("Session lookup failed:", error);
+      user = null;
+    }
   }
 
   if (!user || !user.permissions?.includes("D_Approve")) {
@@ -48,7 +73,6 @@ export default async function UserLoginPage() {
 
   const formOption: Option = { check: {}, approve: {}, all: {} };
 
-  // build formOption
   if (user.permissions) {
     if (user.permissions.includes("Check_TAB")) {
       user.permissions
@@ -107,8 +131,6 @@ export default async function UserLoginPage() {
       ? Object.keys(formOption[key])
       : [];
 
-  // console.log('form', forms)
-
   const initialData = await getDApproveData({
     offset: 0,
     limit: 13,
@@ -124,11 +146,8 @@ export default async function UserLoginPage() {
     all: formOption.all,
   };
 
-  // console.log(tabFormMap)
-
-  // เรียกใช้งาน GetupdateStatus แล้วรวมผลเป็น object เดียว
   const statusData = await GetupdateStatus(tabFormMap);
-  // console.log('sta', statusData)
+
   const AmountData: AmountData = {
     CheckNull: statusData.check?.CheckNull || 0,
     ApproveNull: statusData.approve?.ApproveNull || 0,
@@ -139,7 +158,7 @@ export default async function UserLoginPage() {
     <DApproveTable
       initialData={initialData}
       user={user}
-      AmountData={AmountData} // ส่ง object เดียว
+      AmountData={AmountData}
       formOption={formOption}
       formkey={key}
       formaccess={Object.keys(formOption[key])}

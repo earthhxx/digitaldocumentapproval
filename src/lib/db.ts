@@ -31,6 +31,25 @@ export const getDashboardConnection = async () => {
   return pool_NewFCXT;
 };
 
+// export const getDashboardConnection = async () => {
+//   if (pool_NewFCXT) return pool_NewFCXT;
+
+//   pool_NewFCXT = await new sql.ConnectionPool({
+//     user: requiredEnv('MSSQL_USER'),
+//     password: requiredEnv('MSSQL_PASSWORD'),
+//     server: requiredEnv('MSSQL_SERVER'),
+//     port: parseInt(requiredEnv('MSSQL_PORT'), 10),
+//     database: requiredEnv('MSSQL_DATABASE'),
+//     options: {
+//       encrypt: false,
+//       trustServerCertificate: true,
+//     },
+//   }).connect();
+
+//   console.log('✅ Connected to MSSQL (NewFCXT)');
+//   return pool_NewFCXT;
+// };
+
 export const getDemo1Connection = async () => {
   if (pool_DASHBOARD) return pool_DASHBOARD;
 

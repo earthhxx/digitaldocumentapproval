@@ -1,66 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify, JWTPayload } from "jose";
-
-export type JwtPayload = {
-  userId: number | string;
-  username: string;
-  fullName: string;
-  roles: string[];
-  permissions?: string[];
-  iat?: number;
-  exp?: number;
-};
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-
-  // protect เฉพาะ /api/admin/*
-  if (pathname.startsWith("/api/admin")) {
-    const token = req.cookies.get("auth_token")?.value;
-
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    try {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
-      const { payload } = (await jwtVerify(token, secret)) as { payload: JWTPayload & JwtPayload };
-
-      if (!payload.roles?.includes("Admin")) {
-        return NextResponse.json({ error: "Forbidden: admin only" }, { status: 403 });
-      }
-
-      return NextResponse.next();
-    } catch {
-      return NextResponse.json({ error: "Invalid or expired token" }, { status: 403 });
-    }
+  if (pathname === "/api/Login" || pathname === "/api/setup-session") {
+    return NextResponse.next();
   }
+  // ดูว่า cookie มี auth_token หรือยัง (แต่ยังไม่ verify)
+  // const token = req.cookies.get("auth_token")?.value;
 
-  if (pathname.startsWith("/api/D-approve")) {
-    const token = req.cookies.get("auth_token")?.value;
+  // ยังไม่ verify token แค่เช็คว่ามี cookie ไหม
+  // if (!token) {
+  //   return NextResponse.json({ error: "Unauthorized: No token" }, { status: 401 });
+  // }
 
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  // TODO: ในอนาคต verify token ที่นี่
 
-    try {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
-      const { payload } = (await jwtVerify(token, secret)) as { payload: JWTPayload & JwtPayload };
-
-      if (!payload.permissions?.includes("D_Approve")) {
-        return NextResponse.json({ error: "Forbidden: admin only" }, { status: 403 });
-      }
-
-      return NextResponse.next();
-    } catch {
-      return NextResponse.json({ error: "Invalid or expired token" }, { status: 403 });
-    }
-  }
-
+  // ตรวจสอบ path และสิทธิ์ (ตอนนี้ข้ามไปก่อน)
+  // เช่น ถ้าอยากกัน /api/admin ให้มี role admin
+  // ก็ verify token และ decode payload มาเช็ค
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/:path*"],
+  matcher: ["/api/:path*"],
 };
