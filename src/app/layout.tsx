@@ -50,23 +50,23 @@ export default async function RootLayout({
 
       // ดึงข้อมูล session และ user จากฐานข้อมูล ตาม sessionId
       const sessionResult = await pool.request()
-        .input("sessionId", sql.VarChar, sessionId)
+        .input("sessionId", sql.NVarChar, sessionId)
         .query(`
-          SELECT u.User_Id, u.Name, u.ForgetPass
-          FROM Sessions s
-          INNER JOIN tb_im_employee u ON s.User_Id = u.User_Id
-          WHERE s.SessionId = @sessionId
-        `);
+    SELECT data
+    FROM Sessions
+    WHERE session_id = @sessionId AND expires > GETDATE()
+  `);
 
       if (sessionResult.recordset.length > 0) {
-        const user = sessionResult.recordset[0];
-        // ดึง roles, permissions ตามต้องการ หรือจะดึงจาก session ก็ได้
+        const rawData = sessionResult.recordset[0].data;
+        const parsed = JSON.parse(rawData);
+
         initialUser = {
-          userId: user.User_Id,
-          fullName: user.Name,
-          roles: [],         // เติมข้อมูลจริงจาก DB ตามต้องการ
-          permissions: [],   // เติมข้อมูลจริงจาก DB ตามต้องการ
-          ForgetPass: user.ForgetPass,
+          userId: parsed.userId,
+          fullName: parsed.fullName,
+          roles: parsed.roles || [],
+          permissions: parsed.permissions || [],
+          ForgetPass: parsed.ForgetPass,
         };
       }
     } catch (error) {

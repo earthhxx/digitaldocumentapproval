@@ -33,28 +33,47 @@ export default async function UserLoginPage() {
     try {
       const pool = await getDashboardConnection();
 
-      // สมมติว่าเรามีตาราง sessions เก็บ sessionId กับข้อมูล user ที่จำเป็น (หรือเก็บ userId เพื่อดึงข้อมูล user)
-      // ดึงข้อมูล user จาก sessions table โดย sessionId
+      // ดึงข้อมูล session จากตาราง Sessions
       const sessionResult = await pool.request()
-        .input("sessionId", sql.VarChar, sessionId)
+        .input("sessionId", sql.NVarChar, sessionId)
         .query(`
-          SELECT UserId, FullName, Roles, Permissions, ForgetPass, FormAccess, Dep
-          FROM sessions
-          WHERE SessionId = @sessionId AND ExpireAt > GETDATE()
-        `);
+        SELECT data
+        FROM Sessions
+        WHERE session_id = @sessionId AND expires > GETDATE()
+      `);
 
       if (sessionResult.recordset.length === 0) {
         user = null;
       } else {
-        const row = sessionResult.recordset[0];
+        const sessionDataText = sessionResult.recordset[0].data;
+
+        let sessionData;
+        try {
+          sessionData = JSON.parse(sessionDataText);
+        } catch (parseError) {
+          console.error("Failed to parse session data:", parseError);
+          sessionData = {};
+        }
+
+        // สมมุติว่า sessionData มีข้อมูลแบบนี้:
+        // {
+        //   userId: "123",
+        //   fullName: "John Doe",
+        //   roles: [...],
+        //   permissions: [...],
+        //   ForgetPass: false,
+        //   formaccess: [...],
+        //   Dep: [...]
+        // }
+
         user = {
-          userId: row.UserId,
-          fullName: row.FullName,
-          roles: JSON.parse(row.Roles),        // สมมติว่า roles, permissions, formaccess, dep เก็บเป็น JSON string
-          permissions: JSON.parse(row.Permissions),
-          ForgetPass: row.ForgetPass,
-          formaccess: JSON.parse(row.FormAccess),
-          Dep: JSON.parse(row.Dep),
+          userId: sessionData.userId,
+          fullName: sessionData.fullName,
+          roles: sessionData.roles,
+          permissions: sessionData.permissions,
+          ForgetPass: sessionData.ForgetPass,
+          formaccess: sessionData.formaccess,
+          Dep: sessionData.Dep,
         };
       }
     } catch (error) {
@@ -63,6 +82,8 @@ export default async function UserLoginPage() {
     }
   }
 
+
+  console.log(user, 'user');
   if (!user || !user.permissions?.includes("D_Approve")) {
     return <div>Access Denied</div>;
   }

@@ -1,10 +1,12 @@
 // src/app/api/D-approve/D-approve/route.ts
+
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import sql from "mssql";
+import { getDashboardConnection } from "@/lib/db";
 import { getDApproveData } from "@/lib/modules/DApproveModule";
 
-// 🔐 กำหนด type ของ JWT payload ให้ชัดเจน
-interface JWTPayload {
+// กำหนด type ของข้อมูลใน session
+interface SessionUser {
   userId?: number | string;
   username?: string;
   fullName?: string;
@@ -12,42 +14,57 @@ interface JWTPayload {
   permissions?: string[];
   formaccess?: string[];
   Dep?: string[];
-  ForgetPass?: string,
+  ForgetPass?: string;
 }
 
 export async function POST(req: NextRequest) {
   try {
-    // ✅ ดึง token จาก cookie
-    const token = req.cookies.get("auth_token")?.value;
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // ✅ ดึง session ID จาก cookie
+    const sessionId = req.cookies.get("session_id")?.value;
+
+    if (!sessionId) {
+      return NextResponse.json({ error: "Unauthorized - No session" }, { status: 401 });
     }
 
-    // ✅ ตรวจสอบ token และใส่ type JWTPayload
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "your_secret_key"
-    );
+    // ✅ connect database
+    const pool = await getDashboardConnection();
 
-    // ✅ ตรวจสอบว่า decoded เป็น JWTPayload จริง ๆ
-    if (typeof decoded !== "object" || decoded === null || !("userId" in decoded)) {
-      return NextResponse.json({ error: "Invalid token payload" }, { status: 400 });
+    // ✅ query ข้อมูล session จากตาราง Sessions
+    const sessionResult = await pool.request()
+      .input("sessionId", sql.NVarChar, sessionId)
+      .query(`
+        SELECT data
+        FROM Sessions
+        WHERE session_id = @sessionId AND expires > GETDATE()
+      `);
+
+    if (sessionResult.recordset.length === 0) {
+      return NextResponse.json({ error: "Invalid or expired session" }, { status: 401 });
     }
 
-    const payload = decoded as JWTPayload;
+    // ✅ แปลง data (ntext) เป็น JSON
+    const sessionDataText = sessionResult.recordset[0].data;
+    let sessionUser: SessionUser;
+
+    try {
+      sessionUser = JSON.parse(sessionDataText);
+    } catch (parseErr) {
+      console.error("❌ Failed to parse session data:", parseErr);
+      return NextResponse.json({ error: "Corrupted session data" }, { status: 500 });
+    }
 
     // ✅ รับ body จาก request
     const body = await req.json();
 
-    // ✅ เรียกใช้งาน getDApproveData โดย merge formaccess จาก body หรือ token
+    // ✅ ใช้ข้อมูลจาก session (หรือจาก body ถ้ามี override)
     const data = await getDApproveData({
       ...body,
-      formaccess: body.formaccess || payload.formaccess || [],
+      formaccess: body.formaccess || sessionUser.formaccess || [],
     });
 
     return NextResponse.json(data);
   } catch (err) {
-    console.error("POST /api/D-approve/D-approve error:", err);
+    console.error("❌ POST /api/D-approve/D-approve error:", err);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
