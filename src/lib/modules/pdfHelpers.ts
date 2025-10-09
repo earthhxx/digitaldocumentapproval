@@ -257,7 +257,7 @@ export async function mapFieldsToPDF(
     table: string
 ) {
     const fieldMap = tableFieldMap[table];
-    console.log('fm', fieldMap);
+    // console.log('fm', fieldMap);
     if (!fieldMap) return;
 
     const markFields: Record<string, string> = {

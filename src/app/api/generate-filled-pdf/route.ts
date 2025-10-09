@@ -89,7 +89,7 @@ export async function GET(req: NextRequest) {
         const page = pdfDoc.getPage(0);
 
         const pdfData: PDFData = data;
-        console.log('pdf',pdfData)
+        // console.log('pdf',pdfData)
 
         // ✅ เรียก helper แบบ await (async) เพื่อให้วาดเสร็จก่อน save
         await mapFieldsToPDF(page, fontthai, fontcheck, pdfData, table);
