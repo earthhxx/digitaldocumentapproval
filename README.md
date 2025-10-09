@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# README
 
-## Getting Started
+## Update Summary: Authentication Flow Migration from JWT Token to Session ID
 
-First, run the development server:
+### Background
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+ระบบ authentication เดิมของโปรเจกต์นี้ใช้ **JWT token** เพื่อเก็บข้อมูลผู้ใช้และสิทธิ์การเข้าถึง (roles, permissions) ในการยืนยันตัวตนและการอนุญาตใช้งาน API ต่างๆ อย่างไรก็ตาม พบข้อจำกัดหลายประการที่ทำให้การใช้งาน JWT token ไม่ตอบโจทย์ระบบที่มีสิทธิ์และบทบาทจำนวนมาก
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### What Has Changed
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* **เปลี่ยนการยืนยันตัวตนจาก JWT token เป็น Session ID**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+  * ระบบปัจจุบันจะสร้าง **Session ID** แบบสุ่ม (UUID) เมื่อผู้ใช้ล็อกอินสำเร็จ
+  * ข้อมูล session (รวม roles, permissions, ข้อมูลผู้ใช้) จะถูกเก็บในฐานข้อมูล SQL Server ในตาราง `Sessions` ในรูปแบบ JSON ภายในคอลัมน์ `data`
+  * การตรวจสอบสิทธิ์จะใช้ Session ID ที่อยู่ใน cookie เพื่อตรวจสอบและดึงข้อมูล session จากฐานข้อมูลแทนการถอดรหัส JWT token
+* **ลบ Middleware สำหรับตรวจสอบ token**
 
-## Learn More
+  * Middleware เดิมมีปัญหาด้านความเสถียรและ performance บน Next.js framework ปัจจุบัน
+  * การตรวจสอบ session ถูกย้ายมาอยู่ใน API route และ SSR เพื่อให้ระบบทำงานได้มั่นคงและง่ายต่อการจัดการ
 
-To learn more about Next.js, take a look at the following resources:
+### Plan Points / เหตุผลการเปลี่ยนแปลง
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* จำนวน **permission และ roles ที่มากเกินไป** ทำให้ข้อมูลทั้งหมดไม่สามารถบรรจุใน JWT token ได้อย่างเหมาะสม
+* ข้อจำกัดของ browser ในการรับส่ง token ผ่าน header หรือ cookie โดยทั่วไป **ขนาด token ต้องไม่เกินประมาณ 4KB** ซึ่งระบบนี้เกินกว่าขนาดดังกล่าว
+* การใช้ Session ID และเก็บข้อมูลแบบ centralized บน server-side ช่วยลดภาระและความซับซ้อนของ token
+* เพิ่มความปลอดภัยในการจัดการ session เพราะสามารถหมดอายุหรือยกเลิกได้โดยตรงจาก server
+* ลดปัญหาความไม่เสถียรของ middleware ที่ใช้ตรวจสอบ token
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### ผลลัพธ์และข้อดีของการเปลี่ยนแปลงนี้
 
-## Deploy on Vercel
+* ระบบมีความเสถียรและปลอดภัยมากขึ้น
+* รองรับ permission และ roles จำนวนมากได้โดยไม่มีข้อจำกัดจากขนาด token
+* ง่ายต่อการจัดการและตรวจสอบ session ผ่านฐานข้อมูล
+* สามารถควบคุมอายุ session และยกเลิก session ได้โดยตรงจาก server
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### วิธีใช้งาน
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. เมื่อผู้ใช้ล็อกอินสำเร็จ ระบบจะสร้าง Session ID และเก็บข้อมูล session ลงในตาราง `Sessions` ของฐานข้อมูล
+2. Session ID จะถูกส่งกลับเป็น cookie (`session_id`) ที่ตั้งค่าเป็น `HttpOnly`
+3. ในการเรียก API หรือ SSR ที่ต้องการข้อมูลผู้ใช้ จะดึง `session_id` จาก cookie และดึงข้อมูล session จากฐานข้อมูลเพื่อยืนยันตัวตนและดึงข้อมูลสิทธิ์การใช้งาน
+
+---
+
+ถ้าต้องการให้ช่วยปรับเพิ่มเติม หรือใส่ตัวอย่างโค้ด แจ้งได้เลยครับ!
