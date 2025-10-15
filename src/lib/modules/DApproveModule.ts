@@ -11,7 +11,7 @@ export interface ApproveQuery {
   startDate?: string | null;
   endDate?: string | null;
 }
- 
+
 export interface ApproveRow {
   ID: number;
   FormThai: string;
@@ -58,7 +58,7 @@ export async function getDApproveData({
 
   // console.log("Table Map:", tableMap); // ✅ log table mapping
 
-  const validTabs = ["Check_TAB","Check_DONE_TAB", "Approve_TAB", "All_TAB"];
+  const validTabs = ["Check_TAB", "Check_DONE_TAB", "Approve_TAB", "All_TAB"];
   if (!validTabs.includes(statusType)) {
     console.log("Invalid statusType:", statusType); // ✅ log statusType ไม่ถูกต้อง
     return { totalAll: 0, totals: {}, data: [], offset, limit };
@@ -79,7 +79,7 @@ export async function getDApproveData({
       if (statusType === "Check_TAB")
         whereClause += ` AND StatusCheck IS NULL`;
       else if (statusType === "Check_DONE_TAB")
-        whereClause += ` AND StatusCheck IS NOT NULL AND ApproveStatus IS NULL`;
+        whereClause += ` AND StatusCheck IS NOT NULL AND StatusApprove IS NULL`;
       else if (statusType === "Approve_TAB")
         whereClause += ` AND StatusCheck IS NOT NULL AND StatusCheck != N'ไม่อนุมัติ' AND StatusApprove IS NULL`;
       else if (statusType === "All_TAB")

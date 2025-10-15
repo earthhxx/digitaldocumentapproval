@@ -248,7 +248,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
 
             if (res.ok) {
                 const statusData = await res.json(); // ✅ TabFormAmount
-                console.log(startDate)
+                // console.log(startDate)
                 const AmountData: AmountData = {
                     CheckNull: statusData.check?.CheckNull || 0,
                     ApproveNull: statusData.approve?.ApproveNull || 0,
