@@ -69,11 +69,12 @@ interface SelectedDoc {
 
 const tabToKeyMap: Record<Tab, FormOptionKey> = {
     Check_TAB: "check",
+    Check_DONE_TAB: "check",
     Approve_TAB: "approve",
     All_TAB: "all",
 };
 
-type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
+type Tab = "Check_TAB" | "Check_DONE_TAB" | "Approve_TAB" | "All_TAB";
 
 export default function DApproveTable({ user, initialData, AmountData, formOption, formkey, formaccess, tabFormMap }: DApproveTableProps) {
     // form options จาก formOption[key] เช่น formOption.all
@@ -97,7 +98,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
     // console.log("csr", AmountData)
     const [dataAmount, setDataAmount] = useState<AmountData>(AmountData);
     // console.log("dataamo", dataAmount)
-    const availableTabs = (["Check_TAB", "Approve_TAB", "All_TAB"] as Tab[]).filter(t =>
+    const availableTabs = (["Check_TAB", "Check_DONE_TAB", "Approve_TAB", "All_TAB"] as Tab[]).filter(t =>
         user.permissions?.includes(t)
     );
     // console.log('ava', availableTabs);
@@ -314,6 +315,7 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
 
     const [tabKeyMap] = useState<Record<Tab, string>>({
         Check_TAB: `check`,
+        Check_DONE_TAB: `check`,
         Approve_TAB: `approve`,
         All_TAB: `all`,
     });
@@ -363,8 +365,9 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
 
     const [tabLabels] = useState<Record<Tab, string>>({
         Check_TAB: `เอกสารรอตรวจสอบ`,
+        Check_DONE_TAB: `เอกสารที่ตรวจสอบแล้ว`,
         Approve_TAB: `เอกสารรออนุมัติ`,
-        All_TAB: `เอกสารทั้งหมด`,
+        All_TAB: `เอกสารที่อนุมัติทั้งหมด`,
     });
 
 

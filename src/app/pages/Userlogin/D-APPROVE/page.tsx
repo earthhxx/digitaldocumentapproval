@@ -5,7 +5,7 @@ import DApproveTable from "./components/D_approvetable";
 import type { UserPayload } from "@/app/types/types";
 import { getDApproveData } from "@/lib/modules/DApproveModule";
 import { GetupdateStatus } from "@/lib/modules/GetupdateStatus";
-type Tab = "Check_TAB" | "Approve_TAB" | "All_TAB";
+type Tab = "Check_TAB" |"Check_DONE_TAB"| "Approve_TAB" | "All_TAB";
 
 interface FormDepMap {
   [form: string]: string[];
@@ -88,7 +88,7 @@ export default async function UserLoginPage() {
     return <div>Access Denied</div>;
   }
 
-  const availableTabs = (["Check_TAB", "Approve_TAB", "All_TAB"] as Tab[]).filter(
+  const availableTabs = (["Check_TAB","Check_DONE_TAB", "Approve_TAB", "All_TAB"] as Tab[]).filter(
     (t) => user!.permissions?.includes(t)
   );
 
@@ -140,6 +140,7 @@ export default async function UserLoginPage() {
 
   const tabKeyMap: Record<Tab, keyof Option> = {
     Check_TAB: "check",
+    Check_DONE_TAB: "check",
     Approve_TAB: "approve",
     All_TAB: "all",
   };
