@@ -304,6 +304,7 @@ export async function mapFieldsToPDF(
             // date/time format
             if (format === "date" && data[dataKey]) {
                 const rawValue = data[dataKey];
+                // console.log('date', dataKey, rawValue);
 
                 if (typeof rawValue === "string" || typeof rawValue === "number" || rawValue instanceof Date) {
                     const date = new Date(rawValue);
@@ -318,6 +319,7 @@ export async function mapFieldsToPDF(
 
             if (format === "time" && data[dataKey]) {
                 const rawValue = data[dataKey];
+                // console.log('time', dataKey, rawValue);
 
                 if (
                     typeof rawValue === "string" ||
@@ -325,8 +327,8 @@ export async function mapFieldsToPDF(
                     rawValue instanceof Date
                 ) {
                     const date = new Date(rawValue);
-                    const hh = String(date.getHours()).padStart(2, "0");
-                    const mm = String(date.getMinutes()).padStart(2, "0");
+                    const hh = String(date.getUTCHours()).padStart(2, "0");
+                    const mm = String(date.getUTCMinutes()).padStart(2, "0");
                     text = `${hh}:${mm}`;
                 } else {
                     console.warn(`Invalid time format for key: ${dataKey}`, rawValue);
@@ -341,7 +343,7 @@ export async function mapFieldsToPDF(
             if ((data[dataKey] === 0 || data[dataKey] === "0") && font === "check") {
                 text = "";
             }
-
+            // console.log('text', key, text);
             page.drawText(text.toString(), {
                 x,
                 y,
