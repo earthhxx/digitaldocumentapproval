@@ -204,9 +204,9 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                 }),
                 credentials: "include",
             });
-
             if (res.ok) {
                 const data = await res.json();
+                // console.log(data)
                 setApproveData({
                     totalAll: data.totalAll ?? 0,
                     totals: data.totals ?? {},
@@ -611,7 +611,13 @@ export default function DApproveTable({ user, initialData, AmountData, formOptio
                                         <td className="px-4 py-2 text-left border-t border-gray-200 ">{doc.FormThai}</td>
                                         <td className="px-4 py-2 text-left border-t border-gray-200 ">{doc.source}</td>
                                         <td className="px-4 py-2 text-left border-t border-gray-200 ">{doc.Dep}</td>
-                                        <td className="px-4 py-2 text-left border-t border-gray-200 ">{doc.DateRequest ? new Date(doc.DateRequest).toLocaleDateString() : "-"}</td>
+                                        <td className="px-4 py-2 text-left border-t border-gray-200 "> {doc.DateRequest
+                                            ? (() => {
+                                                const d = new Date(doc.DateRequest);
+                                                // ไม่บวก +7 ชั่วโมง
+                                                return `${d.getUTCFullYear()}/${d.getUTCMonth() + 1}/${d.getUTCDate()}`;
+                                            })()
+                                            : "-"}</td>
                                         <td className="px-4 py-2 text-left border-t border-gray-200 ">{doc.NameRequest}</td>
                                         {tab === "Approve_TAB" && <td className="px-4 py-2 text-left border-t border-gray-200 w-[15%]">{doc.DateCheck ? new Date(doc.DateCheck).toLocaleDateString() : "-"}</td>}
                                         {tab === "All_TAB" && <td className="px-4 py-2 text-center border-t border-gray-200 w-[15%]">{doc.DateApprove ? new Date(doc.DateApprove).toLocaleDateString() : "-"}</td>}
