@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       tableGroups[rec.source].push(rec.ID);
     }
 
-    console.log("👉 Grouped records by table:", tableGroups);
+    // console.log("👉 Grouped records by table:", tableGroups);
 
     for (const [source, ids] of Object.entries(tableGroups)) {
       const tablesResult = await pool
