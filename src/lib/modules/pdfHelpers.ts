@@ -295,7 +295,7 @@ export async function mapFieldsToPDF(
     // loop key ของ fieldMap
     for (const key in fieldMap) {
         const fields = Array.isArray(fieldMap[key]) ? fieldMap[key] : [fieldMap[key]];
-
+        // console.log(fields)
         for (const field of fields) {
             const { x, y, size = 12, format, font, source } = field;
             const dataKey = source ?? key;
@@ -307,15 +307,17 @@ export async function mapFieldsToPDF(
                 // console.log('date', dataKey, rawValue);
 
                 if (typeof rawValue === "string" || typeof rawValue === "number" || rawValue instanceof Date) {
+                    // const date = new Date(rawValue);
+                    // text = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
                     const date = new Date(rawValue);
-                    text = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+                    text = `${date.getUTCFullYear()}/${date.getUTCMonth() + 1}/${date.getUTCDate()}`;
+
                 } else {
                     // handle unexpected type
                     console.warn(`Unexpected date type: ${typeof rawValue}`, rawValue);
                     text = ""; // or fallback
                 }
             }
-
 
             if (format === "time" && data[dataKey]) {
                 const rawValue = data[dataKey];
