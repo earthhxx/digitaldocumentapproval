@@ -87,7 +87,7 @@ const tableFieldMap: TableFieldMap = {
         NameCompany: { x: 300, y: 392, size: 15, font: "thai" },
 
         // Dates
-        Date1: { x: 450, y: 372, size: 15, format: "date", font: "thai" },
+        dateout: { x: 450, y: 372, size: 15, format: "date", font: "thai" },
 
         // Checkboxes
         Repair: { x: 212, y: 345, size: 20, font: "check" },
